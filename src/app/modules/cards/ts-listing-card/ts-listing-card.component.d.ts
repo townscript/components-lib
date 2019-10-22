@@ -15,9 +15,6 @@ export declare class TsListingCardComponent implements OnInit {
     homeUrl: string;
     goingCounter: boolean;
     moreIcons: boolean;
-    showRegularCard: boolean;
-    featuredCard: boolean;
-    topicCard: boolean;
     defaultCardImageUrl: string;
     constructor(dialog: MatDialog, browser: BrowserService, placeService: PlaceService);
     shareEvent: () => void;

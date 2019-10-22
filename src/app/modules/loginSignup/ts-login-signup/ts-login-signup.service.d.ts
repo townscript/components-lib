@@ -1,12 +1,12 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ApiService } from '../../../shared/services/api-service';
 export declare class TsLoginSignupService {
-    apiService: ApiService;
     private http;
-    token: any;
+    token: string;
+    baseUrl: String;
+    apiServerUrl: String;
     headers: HttpHeaders;
     CAPTCHA_SITE_INVISIBLE_CAPTCHA_KEY: any;
-    constructor(apiService: ApiService, http: HttpClient);
+    constructor(http: HttpClient);
     getUserSignUpDetails: (emailId: string) => Promise<any>;
     loginWithTownscript: (emailId: string, password: string) => Promise<any>;
     registerWithTownscriptWithCaptcha: (formData: any) => Promise<any>;

@@ -1,14 +1,10 @@
-import { OnInit, ElementRef, EventEmitter } from '@angular/core';
-import { Subject } from 'rxjs';
-import { TimeService } from '../../../../../shared/services/time.service';
-import { DatePipe } from '@angular/common';
-import { HeaderService } from '../ts-header.service';
+import { OnInit, ElementRef, EventEmitter, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { PlaceService } from '../place.service';
-export declare class CitySearchPopupComponent implements OnInit {
-    private placeService;
+import { DatePipe } from '@angular/common';
+import { Subject } from 'rxjs';
+import { HeaderService } from '../ts-header.service';
+export declare class CitySearchPopupComponent implements OnInit, AfterViewInit {
     private headerService;
-    private timeService;
     datepipe: DatePipe;
     cityInput: ElementRef;
     showArrow: boolean;
@@ -26,7 +22,7 @@ export declare class CitySearchPopupComponent implements OnInit {
     cityLoading: boolean;
     index: any;
     popularPlaces: any;
-    constructor(placeService: PlaceService, headerService: HeaderService, timeService: TimeService, datepipe: DatePipe);
+    constructor(headerService: HeaderService, datepipe: DatePipe);
     callSearchCity: (query: any) => void;
     placeChanged: (place: any) => void;
     openCityPopup: () => void;
