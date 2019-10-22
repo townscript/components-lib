@@ -4,13 +4,14 @@ export declare class ShareEventModalComponent implements OnInit {
     dialogRef: MatDialogRef<ShareEventModalComponent>;
     data: any;
     event: any;
-    eventURL: string;
-    eventName: string;
+    eventURL: any;
+    eventName: any;
     shareLink: any;
-    baseUrl: string;
-    copied: boolean;
+    baseUrl: any;
+    copied: any;
     constructor(dialogRef: MatDialogRef<ShareEventModalComponent>, data: any);
     close: () => void;
+    ngAfterViewInit(): void;
     copyLink: () => void;
     ngOnInit(): void;
 }

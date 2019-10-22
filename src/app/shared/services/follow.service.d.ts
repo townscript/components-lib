@@ -5,13 +5,13 @@ export declare class FollowService {
     private userService;
     baseUrl: String;
     apiServerUrl: String;
-    listingsUrl: String;
     user: any;
+    listingsUrl: String;
     private followData$;
     followData: import("rxjs").Observable<Object>;
     constructor(http: HttpClient, userService: UserService);
-    createFollowData: (type: any, typeId: any, userId: any) => import("rxjs").Observable<Object>;
-    getFollowData: (id: any) => void;
-    unfollow: (followDataId: any) => import("rxjs").Observable<Object>;
-    updateFollowData: (data: any) => void;
+    createFollowData(type: any, typeId: any, userId: any): import("rxjs").Observable<Object>;
+    getFollowData(id: any): void;
+    unfollow(followDataId: any): import("rxjs").Observable<Object>;
+    updateFollowData(data: any): void;
 }

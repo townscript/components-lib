@@ -1,25 +1,22 @@
-import { OnInit, OnDestroy } from '@angular/core';
+import { OnInit } from '@angular/core';
 import { MatDialog } from '@angular/material';
-import { UserService } from '../../../../shared/services/index';
+import { UserService } from './../../../../shared/services/user-service';
 import { FooterService } from './ts-footer.service';
 import { PlaceService } from '../ts-header/place.service';
-export declare class TsFooterComponent implements OnInit, OnDestroy {
+export declare class TsFooterComponent implements OnInit {
     private dialog;
     private userService;
     private footerService;
     private placeService;
-    source: string;
+    city: any;
+    placeId: any;
+    source: any;
     popularEvents: any;
     recentBlogs: any;
-    popularReads: {
-        title: string;
-        url: string;
-    }[];
+    popularReads: any;
     popularCities: any;
     popularEventsData: any;
     countryCityMap: any;
-    city: any;
-    placeId: string;
     myBookingsURL: string;
     subObject: any;
     constructor(dialog: MatDialog, userService: UserService, footerService: FooterService, placeService: PlaceService);

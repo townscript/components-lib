@@ -13,6 +13,7 @@ export declare class UserMenuComponent implements OnInit {
     host: any;
     s3BucketUrl: any;
     constructor(notificationService: NotificationService, userService: UserService, cookieService: CookieService);
-    logout: () => void;
+    logout(): void;
+    ngAfterViewInit(): void;
     ngOnInit(): void;
 }
