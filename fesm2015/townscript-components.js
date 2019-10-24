@@ -233,7 +233,7 @@ let HeaderService = class HeaderService {
         };
     }
     getPopularCities(countryCode) {
-        return this.http.get(this.baseUrl + 'listings/city/popular/' + countryCode);
+        return this.http.get(this.baseUrl + 'listings/city/popular/' + countryCode).toPromise();
     }
 };
 HeaderService = __decorate([
@@ -687,7 +687,8 @@ SearchComponent = __decorate([
 ], SearchComponent);
 
 let CitySearchPopupComponent = class CitySearchPopupComponent {
-    constructor(headerService, datepipe) {
+    constructor(placeService, headerService, datepipe) {
+        this.placeService = placeService;
         this.headerService = headerService;
         this.datepipe = datepipe;
         this.showArrow = true;
@@ -737,15 +738,19 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
                 this.cityQueryChanged.next(text);
             }
         };
-        this.getPopularPlaces = () => {
-            this.headerService.getPopularCities(this.urlArray[0]).subscribe(res => {
-                this.popularPlaces = res['data'].slice(0, 6).map(ele => {
-                    ele.type = 'city';
-                    ele.cityCode = ele.code;
-                    return ele;
-                });
-            });
-        };
+        this.getPopularPlaces = () => __awaiter(this, void 0, void 0, function* () {
+            this.placeService.place.subscribe((res) => __awaiter(this, void 0, void 0, function* () {
+                if (res) {
+                    const country = JSON.parse(res)['country'];
+                    const data = yield this.headerService.getPopularCities(country);
+                    this.popularPlaces = data['data'].slice(0, 6).map(ele => {
+                        ele.type = 'city';
+                        ele.cityCode = ele.code;
+                        return ele;
+                    });
+                }
+            }));
+        });
         this.cityQueryChanged.pipe(debounceTime(300)).subscribe(text => this.callSearchCity(text));
         if (this.router.url) {
             this.urlArray = this.router.url.replace('/', '').split('/');
@@ -792,7 +797,7 @@ CitySearchPopupComponent = __decorate([
         template: "<div class=\"city-suggestions enter-slide-bottom\" [class.arrow]=\"showArrow\">\n    <div class=\"suggestions-container\">\n        <ul>\n            <li [class.active]=\"citySearchActive\" class=\"p-2 capitalize cursor-pointer flex items-center truncate\">\n                <i class=\"mdi mdi-magnify mr-2\"></i>\n                <input #cityInput autocomplete=\"off\" id=\"cityInput\" type=\"text\" placeholder=\"Type here to search...\"\n                    [(ngModel)]=\"cityQuery\" (ngModelChange)=\"searchCity($event)\" (focus)=\"citySearchActive=true\"\n                    class=\"w-full bg-transparent text-sm\" />\n                <i *ngIf=\"cityLoading\" class=\"mdi mdi-loading mdi-spin\"></i>\n            </li>\n            <li matRipple (click)=\"placeChanged(place);\"\n                class=\"p-2 capitalize cursor-pointer flex items-center truncate\"\n                *ngFor=\"let place of placeSearchResults\">\n                <i class=\"mdi mdi-map-marker text-base mr-1 color-blue\"></i>\n                <span class=\"text-sm flex items-end truncate\">\n                    <span class=\"mr-1 whitespace-no-wrap\">{{place.name}} </span>\n                    <small class=\"text-2xs text-gray-600\"\n                        *ngIf=\"place.city && place?.city.length>0 && place?.type!='city'\">\n                        {{place.city}},\n                    </small>\n                    <small class=\"text-2xs text-gray-600\"\n                        *ngIf=\"place.country && place?.country.length>0 && place?.type!='country'\">{{place.country}}\n                    </small>\n                    <small class=\"text-2xs truncate text-gray-600\">{{place.secondaryText}}</small>\n                </span>\n            </li>\n            <ng-container matRipple *ngIf=\"!placeSearchResults || placeSearchResults.length==0\">\n                <li (click)=\"placeChanged(city);\" class=\"p-2 px-4 cursor-pointer capitalize\"\n                    *ngFor=\"let city of popularPlaces\">\n                    <i class=\"mdi mdi-map-marker text-base mr-1 color-blue\"></i>\n                    <span class=\"text-base\">{{city.name}}</span>\n                </li>\n            </ng-container>\n        </ul>\n    </div>\n</div>",
         styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.city-suggestions{width:100%;background:#fafafa;position:absolute;box-shadow:0 5px 10px 0 rgba(0,0,0,.15)}.city-suggestions .mdi-spin::before{-webkit-animation-duration:.5s;animation-duration:.5s}.city-suggestions li.active,.city-suggestions li:hover{background:#ededed}.city-suggestions.arrow{border-top:3px solid #3782c4}.city-suggestions.arrow:before{content:\" \";width:10px;position:absolute;top:-7px;left:88%;height:10px;-webkit-filter:drop-shadow(0 -5px 10px rgba(0, 0, 0, .15));filter:drop-shadow(0 -5px 10px rgba(0, 0, 0, .15));background:#ededed;-webkit-transform:rotate(45deg);transform:rotate(45deg);border-top:3px solid #3782c4;border-left:3px solid #3782c4}@media (min-width:991px){.city-suggestions{width:140%;left:-40%}}"]
     }),
-    __metadata("design:paramtypes", [HeaderService, DatePipe])
+    __metadata("design:paramtypes", [PlaceService, HeaderService, DatePipe])
 ], CitySearchPopupComponent);
 
 let TsLoginSignupService = class TsLoginSignupService {

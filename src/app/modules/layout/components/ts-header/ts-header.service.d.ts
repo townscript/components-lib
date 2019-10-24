@@ -5,5 +5,5 @@ export declare class HeaderService {
     apiServerUrl: string;
     constructor(http: HttpClient);
     getplaceSearchResults: (query: any) => import("rxjs").Observable<Object>;
-    getPopularCities(countryCode: any): import("rxjs").Observable<Object>;
+    getPopularCities(countryCode: any): Promise<Object>;
 }
