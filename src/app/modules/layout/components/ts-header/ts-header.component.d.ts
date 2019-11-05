@@ -1,0 +1,33 @@
+import { OnInit, ElementRef } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { UserService } from '../../../../shared/services/user-service';
+import { PlaceService } from './place.service';
+export declare class TsHeaderComponent implements OnInit {
+    private placeService;
+    private dialog;
+    private userService;
+    Components: Array<String>;
+    backState: boolean;
+    source: string;
+    shadow: boolean;
+    citySuggestions: ElementRef;
+    userMenuEle: ElementRef;
+    user: any;
+    router: any;
+    userMenu: any;
+    host: string;
+    activePlace: string;
+    activeCity: string;
+    activeCountryCode: string;
+    homePageUrl: string;
+    s3BucketUrl: any;
+    cityPopupActive: boolean;
+    constructor(placeService: PlaceService, dialog: MatDialog, userService: UserService);
+    clickout: (event: any) => void;
+    openLogin: () => void;
+    navigateToMobileSearch: () => void;
+    openMyProfileComponent: () => void;
+    goBack: () => void;
+    goToHomePage: () => void;
+    ngOnInit(): void;
+}
