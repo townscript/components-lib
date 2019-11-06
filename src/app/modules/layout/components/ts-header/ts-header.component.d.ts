@@ -24,7 +24,9 @@ export declare class TsHeaderComponent implements OnInit {
     cityPopupActive: boolean;
     constructor(placeService: PlaceService, dialog: MatDialog, userService: UserService);
     clickout: (event: any) => void;
-    openLogin: () => void;
+    openLogin: (callback?: any) => void;
+    navigateToDashboard: () => void;
+    createEventClick: () => void;
     navigateToMobileSearch: () => void;
     openMyProfileComponent: () => void;
     goBack: () => void;
