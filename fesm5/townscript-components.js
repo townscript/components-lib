@@ -255,7 +255,7 @@ var PlaceService = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         if (!isPlatformBrowser(this.platformId)) return [3 /*break*/, 4];
-                        localData = localStorage.getItem('ipInfoData');
+                        localData = localStorage.getItem('ipinfo_data');
                         ipInfoData = void 0;
                         if (!!localData) return [3 /*break*/, 2];
                         console.log('Calling ip info!');
@@ -268,7 +268,7 @@ var PlaceService = /** @class */ (function () {
                             'countryCode': ipInfoJson['country'].toLowerCase(),
                             'city': ipInfoJson['city'].toLowerCase()
                         };
-                        localStorage.setItem('ipInfoData', JSON.stringify(ipInfoData));
+                        localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData));
                         return [3 /*break*/, 3];
                     case 2:
                         ipInfoData = JSON.parse(localData);

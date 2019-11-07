@@ -239,7 +239,7 @@ let PlaceService = class PlaceService {
     getLocationFromIpInfo() {
         return __awaiter(this, void 0, void 0, function* () {
             if (isPlatformBrowser(this.platformId)) {
-                const localData = localStorage.getItem('ipInfoData');
+                const localData = localStorage.getItem('ipinfo_data');
                 let ipInfoData;
                 if (!localData) {
                     console.log('Calling ip info!');
@@ -250,7 +250,7 @@ let PlaceService = class PlaceService {
                         'countryCode': ipInfoJson['country'].toLowerCase(),
                         'city': ipInfoJson['city'].toLowerCase()
                     };
-                    localStorage.setItem('ipInfoData', JSON.stringify(ipInfoData));
+                    localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData));
                 }
                 else {
                     ipInfoData = JSON.parse(localData);
