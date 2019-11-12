@@ -50,7 +50,7 @@ BrowserService = __decorate([
 let CookieService = class CookieService {
     constructor() {
         this.deleteCookie = (name) => {
-            this.setCookie(name, '', -1, '/');
+            this.setCookie(name, '', -1, '');
         };
         this.setCookie = (name, value, expireDays, path = '') => {
             const d = new Date();

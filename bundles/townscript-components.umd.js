@@ -119,7 +119,7 @@
         function CookieService() {
             var _this = this;
             this.deleteCookie = function (name) {
-                _this.setCookie(name, '', -1, '/');
+                _this.setCookie(name, '', -1, '');
             };
             this.setCookie = function (name, value, expireDays, path) {
                 if (path === void 0) { path = ''; }
