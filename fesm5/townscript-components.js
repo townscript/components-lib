@@ -1084,6 +1084,7 @@ var TsLoginSignupComponent = /** @class */ (function () {
             var input = document.querySelector('#phoneNumber');
             _this_1.intlInput = window.intlTelInput(input, {
                 initialCountry: _this_1.countryCode,
+                preferredCountries: ["in", "id", "sg", "my"],
                 utilScripts: '../../../../../../node_modules/intl-tel-input/build/js/utils.js'
             });
         };

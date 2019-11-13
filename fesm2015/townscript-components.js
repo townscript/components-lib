@@ -994,6 +994,7 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
             const input = document.querySelector('#phoneNumber');
             this.intlInput = window.intlTelInput(input, {
                 initialCountry: this.countryCode,
+                preferredCountries: ["in", "id", "sg", "my"],
                 utilScripts: '../../../../../../node_modules/intl-tel-input/build/js/utils.js'
             });
         };
