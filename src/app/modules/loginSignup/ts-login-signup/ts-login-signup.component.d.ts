@@ -45,6 +45,7 @@ export declare class TsLoginSignupComponent implements OnInit, OnDestroy {
     subObject: any;
     showConfirmation: boolean;
     baseUrl: any;
+    userName: any;
     constructor(cookieService: CookieService, userService: UserService, notificationService: NotificationService, tsLoginSignupService: TsLoginSignupService, placeService: PlaceService);
     ngOnInit(): void;
     ngOnDestroy(): void;
