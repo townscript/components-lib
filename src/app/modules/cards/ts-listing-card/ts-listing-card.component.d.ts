@@ -16,6 +16,7 @@ export declare class TsListingCardComponent implements OnInit {
     goingCounter: boolean;
     moreIcons: boolean;
     defaultCardImageUrl: string;
+    recurrenceRule: any;
     constructor(dialog: MatDialog, browser: BrowserService, placeService: PlaceService);
     shareEvent: () => void;
     navigateToListing: (code: any) => void;
