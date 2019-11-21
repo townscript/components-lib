@@ -4,7 +4,7 @@ import { MatSnackBar, MatSnackBarConfig, MatDialog, MatDialogConfig, MAT_DIALOG_
 import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { DOCUMENT, isPlatformBrowser, DatePipe, CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders, HttpParams, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import * as algoliaSearchImported from 'algoliasearch';
 import { debounceTime, take } from 'rxjs/operators';
@@ -481,7 +481,7 @@ var TsFooterComponent = /** @class */ (function () {
         if (this.popularEvents == undefined || this.popularEvents.length == 0) {
             this.subObject = this.placeService.place.subscribe(function (res) {
                 var data = JSON.parse(res);
-                if (data['city']) {
+                if (data != undefined) {
                     _this.getCityFromCityCode(data['city']);
                 }
             });
@@ -1756,7 +1756,6 @@ var TsLoginSignupModule = /** @class */ (function () {
                 TsFormsModule,
                 ReactiveFormsModule,
                 RecaptchaModule,
-                HttpClientModule,
                 MatRippleModule,
                 MatSnackBarModule,
                 MatInputModule,
@@ -1794,7 +1793,6 @@ var LayoutModule = /** @class */ (function () {
             imports: [
                 CommonModule,
                 FormsModule,
-                HttpClientModule,
                 MatRippleModule$1,
                 MatSnackBarModule$1,
                 TsLoginSignupModule,

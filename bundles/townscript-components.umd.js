@@ -548,7 +548,7 @@
             if (this.popularEvents == undefined || this.popularEvents.length == 0) {
                 this.subObject = this.placeService.place.subscribe(function (res) {
                     var data = JSON.parse(res);
-                    if (data['city']) {
+                    if (data != undefined) {
                         _this.getCityFromCityCode(data['city']);
                     }
                 });
@@ -1823,7 +1823,6 @@
                     elements.TsFormsModule,
                     forms.ReactiveFormsModule,
                     ngRecaptcha.RecaptchaModule,
-                    http.HttpClientModule,
                     material.MatRippleModule,
                     material.MatSnackBarModule,
                     material.MatInputModule,
@@ -1861,7 +1860,6 @@
                 imports: [
                     common.CommonModule,
                     forms.FormsModule,
-                    http.HttpClientModule,
                     core$1.MatRippleModule,
                     snackBar.MatSnackBarModule,
                     TsLoginSignupModule,

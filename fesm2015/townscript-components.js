@@ -4,7 +4,7 @@ import { MatSnackBarConfig, MatSnackBar, MatDialogConfig, MatDialog, MAT_DIALOG_
 import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { isPlatformBrowser, DOCUMENT, DatePipe, CommonModule } from '@angular/common';
-import { HttpClient, HttpHeaders, HttpParams, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import * as algoliaSearchImported from 'algoliasearch';
 import { debounceTime, take } from 'rxjs/operators';
@@ -428,7 +428,7 @@ let TsFooterComponent = class TsFooterComponent {
         if (this.popularEvents == undefined || this.popularEvents.length == 0) {
             this.subObject = this.placeService.place.subscribe((res) => {
                 const data = JSON.parse(res);
-                if (data['city']) {
+                if (data != undefined) {
                     this.getCityFromCityCode(data['city']);
                 }
             });
@@ -1615,7 +1615,6 @@ TsLoginSignupModule = __decorate([
             TsFormsModule,
             ReactiveFormsModule,
             RecaptchaModule,
-            HttpClientModule,
             MatRippleModule,
             MatSnackBarModule,
             MatInputModule,
@@ -1650,7 +1649,6 @@ LayoutModule = __decorate([
         imports: [
             CommonModule,
             FormsModule,
-            HttpClientModule,
             MatRippleModule$1,
             MatSnackBarModule$1,
             TsLoginSignupModule,
