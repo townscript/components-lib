@@ -4,7 +4,9 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs';
 import { TimeService } from '../../../../../shared/services/time.service';
 import { PlaceService } from '../place.service';
+import { HeaderService } from '../ts-header.service';
 export declare class SearchComponent implements OnInit {
+    private headerService;
     private placeService;
     private timeService;
     datepipe: DatePipe;
@@ -28,12 +30,14 @@ export declare class SearchComponent implements OnInit {
     homeUrl: string;
     router: Router;
     host: any;
-    constructor(placeService: PlaceService, timeService: TimeService, datepipe: DatePipe);
+    popularPlaces: any;
+    constructor(headerService: HeaderService, placeService: PlaceService, timeService: TimeService, datepipe: DatePipe);
     callAlgolia: (text: any) => void;
     filterDataForSearchResult: (data: any) => void;
     clickout(event: any): void;
     navigateToListing: (interest: any) => void;
     navigateToEventPage: (eventCode: any) => void;
     search: (text: any) => void;
+    getPopularPlaces: () => Promise<void>;
     ngOnInit(): void;
 }

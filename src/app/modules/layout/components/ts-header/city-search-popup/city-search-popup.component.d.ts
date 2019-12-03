@@ -14,6 +14,7 @@ export declare class CitySearchPopupComponent implements OnInit, AfterViewInit {
     activePlaceChange: EventEmitter<String>;
     cityPopupActive: boolean;
     cityPopupActiveChange: EventEmitter<boolean>;
+    popularPlaces: any;
     citySearchActive: boolean;
     placeSearchResults: any;
     router: Router;
@@ -23,13 +24,11 @@ export declare class CitySearchPopupComponent implements OnInit, AfterViewInit {
     client: any;
     cityLoading: boolean;
     index: any;
-    popularPlaces: any;
     constructor(placeService: PlaceService, headerService: HeaderService, datepipe: DatePipe);
     callSearchCity: (query: any) => void;
     placeChanged: (place: any) => void;
     openCityPopup: () => void;
     searchCity: (text: any) => void;
-    getPopularPlaces: () => Promise<void>;
     ngAfterViewInit(): void;
     ngOnInit(): void;
 }
