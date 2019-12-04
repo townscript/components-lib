@@ -22,6 +22,8 @@ export * from './src/app/modules/cards/ts-listing-card/share-event-modal/share-e
 export * from './src/app/modules/cards/ts-card-skeleton/ts-card-skeleton.component';
 export * from './src/app/modules/cards/ts-listing-card/ts-listing-card.component';
 export * from './src/app/shared/components/follow/follow.component';
+export * from './src/app/shared/directives/analytics/data-analytics.directive';
+export * from './src/app/shared/services/analytics/data-collector.service';
 export * from './src/app/modules/layout/layout.module';
 export * from './src/app/modules/loginSignup/login-signup.module';
 export * from './src/app/modules/cards/cards.module';
