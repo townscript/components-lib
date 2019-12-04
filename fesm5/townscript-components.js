@@ -1264,10 +1264,10 @@ var TsLoginSignupComponent = /** @class */ (function () {
                             this.notificationService.success('Reset Password Link has been sent', 2000, 'Dismiss');
                         }
                         this.resetPwdLinkSent = true;
-                        if (sessionStorage.getItem('email')) {
-                            sessionStorage.removeItem('email');
+                        if (localStorage.getItem('email')) {
+                            localStorage.removeItem('email');
                         }
-                        sessionStorage.setItem('email', this.loginForm.get('email').value.trim());
+                        localStorage.setItem('email', this.loginForm.get('email').value.trim());
                         return [2 /*return*/];
                 }
             });
