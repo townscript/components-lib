@@ -12,6 +12,7 @@ export declare class FollowComponent implements OnInit {
     color: string;
     followTypeId: any;
     followType: any;
+    status: any;
     textCopy: string;
     hovered: boolean;
     user: any;
@@ -21,6 +22,7 @@ export declare class FollowComponent implements OnInit {
     followed: boolean;
     constructor(userService: UserService, followService: FollowService, dialog: MatDialog);
     ngOnInit(): void;
+    emitFollowStatus: () => void;
     checkFollowStatus: () => void;
     openLogin: () => void;
     followedFn: ($event: any) => void;

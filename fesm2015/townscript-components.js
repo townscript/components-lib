@@ -1504,8 +1504,12 @@ let FollowComponent = class FollowComponent {
         this.followedText = 'Following';
         this.type = 'button';
         this.color = '#683592';
+        this.status = new EventEmitter();
         this.loggedIn = false;
         this.followed = false;
+        this.emitFollowStatus = () => {
+            this.status.emit(this.followed);
+        };
         this.checkFollowStatus = () => {
             if (!this.followTypeId || !this.followType) {
                 return;
@@ -1521,6 +1525,7 @@ let FollowComponent = class FollowComponent {
                     if (this.followed) {
                         this.text = this.followedText;
                     }
+                    this.emitFollowStatus();
                 }
             });
         };
@@ -1592,6 +1597,10 @@ __decorate([
     Input(),
     __metadata("design:type", Object)
 ], FollowComponent.prototype, "followType", void 0);
+__decorate([
+    Output(),
+    __metadata("design:type", Object)
+], FollowComponent.prototype, "status", void 0);
 FollowComponent = __decorate([
     Component({
         selector: 'app-follow',

@@ -1653,8 +1653,12 @@ var FollowComponent = /** @class */ (function () {
         this.followedText = 'Following';
         this.type = 'button';
         this.color = '#683592';
+        this.status = new EventEmitter();
         this.loggedIn = false;
         this.followed = false;
+        this.emitFollowStatus = function () {
+            _this.status.emit(_this.followed);
+        };
         this.checkFollowStatus = function () {
             if (!_this.followTypeId || !_this.followType) {
                 return;
@@ -1670,6 +1674,7 @@ var FollowComponent = /** @class */ (function () {
                     if (_this.followed) {
                         _this.text = _this.followedText;
                     }
+                    _this.emitFollowStatus();
                 }
             });
         };
@@ -1741,6 +1746,10 @@ var FollowComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Object)
     ], FollowComponent.prototype, "followType", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", Object)
+    ], FollowComponent.prototype, "status", void 0);
     FollowComponent = __decorate([
         Component({
             selector: 'app-follow',

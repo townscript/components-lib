@@ -1719,8 +1719,12 @@
             this.followedText = 'Following';
             this.type = 'button';
             this.color = '#683592';
+            this.status = new core.EventEmitter();
             this.loggedIn = false;
             this.followed = false;
+            this.emitFollowStatus = function () {
+                _this.status.emit(_this.followed);
+            };
             this.checkFollowStatus = function () {
                 if (!_this.followTypeId || !_this.followType) {
                     return;
@@ -1736,6 +1740,7 @@
                         if (_this.followed) {
                             _this.text = _this.followedText;
                         }
+                        _this.emitFollowStatus();
                     }
                 });
             };
@@ -1807,6 +1812,10 @@
             core.Input(),
             __metadata("design:type", Object)
         ], FollowComponent.prototype, "followType", void 0);
+        __decorate([
+            core.Output(),
+            __metadata("design:type", Object)
+        ], FollowComponent.prototype, "status", void 0);
         FollowComponent = __decorate([
             core.Component({
                 selector: 'app-follow',
