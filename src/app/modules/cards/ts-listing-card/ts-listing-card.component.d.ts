@@ -17,6 +17,6 @@ export declare class TsListingCardComponent implements OnInit {
     moreIcons: boolean;
     defaultCardImageUrl: string;
     constructor(dialog: MatDialog, browser: BrowserService, placeService: PlaceService);
-    shareEvent: () => void;
+    shareEvent: (event: any) => void;
     ngOnInit(): void;
 }
