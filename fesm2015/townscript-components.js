@@ -225,7 +225,6 @@ let PlaceService = class PlaceService {
             }
             else {
                 this.getLocationFromIpInfo().then(ipInfoData => {
-                    console.log(ipInfoData);
                     const data = { 'city': ipInfoData['city'], 'country': ipInfoData['countryCode'].toLowerCase(), 'currentPlace': ipInfoData['city'] };
                     this.updatePlace(data);
                 });
@@ -989,12 +988,15 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
             this.show = !this.show;
         };
         this.verifyEmail = () => __awaiter(this, void 0, void 0, function* () {
+            this.showLoader = true;
             if (!this.loginForm.controls.email.valid) {
+                this.showLoader = false;
                 return;
             }
             const result = yield this.tsLoginSignupService.getUserSignUpDetails(this.loginForm.value.email);
             let newData = result;
             try {
+                this.showLoader = false;
                 newData = JSON.parse(result.data);
             }
             catch (e) {
@@ -1211,7 +1213,7 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
         });
     }
     ngOnDestroy() {
-        if (this.subObject != undefined) {
+        if (this.subObject !== undefined) {
             this.subObject.unsubscribe();
         }
     }

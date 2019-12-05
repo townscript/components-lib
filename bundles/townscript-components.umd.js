@@ -303,7 +303,6 @@
                 }
                 else {
                     this.getLocationFromIpInfo().then(function (ipInfoData) {
-                        console.log(ipInfoData);
                         var data = { 'city': ipInfoData['city'], 'country': ipInfoData['countryCode'].toLowerCase(), 'currentPlace': ipInfoData['city'] };
                         _this.updatePlace(data);
                     });
@@ -1153,7 +1152,9 @@
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
+                            this.showLoader = true;
                             if (!this.loginForm.controls.email.valid) {
+                                this.showLoader = false;
                                 return [2 /*return*/];
                             }
                             return [4 /*yield*/, this.tsLoginSignupService.getUserSignUpDetails(this.loginForm.value.email)];
@@ -1161,6 +1162,7 @@
                             result = _a.sent();
                             newData = result;
                             try {
+                                this.showLoader = false;
                                 newData = JSON.parse(result.data);
                             }
                             catch (e) {
@@ -1413,7 +1415,7 @@
             });
         };
         TsLoginSignupComponent.prototype.ngOnDestroy = function () {
-            if (this.subObject != undefined) {
+            if (this.subObject !== undefined) {
                 this.subObject.unsubscribe();
             }
         };
