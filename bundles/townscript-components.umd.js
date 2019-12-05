@@ -208,9 +208,9 @@
             this.documentIsAccessible = common.isPlatformBrowser(this.platformId);
             if (this.documentIsAccessible) {
                 var user = this.cookieService.getCookie('townscript-user');
-                console.log('got user from cookie' + user);
+                console.log('got user from cookie');
                 if (user != null && user.length > 0) {
-                    this.updateUser(JSON.parse(user));
+                    this.updateUser(JSON.parse(JSON.parse(user)));
                 }
             }
         }
