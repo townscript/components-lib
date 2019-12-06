@@ -600,14 +600,8 @@ var TsHeaderComponent = /** @class */ (function () {
                         switch (_a.label) {
                             case 0:
                                 if (!res) return [3 /*break*/, 2];
-                                country = '';
-                                try {
-                                    country = JSON.parse(res)['country'];
-                                }
-                                catch (e) {
-                                    country = this.urlArray[0];
-                                }
-                                return [4 /*yield*/, this.headerService.getPopularCities(country)];
+                                country = JSON.parse(res)['country'];
+                                return [4 /*yield*/, this.headerService.getPopularCities(country || this.urlArray[0])];
                             case 1:
                                 data = _a.sent();
                                 this.popularPlaces = data['data'].slice(0, 6).map(function (ele) {
@@ -815,14 +809,8 @@ var SearchComponent = /** @class */ (function () {
                         switch (_a.label) {
                             case 0:
                                 if (!res) return [3 /*break*/, 2];
-                                country = '';
-                                try {
-                                    country = JSON.parse(res)['country'];
-                                }
-                                catch (e) {
-                                    country = this.urlArray[0];
-                                }
-                                return [4 /*yield*/, this.headerService.getPopularCities(country)];
+                                country = JSON.parse(res)['country'];
+                                return [4 /*yield*/, this.headerService.getPopularCities(country || this.urlArray[0])];
                             case 1:
                                 data = _a.sent();
                                 this.popularPlaces = data['data'].slice(0, 6).map(function (ele) {

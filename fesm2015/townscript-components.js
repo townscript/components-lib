@@ -539,14 +539,8 @@ let TsHeaderComponent = class TsHeaderComponent {
         this.getPopularPlaces = () => __awaiter(this, void 0, void 0, function* () {
             this.placeService.place.subscribe((res) => __awaiter(this, void 0, void 0, function* () {
                 if (res) {
-                    let country = '';
-                    try {
-                        country = JSON.parse(res)['country'];
-                    }
-                    catch (e) {
-                        country = this.urlArray[0];
-                    }
-                    const data = yield this.headerService.getPopularCities(country);
+                    const country = JSON.parse(res)['country'];
+                    const data = yield this.headerService.getPopularCities(country || this.urlArray[0]);
                     this.popularPlaces = data['data'].slice(0, 6).map(ele => {
                         ele.type = 'city';
                         ele.cityCode = ele.code;
@@ -736,14 +730,8 @@ let SearchComponent = class SearchComponent {
         this.getPopularPlaces = () => __awaiter(this, void 0, void 0, function* () {
             this.placeService.place.subscribe((res) => __awaiter(this, void 0, void 0, function* () {
                 if (res) {
-                    let country = '';
-                    try {
-                        country = JSON.parse(res)['country'];
-                    }
-                    catch (e) {
-                        country = this.urlArray[0];
-                    }
-                    const data = yield this.headerService.getPopularCities(country);
+                    const country = JSON.parse(res)['country'];
+                    const data = yield this.headerService.getPopularCities(country || this.urlArray[0]);
                     this.popularPlaces = data['data'].slice(0, 6).map(ele => {
                         ele.type = 'city';
                         ele.cityCode = ele.code;
