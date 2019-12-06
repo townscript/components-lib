@@ -310,7 +310,8 @@
             }
         }
         PlaceService.prototype.updatePlace = function (data) {
-            console.log('updating place in components with ' + data);
+            console.log('updating place in components with ');
+            console.log(data);
             data = JSON.stringify(data);
             this.cookieService.setCookie('location', data, 100000000, '/');
             this.currentPlace$.next(data);
