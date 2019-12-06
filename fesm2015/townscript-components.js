@@ -232,6 +232,7 @@ let PlaceService = class PlaceService {
         }
     }
     updatePlace(data) {
+        console.log('updating place in components with ' + data);
         data = JSON.stringify(data);
         this.cookieService.setCookie('location', data, 100000000, '/');
         this.currentPlace$.next(data);
