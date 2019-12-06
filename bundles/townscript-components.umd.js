@@ -410,7 +410,6 @@
             core.Component({
                 selector: 'app-login-modal',
                 template: "<app-ts-login-signup clickLocation =\"modal\" [mode]=\"'dialog'\" [defaultHeader]=\"header\" [defaultSubHeader]=\"subHeader\" [showSocial]=\"showSocial\"\n  [rdurl]=\"rdurl\" (closeDialog)='close()'></app-ts-login-signup>\n",
-                encapsulation: core.ViewEncapsulation.None,
                 styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.mat-dialog-bkg-container{background:#414243;opacity:.7!important}@media (max-width:700px){.cdk-overlay-pane{height:100vh!important;width:100vw!important;max-width:100vw!important}}@media (min-width:700px){.cdk-overlay-pane{min-width:500px!important}}"]
             }),
             __param(1, core.Inject(dialog.MAT_DIALOG_DATA)),

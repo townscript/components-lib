@@ -1,5 +1,5 @@
 import { __decorate, __metadata, __param, __awaiter } from 'tslib';
-import { Injectable, Inject, PLATFORM_ID, InjectionToken, ɵɵdefineInjectable, ɵɵinject, Component, ViewEncapsulation, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, Pipe, Directive, NgModule } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID, InjectionToken, ɵɵdefineInjectable, ɵɵinject, Component, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, ViewEncapsulation, Pipe, Directive, NgModule } from '@angular/core';
 import { MatSnackBarConfig, MatSnackBar, MatDialogConfig, MatDialog, MAT_DIALOG_DATA as MAT_DIALOG_DATA$1, MatDialogRef as MatDialogRef$1, MatRippleModule, MatSnackBarModule, MatInputModule, MatTooltipModule, MatProgressSpinnerModule } from '@angular/material';
 import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
@@ -321,7 +321,6 @@ LoginModalComponent = __decorate([
     Component({
         selector: 'app-login-modal',
         template: "<app-ts-login-signup clickLocation =\"modal\" [mode]=\"'dialog'\" [defaultHeader]=\"header\" [defaultSubHeader]=\"subHeader\" [showSocial]=\"showSocial\"\n  [rdurl]=\"rdurl\" (closeDialog)='close()'></app-ts-login-signup>\n",
-        encapsulation: ViewEncapsulation.None,
         styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.mat-dialog-bkg-container{background:#414243;opacity:.7!important}@media (max-width:700px){.cdk-overlay-pane{height:100vh!important;width:100vw!important;max-width:100vw!important}}@media (min-width:700px){.cdk-overlay-pane{min-width:500px!important}}"]
     }),
     __param(1, Inject(MAT_DIALOG_DATA)),
