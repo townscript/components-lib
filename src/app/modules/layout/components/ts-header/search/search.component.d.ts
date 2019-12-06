@@ -29,6 +29,7 @@ export declare class SearchComponent implements OnInit {
     index: any;
     homeUrl: string;
     router: Router;
+    urlArray: any;
     host: any;
     popularPlaces: any;
     constructor(headerService: HeaderService, placeService: PlaceService, timeService: TimeService, datepipe: DatePipe);
