@@ -4,7 +4,7 @@ export declare class FooterService {
     baseUrl: string;
     listingsUrl: string;
     constructor(http: HttpClient);
-    getPopularEvents: (lat: any, long: any) => Promise<any>;
+    getPopularEvents: (lat: any, long: any, filter?: any) => Promise<any>;
     getCityFromCityCode: (code: string) => Promise<any>;
     getAllPopularCities: () => Promise<any>;
 }

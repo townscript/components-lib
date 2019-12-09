@@ -28,7 +28,7 @@ export declare class TsFooterComponent implements OnInit, OnDestroy {
     redirectToMyBookings: () => void;
     openLogin: () => void;
     getCityFromCityCode: (code: string) => Promise<any>;
-    getPopularEvents: () => Promise<any>;
+    getPopularEvents: (country?: string) => Promise<any>;
     getPopularCities: () => Promise<any>;
     ngOnInit(): void;
     ngOnDestroy(): void;

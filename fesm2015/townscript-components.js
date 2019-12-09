@@ -335,15 +335,14 @@ let FooterService = class FooterService {
         this.http = http;
         this.baseUrl = config.baseUrl;
         this.listingsUrl = this.baseUrl + 'listings/';
-        this.getPopularEvents = (lat, long) => {
+        this.getPopularEvents = (lat, long, filter) => {
             const params = new Object();
-            params['lat'] = lat;
-            params['lng'] = long;
+            params['lat'] = lat ? lat : 1;
+            params['lng'] = long ? long : 2;
             params['radarDistance'] = 50;
             params['page'] = 0;
             params['size'] = 8;
-            params['minScore'] = 0;
-            return this.http.post(this.listingsUrl + 'event/radar', {}, { params: params }).toPromise();
+            return this.http.post(this.listingsUrl + 'event/radar', filter ? filter : {}, { params: params }).toPromise();
         };
         this.getCityFromCityCode = (code) => {
             return this.http.get(this.listingsUrl + 'place/city?code=' + code).toPromise();
@@ -417,8 +416,12 @@ let TsFooterComponent = class TsFooterComponent {
             this.city = res['data'];
             this.getPopularEvents();
         });
-        this.getPopularEvents = () => __awaiter(this, void 0, void 0, function* () {
-            const res = yield this.footerService.getPopularEvents(this.city.latitude, this.city.longitude);
+        this.getPopularEvents = (country) => __awaiter(this, void 0, void 0, function* () {
+            let filter = { 'minScore': 0 };
+            if (country != undefined) {
+                filter['country'] = country;
+            }
+            const res = yield this.footerService.getPopularEvents(this.city.latitude, this.city.longitude, filter);
             this.popularEvents = res.data.data;
         });
         this.getPopularCities = () => __awaiter(this, void 0, void 0, function* () {
@@ -430,8 +433,13 @@ let TsFooterComponent = class TsFooterComponent {
         if (this.popularEvents == undefined || this.popularEvents.length == 0) {
             this.subObject = this.placeService.place.subscribe((res) => {
                 const data = JSON.parse(res);
-                if (data != undefined) {
-                    this.getCityFromCityCode(data['city']);
+                if (data != undefined && data.length > 0) {
+                    if (data['city']) {
+                        this.getCityFromCityCode(data['city']);
+                    }
+                    else {
+                        this.getPopularEvents(data['currentPlace']);
+                    }
                 }
             });
         }

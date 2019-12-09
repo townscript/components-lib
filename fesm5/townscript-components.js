@@ -361,15 +361,14 @@ var FooterService = /** @class */ (function () {
         this.http = http;
         this.baseUrl = config.baseUrl;
         this.listingsUrl = this.baseUrl + 'listings/';
-        this.getPopularEvents = function (lat, long) {
+        this.getPopularEvents = function (lat, long, filter) {
             var params = new Object();
-            params['lat'] = lat;
-            params['lng'] = long;
+            params['lat'] = lat ? lat : 1;
+            params['lng'] = long ? long : 2;
             params['radarDistance'] = 50;
             params['page'] = 0;
             params['size'] = 8;
-            params['minScore'] = 0;
-            return _this.http.post(_this.listingsUrl + 'event/radar', {}, { params: params }).toPromise();
+            return _this.http.post(_this.listingsUrl + 'event/radar', filter ? filter : {}, { params: params }).toPromise();
         };
         this.getCityFromCityCode = function (code) {
             return _this.http.get(_this.listingsUrl + 'place/city?code=' + code).toPromise();
@@ -453,11 +452,16 @@ var TsFooterComponent = /** @class */ (function () {
                 }
             });
         }); };
-        this.getPopularEvents = function () { return __awaiter(_this, void 0, void 0, function () {
-            var res;
+        this.getPopularEvents = function (country) { return __awaiter(_this, void 0, void 0, function () {
+            var filter, res;
             return __generator(this, function (_a) {
                 switch (_a.label) {
-                    case 0: return [4 /*yield*/, this.footerService.getPopularEvents(this.city.latitude, this.city.longitude)];
+                    case 0:
+                        filter = { 'minScore': 0 };
+                        if (country != undefined) {
+                            filter['country'] = country;
+                        }
+                        return [4 /*yield*/, this.footerService.getPopularEvents(this.city.latitude, this.city.longitude, filter)];
                     case 1:
                         res = _a.sent();
                         this.popularEvents = res.data.data;
@@ -483,8 +487,13 @@ var TsFooterComponent = /** @class */ (function () {
         if (this.popularEvents == undefined || this.popularEvents.length == 0) {
             this.subObject = this.placeService.place.subscribe(function (res) {
                 var data = JSON.parse(res);
-                if (data != undefined) {
-                    _this.getCityFromCityCode(data['city']);
+                if (data != undefined && data.length > 0) {
+                    if (data['city']) {
+                        _this.getCityFromCityCode(data['city']);
+                    }
+                    else {
+                        _this.getPopularEvents(data['currentPlace']);
+                    }
                 }
             });
         }
