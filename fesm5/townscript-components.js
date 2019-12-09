@@ -461,7 +461,7 @@ var TsFooterComponent = /** @class */ (function () {
                         if (country != undefined) {
                             filter['country'] = country;
                         }
-                        return [4 /*yield*/, this.footerService.getPopularEvents(this.city.latitude, this.city.longitude, filter)];
+                        return [4 /*yield*/, this.footerService.getPopularEvents(this.city.latitude ? this.city.latitude : undefined, this.city.longitude ? this.city.longitude : undefined, filter)];
                     case 1:
                         res = _a.sent();
                         this.popularEvents = res.data.data;
