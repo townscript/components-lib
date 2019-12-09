@@ -433,7 +433,7 @@ let TsFooterComponent = class TsFooterComponent {
         if (this.popularEvents == undefined || this.popularEvents.length == 0) {
             this.subObject = this.placeService.place.subscribe((res) => {
                 const data = JSON.parse(res);
-                if (data != undefined && data.length > 0) {
+                if (data != undefined && Object.keys(data).length > 0) {
                     if (data['city']) {
                         this.getCityFromCityCode(data['city']);
                     }
@@ -573,11 +573,14 @@ let TsHeaderComponent = class TsHeaderComponent {
         });
         this.getPopularPlaces();
         this.placeService.place.subscribe(res => {
-            if (res) {
-                this.activePlace = JSON.parse(res)['currentPlace'];
-                this.activeCity = JSON.parse(res)['city'];
-                this.activeCountryCode = JSON.parse(res)['country'];
-                this.homePageUrl = '/' + this.activeCountryCode.toLowerCase() + '/' + this.activeCity.toLowerCase();
+            let data = JSON.parse(res);
+            if (Object.keys(data).length > 0) {
+                this.activePlace = data['currentPlace'];
+                this.activeCity = data['city'];
+                this.activeCountryCode = data['country'];
+                if (this.activeCountryCode != undefined && this.activeCity != undefined) {
+                    this.homePageUrl = '/' + this.activeCountryCode.toLowerCase() + '/' + this.activeCity.toLowerCase();
+                }
             }
         });
     }

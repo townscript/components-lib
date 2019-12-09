@@ -487,7 +487,7 @@ var TsFooterComponent = /** @class */ (function () {
         if (this.popularEvents == undefined || this.popularEvents.length == 0) {
             this.subObject = this.placeService.place.subscribe(function (res) {
                 var data = JSON.parse(res);
-                if (data != undefined && data.length > 0) {
+                if (data != undefined && Object.keys(data).length > 0) {
                     if (data['city']) {
                         _this.getCityFromCityCode(data['city']);
                     }
@@ -643,11 +643,14 @@ var TsHeaderComponent = /** @class */ (function () {
         });
         this.getPopularPlaces();
         this.placeService.place.subscribe(function (res) {
-            if (res) {
-                _this.activePlace = JSON.parse(res)['currentPlace'];
-                _this.activeCity = JSON.parse(res)['city'];
-                _this.activeCountryCode = JSON.parse(res)['country'];
-                _this.homePageUrl = '/' + _this.activeCountryCode.toLowerCase() + '/' + _this.activeCity.toLowerCase();
+            var data = JSON.parse(res);
+            if (Object.keys(data).length > 0) {
+                _this.activePlace = data['currentPlace'];
+                _this.activeCity = data['city'];
+                _this.activeCountryCode = data['country'];
+                if (_this.activeCountryCode != undefined && _this.activeCity != undefined) {
+                    _this.homePageUrl = '/' + _this.activeCountryCode.toLowerCase() + '/' + _this.activeCity.toLowerCase();
+                }
             }
         });
     };
