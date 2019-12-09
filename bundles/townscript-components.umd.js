@@ -526,7 +526,7 @@
                             if (country != undefined) {
                                 filter['country'] = country;
                             }
-                            return [4 /*yield*/, this.footerService.getPopularEvents(this.city.latitude ? this.city.latitude : undefined, this.city.longitude ? this.city.longitude : undefined, filter)];
+                            return [4 /*yield*/, this.footerService.getPopularEvents(this.city ? this.city.latitude : undefined, this.city ? this.city.longitude : undefined, filter)];
                         case 1:
                             res = _a.sent();
                             this.popularEvents = res.data.data;
@@ -685,7 +685,6 @@
                                         ele.cityCode = ele.code;
                                         return ele;
                                     });
-                                    console.log(this.popularPlaces);
                                     _a.label = 2;
                                 case 2: return [2 /*return*/];
                             }
@@ -897,7 +896,6 @@
                                         ele.cityCode = ele.code;
                                         return ele;
                                     });
-                                    console.log(this.popularPlaces);
                                     _a.label = 2;
                                 case 2: return [2 /*return*/];
                             }
@@ -1034,7 +1032,6 @@
             this.cityInput.nativeElement.focus();
         };
         CitySearchPopupComponent.prototype.ngOnInit = function () {
-            console.log(this.popularPlaces);
         };
         __decorate([
             core.ViewChild('cityInput', { static: true }),

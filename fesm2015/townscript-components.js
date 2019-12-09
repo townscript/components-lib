@@ -421,7 +421,7 @@ let TsFooterComponent = class TsFooterComponent {
             if (country != undefined) {
                 filter['country'] = country;
             }
-            const res = yield this.footerService.getPopularEvents(this.city.latitude ? this.city.latitude : undefined, this.city.longitude ? this.city.longitude : undefined, filter);
+            const res = yield this.footerService.getPopularEvents(this.city ? this.city.latitude : undefined, this.city ? this.city.longitude : undefined, filter);
             this.popularEvents = res.data.data;
         });
         this.getPopularCities = () => __awaiter(this, void 0, void 0, function* () {
@@ -556,7 +556,6 @@ let TsHeaderComponent = class TsHeaderComponent {
                         ele.cityCode = ele.code;
                         return ele;
                     });
-                    console.log(this.popularPlaces);
                 }
             }));
         });
@@ -750,7 +749,6 @@ let SearchComponent = class SearchComponent {
                         ele.cityCode = ele.code;
                         return ele;
                     });
-                    console.log(this.popularPlaces);
                 }
             }));
         });
@@ -879,7 +877,6 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
         this.cityInput.nativeElement.focus();
     }
     ngOnInit() {
-        console.log(this.popularPlaces);
     }
 };
 __decorate([
