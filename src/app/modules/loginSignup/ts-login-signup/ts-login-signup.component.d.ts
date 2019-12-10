@@ -50,7 +50,7 @@ export declare class TsLoginSignupComponent implements OnInit, OnDestroy {
     ngOnInit(): void;
     ngOnDestroy(): void;
     initForm: () => void;
-    close: () => void;
+    close: (signedIn: any) => void;
     clearErrors: () => void;
     resolve: (captchaResponse: string) => void;
     password: () => void;

@@ -391,8 +391,8 @@
             this.data = data;
             this.header = 'Let\'s get started';
             this.subHeader = 'Your one stop tool for organizing events';
-            this.close = function () {
-                _this.dialogRef.close();
+            this.close = function (event) {
+                _this.dialogRef.close(event);
             };
         }
         LoginModalComponent.prototype.ngOnInit = function () {
@@ -412,7 +412,7 @@
         LoginModalComponent = __decorate([
             core.Component({
                 selector: 'app-login-modal',
-                template: "<app-ts-login-signup clickLocation =\"modal\" [mode]=\"'dialog'\" [defaultHeader]=\"header\" [defaultSubHeader]=\"subHeader\" [showSocial]=\"showSocial\"\n  [rdurl]=\"rdurl\" (closeDialog)='close()'></app-ts-login-signup>\n",
+                template: "<app-ts-login-signup clickLocation=\"modal\" [mode]=\"'dialog'\" [defaultHeader]=\"header\" [defaultSubHeader]=\"subHeader\"\n  [showSocial]=\"showSocial\" [rdurl]=\"rdurl\" (closeDialog)='close($event)'></app-ts-login-signup>",
                 styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.mat-dialog-bkg-container{background:#414243;opacity:.7!important}@media (max-width:700px){.cdk-overlay-pane{height:100vh!important;width:100vw!important;max-width:100vw!important}}@media (min-width:700px){.cdk-overlay-pane{min-width:500px!important}}"]
             }),
             __param(1, core.Inject(dialog.MAT_DIALOG_DATA)),
@@ -1165,8 +1165,8 @@
                 _this_1.loginForm.get('password').disable();
                 _this_1.loginForm.get('phoneNumber').disable();
             };
-            this.close = function () {
-                _this_1.closeDialog.emit(true);
+            this.close = function (signedIn) {
+                _this_1.closeDialog.emit(signedIn);
             };
             this.clearErrors = function () {
                 _this_1.socialLoginMsg = '';
@@ -1263,7 +1263,7 @@
                             // this.cookieService.setCookie('townscript-user', JSON.stringify(userData), 90);
                             setTimeout(function () {
                                 if (_this_1.mode === 'dialog') {
-                                    _this_1.close();
+                                    _this_1.close(true);
                                 }
                             }, 1400);
                             if (this.rdurl != undefined) {
@@ -1344,7 +1344,7 @@
                     _this_1.openDefaultView();
                 }
                 else {
-                    _this_1.close();
+                    _this_1.close(false);
                 }
             };
             this.openSignInView = function () {
@@ -1773,18 +1773,24 @@
                     }
                 });
             };
-            this.openLogin = function () {
+            this.openLogin = function ($event) {
                 var dialogConfig = new material.MatDialogConfig();
                 dialogConfig.disableClose = false;
                 dialogConfig.autoFocus = true;
                 dialogConfig.backdropClass = 'mat-dialog-bkg-container';
-                _this.dialog.open(LoginModalComponent, dialogConfig);
+                var dialogRef = _this.dialog.open(LoginModalComponent, dialogConfig);
+                dialogRef.afterClosed().subscribe(function (isSignedIn) {
+                    if (isSignedIn) {
+                        _this.loggedIn = true;
+                        _this.followedFn($event);
+                    }
+                });
             };
             this.followedFn = function ($event) {
                 $event.stopPropagation();
                 $event.preventDefault();
                 if (!_this.loggedIn) {
-                    _this.openLogin();
+                    _this.openLogin($event);
                     return;
                 }
                 if (!_this.followed) {

@@ -302,8 +302,8 @@ let LoginModalComponent = class LoginModalComponent {
         this.data = data;
         this.header = 'Let\'s get started';
         this.subHeader = 'Your one stop tool for organizing events';
-        this.close = () => {
-            this.dialogRef.close();
+        this.close = (event) => {
+            this.dialogRef.close(event);
         };
     }
     ngOnInit() {
@@ -324,7 +324,7 @@ let LoginModalComponent = class LoginModalComponent {
 LoginModalComponent = __decorate([
     Component({
         selector: 'app-login-modal',
-        template: "<app-ts-login-signup clickLocation =\"modal\" [mode]=\"'dialog'\" [defaultHeader]=\"header\" [defaultSubHeader]=\"subHeader\" [showSocial]=\"showSocial\"\n  [rdurl]=\"rdurl\" (closeDialog)='close()'></app-ts-login-signup>\n",
+        template: "<app-ts-login-signup clickLocation=\"modal\" [mode]=\"'dialog'\" [defaultHeader]=\"header\" [defaultSubHeader]=\"subHeader\"\n  [showSocial]=\"showSocial\" [rdurl]=\"rdurl\" (closeDialog)='close($event)'></app-ts-login-signup>",
         styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.mat-dialog-bkg-container{background:#414243;opacity:.7!important}@media (max-width:700px){.cdk-overlay-pane{height:100vh!important;width:100vw!important;max-width:100vw!important}}@media (min-width:700px){.cdk-overlay-pane{min-width:500px!important}}"]
     }),
     __param(1, Inject(MAT_DIALOG_DATA)),
@@ -1006,8 +1006,8 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
             this.loginForm.get('password').disable();
             this.loginForm.get('phoneNumber').disable();
         };
-        this.close = () => {
-            this.closeDialog.emit(true);
+        this.close = (signedIn) => {
+            this.closeDialog.emit(signedIn);
         };
         this.clearErrors = () => {
             this.socialLoginMsg = '';
@@ -1087,7 +1087,7 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
             // this.cookieService.setCookie('townscript-user', JSON.stringify(userData), 90);
             setTimeout(() => {
                 if (this.mode === 'dialog') {
-                    this.close();
+                    this.close(true);
                 }
             }, 1400);
             if (this.rdurl != undefined) {
@@ -1156,7 +1156,7 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
                 this.openDefaultView();
             }
             else {
-                this.close();
+                this.close(false);
             }
         };
         this.openSignInView = () => {
@@ -1558,18 +1558,24 @@ let FollowComponent = class FollowComponent {
                 }
             });
         };
-        this.openLogin = () => {
+        this.openLogin = ($event) => {
             const dialogConfig = new MatDialogConfig();
             dialogConfig.disableClose = false;
             dialogConfig.autoFocus = true;
             dialogConfig.backdropClass = 'mat-dialog-bkg-container';
-            this.dialog.open(LoginModalComponent, dialogConfig);
+            const dialogRef = this.dialog.open(LoginModalComponent, dialogConfig);
+            dialogRef.afterClosed().subscribe(isSignedIn => {
+                if (isSignedIn) {
+                    this.loggedIn = true;
+                    this.followedFn($event);
+                }
+            });
         };
         this.followedFn = ($event) => {
             $event.stopPropagation();
             $event.preventDefault();
             if (!this.loggedIn) {
-                this.openLogin();
+                this.openLogin($event);
                 return;
             }
             if (!this.followed) {

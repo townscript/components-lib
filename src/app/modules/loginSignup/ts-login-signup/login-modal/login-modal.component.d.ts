@@ -10,5 +10,5 @@ export declare class LoginModalComponent implements OnInit {
     showSocial: boolean;
     constructor(dialogRef: MatDialogRef<TsLoginSignupComponent>, data: any);
     ngOnInit(): void;
-    close: () => void;
+    close: (event: any) => void;
 }
