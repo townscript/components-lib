@@ -775,8 +775,12 @@ let SearchComponent = class SearchComponent {
         this.placeService.place.subscribe(res => {
             if (res) {
                 const data = JSON.parse(res);
-                this.activePlace = data['currentPlace'];
-                this.homeUrl = ('/' + data['country'] + '/' + data['city']).toLowerCase();
+                if (data['currentPlace'] != undefined) {
+                    this.activePlace = data['currentPlace'];
+                }
+                if (data['country'] != undefined && data['city'] != undefined) {
+                    this.homeUrl = ('/' + data['country'] + '/' + data['city']).toLowerCase();
+                }
             }
         });
     }

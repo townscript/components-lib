@@ -928,8 +928,12 @@
             this.placeService.place.subscribe(function (res) {
                 if (res) {
                     var data = JSON.parse(res);
-                    _this.activePlace = data['currentPlace'];
-                    _this.homeUrl = ('/' + data['country'] + '/' + data['city']).toLowerCase();
+                    if (data['currentPlace'] != undefined) {
+                        _this.activePlace = data['currentPlace'];
+                    }
+                    if (data['country'] != undefined && data['city'] != undefined) {
+                        _this.homeUrl = ('/' + data['country'] + '/' + data['city']).toLowerCase();
+                    }
                 }
             });
         };
