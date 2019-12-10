@@ -61,7 +61,8 @@ var CookieService = /** @class */ (function () {
             var d = new Date();
             d.setTime(d.getTime() + expireDays * 24 * 60 * 60 * 1000);
             var expires = 'expires=' + d.toUTCString();
-            document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '');
+            var host = '.' + window.location.host.split('.').splice(1).join('.');
+            document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '' + ';domain=' + host);
         };
     }
     CookieService.prototype.getCookie = function (name) {

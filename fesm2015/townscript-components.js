@@ -58,7 +58,8 @@ let CookieService = class CookieService {
             const d = new Date();
             d.setTime(d.getTime() + expireDays * 24 * 60 * 60 * 1000);
             const expires = 'expires=' + d.toUTCString();
-            document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '');
+            const host = '.' + window.location.host.split('.').splice(1).join('.');
+            document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '' + ';domain=' + host);
         };
     }
     getCookie(name) {
