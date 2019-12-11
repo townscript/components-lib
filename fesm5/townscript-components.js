@@ -925,7 +925,7 @@ var CitySearchPopupComponent = /** @class */ (function () {
         };
         this.placeChanged = function (place) {
             var tsType = _this.urlArray[2];
-            var tsTypeUrl = tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
+            var tsTypeUrl = tsType && tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
             if (place.type === 'country') {
                 _this.router.navigate(['/' + place.twoDigitCode.toLowerCase() +
                         '/' + place.country.split(' ').join('-').toLowerCase() + tsTypeUrl], { state: { place: place } });

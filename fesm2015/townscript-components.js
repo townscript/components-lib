@@ -835,7 +835,7 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
         };
         this.placeChanged = (place) => {
             let tsType = this.urlArray[2];
-            const tsTypeUrl = tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
+            const tsTypeUrl = tsType && tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
             if (place.type === 'country') {
                 this.router.navigate(['/' + place.twoDigitCode.toLowerCase() +
                         '/' + place.country.split(' ').join('-').toLowerCase() + tsTypeUrl], { state: { place: place } });
