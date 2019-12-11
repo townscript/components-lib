@@ -1760,7 +1760,7 @@
                 if (!_this.followTypeId || !_this.followType) {
                     return;
                 }
-                _this.followService.followData.subscribe(function (res) {
+                _this.subObject = _this.followService.followData.subscribe(function (res) {
                     if (res) {
                         _this.allFollowData = res;
                         _this.followed = _this.allFollowData.map(function (ele) { return ele.typeId; }).indexOf(_this.followTypeId) > -1;
@@ -1828,6 +1828,11 @@
         FollowComponent.prototype.ngOnChanges = function (changes) {
             if (changes['followTypeId'] || changes['followType']) {
                 this.checkFollowStatus();
+            }
+        };
+        FollowComponent.prototype.ngOnDestroy = function () {
+            if (this.subObject !== undefined) {
+                this.subObject.unsubscribe();
             }
         };
         __decorate([

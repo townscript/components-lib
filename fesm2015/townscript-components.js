@@ -1545,7 +1545,7 @@ let FollowComponent = class FollowComponent {
             if (!this.followTypeId || !this.followType) {
                 return;
             }
-            this.followService.followData.subscribe(res => {
+            this.subObject = this.followService.followData.subscribe(res => {
                 if (res) {
                     this.allFollowData = res;
                     this.followed = this.allFollowData.map(ele => ele.typeId).indexOf(this.followTypeId) > -1;
@@ -1612,6 +1612,11 @@ let FollowComponent = class FollowComponent {
     ngOnChanges(changes) {
         if (changes['followTypeId'] || changes['followType']) {
             this.checkFollowStatus();
+        }
+    }
+    ngOnDestroy() {
+        if (this.subObject !== undefined) {
+            this.subObject.unsubscribe();
         }
     }
 };

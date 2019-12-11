@@ -1,8 +1,8 @@
-import { OnInit, OnChanges, SimpleChanges } from '@angular/core';
+import { OnInit, OnChanges, SimpleChanges, OnDestroy } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { FollowService } from '../../services/follow.service';
 import { UserService } from '../../services/user-service';
-export declare class FollowComponent implements OnInit, OnChanges {
+export declare class FollowComponent implements OnInit, OnChanges, OnDestroy {
     private userService;
     private followService;
     private dialog;
@@ -20,6 +20,7 @@ export declare class FollowComponent implements OnInit, OnChanges {
     currentId: any;
     loggedIn: boolean;
     followed: boolean;
+    subObject: any;
     constructor(userService: UserService, followService: FollowService, dialog: MatDialog);
     ngOnInit(): void;
     emitFollowStatus: () => void;
@@ -27,4 +28,5 @@ export declare class FollowComponent implements OnInit, OnChanges {
     openLogin: ($event: any) => void;
     followedFn: ($event: any) => void;
     ngOnChanges(changes: SimpleChanges): void;
+    ngOnDestroy(): void;
 }
