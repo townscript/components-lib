@@ -254,6 +254,7 @@
                 return _this.http.post(_this.listingsUrl + 'followData/unfollow/' + followDataId, {});
             };
             this.updateFollowData = function (data) {
+                _this.followData = new rxjs.BehaviorSubject(null);
                 _this.followData$.next(data);
             };
             this.userService.user.subscribe(function (data) {
@@ -988,7 +989,7 @@
                 });
             };
             this.placeChanged = function (place) {
-                var tsType = _this.urlArray[_this.urlArray.length - 1];
+                var tsType = _this.urlArray[2];
                 var tsTypeUrl = tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
                 if (place.type === 'country') {
                     _this.router.navigate(['/' + place.twoDigitCode.toLowerCase() +

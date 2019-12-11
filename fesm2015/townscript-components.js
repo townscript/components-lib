@@ -179,6 +179,7 @@ let FollowService = class FollowService {
             return this.http.post(this.listingsUrl + 'followData/unfollow/' + followDataId, {});
         };
         this.updateFollowData = (data) => {
+            this.followData = new BehaviorSubject(null);
             this.followData$.next(data);
         };
         this.userService.user.subscribe(data => {
@@ -833,7 +834,7 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
             });
         };
         this.placeChanged = (place) => {
-            let tsType = this.urlArray[this.urlArray.length - 1];
+            let tsType = this.urlArray[2];
             const tsTypeUrl = tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
             if (place.type === 'country') {
                 this.router.navigate(['/' + place.twoDigitCode.toLowerCase() +
