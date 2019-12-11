@@ -190,7 +190,7 @@ var FollowService = /** @class */ (function () {
             return _this.http.post(_this.listingsUrl + 'followData/unfollow/' + followDataId, {});
         };
         this.updateFollowData = function (data) {
-            _this.followData$ = new BehaviorSubject(null);
+            _this.followData = new BehaviorSubject(null);
             _this.followData$.next(data);
         };
         this.userService.user.subscribe(function (data) {
