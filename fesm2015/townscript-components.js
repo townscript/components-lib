@@ -727,8 +727,8 @@ let SearchComponent = class SearchComponent {
             this.searchResults = { 'interests': interests, 'organizers': organizers, 'events': events };
         };
         this.navigateToListing = (interest) => {
-            console.log(this.homeUrl + '/' + interest);
-            this.router.navigate([this.homeUrl + '/' + interest]);
+            let listingUrl = this.urlArray[0] + '/' + this.urlArray[1];
+            this.router.navigate([listingUrl + '/' + interest]);
             this.searchActive = false;
         };
         this.navigateToEventPage = (eventCode) => {
@@ -833,15 +833,17 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
             });
         };
         this.placeChanged = (place) => {
+            let tsType = this.urlArray[this.urlArray.length - 1];
+            const tsTypeUrl = tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
             if (place.type === 'country') {
                 this.router.navigate(['/' + place.twoDigitCode.toLowerCase() +
-                        '/' + place.country.split(' ').join('-').toLowerCase()], { state: { place: place } });
+                        '/' + place.country.split(' ').join('-').toLowerCase() + tsTypeUrl], { state: { place: place } });
             }
             if (place.type === 'city') {
-                this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.cityCode], { state: { place: place } });
+                this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.cityCode + tsTypeUrl], { state: { place: place } });
             }
             if (place.type === 'locality') {
-                this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.localityCode + '--' + place.cityCode], { state: { place: place } });
+                this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.localityCode + '--' + place.cityCode + tsTypeUrl], { state: { place: place } });
             }
             if (place.type === 'unstructured') {
                 const name = place.name.replace(/,/g, '').replace(/ /g, '-');
@@ -849,7 +851,7 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
                 if (place.secondaryText) {
                     secondaryText = place.secondaryText.replace(/,/g, '').replace(/ /g, '-');
                 }
-                this.router.navigate(['/s/' + name + '--' + secondaryText], { state: { place: place } });
+                this.router.navigate(['/s/' + name + '--' + secondaryText + tsTypeUrl], { state: { place: place } });
             }
             // this.placeService.updatePlace(place.name);
             this.activePlace = place.name;

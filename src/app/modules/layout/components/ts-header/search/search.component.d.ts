@@ -36,8 +36,8 @@ export declare class SearchComponent implements OnInit {
     callAlgolia: (text: any) => void;
     filterDataForSearchResult: (data: any) => void;
     clickout(event: any): void;
-    navigateToListing: (interest: any) => void;
-    navigateToEventPage: (eventCode: any) => void;
+    navigateToListing: (interest: string) => void;
+    navigateToEventPage: (eventCode: string) => void;
     search: (text: any) => void;
     getPopularPlaces: () => Promise<void>;
     ngOnInit(): void;

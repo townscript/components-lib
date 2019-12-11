@@ -801,8 +801,8 @@ var SearchComponent = /** @class */ (function () {
             _this.searchResults = { 'interests': interests, 'organizers': organizers, 'events': events };
         };
         this.navigateToListing = function (interest) {
-            console.log(_this.homeUrl + '/' + interest);
-            _this.router.navigate([_this.homeUrl + '/' + interest]);
+            var listingUrl = _this.urlArray[0] + '/' + _this.urlArray[1];
+            _this.router.navigate([listingUrl + '/' + interest]);
             _this.searchActive = false;
         };
         this.navigateToEventPage = function (eventCode) {
@@ -923,15 +923,17 @@ var CitySearchPopupComponent = /** @class */ (function () {
             });
         };
         this.placeChanged = function (place) {
+            var tsType = _this.urlArray[_this.urlArray.length - 1];
+            var tsTypeUrl = tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
             if (place.type === 'country') {
                 _this.router.navigate(['/' + place.twoDigitCode.toLowerCase() +
-                        '/' + place.country.split(' ').join('-').toLowerCase()], { state: { place: place } });
+                        '/' + place.country.split(' ').join('-').toLowerCase() + tsTypeUrl], { state: { place: place } });
             }
             if (place.type === 'city') {
-                _this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.cityCode], { state: { place: place } });
+                _this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.cityCode + tsTypeUrl], { state: { place: place } });
             }
             if (place.type === 'locality') {
-                _this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.localityCode + '--' + place.cityCode], { state: { place: place } });
+                _this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.localityCode + '--' + place.cityCode + tsTypeUrl], { state: { place: place } });
             }
             if (place.type === 'unstructured') {
                 var name_1 = place.name.replace(/,/g, '').replace(/ /g, '-');
@@ -939,7 +941,7 @@ var CitySearchPopupComponent = /** @class */ (function () {
                 if (place.secondaryText) {
                     secondaryText = place.secondaryText.replace(/,/g, '').replace(/ /g, '-');
                 }
-                _this.router.navigate(['/s/' + name_1 + '--' + secondaryText], { state: { place: place } });
+                _this.router.navigate(['/s/' + name_1 + '--' + secondaryText + tsTypeUrl], { state: { place: place } });
             }
             // this.placeService.updatePlace(place.name);
             _this.activePlace = place.name;
