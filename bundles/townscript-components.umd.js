@@ -216,7 +216,7 @@
             }
         }
         UserService.prototype.updateUser = function (data) {
-            this.user$ = new rxjs.BehaviorSubject(null);
+            // this.user$ = new BehaviorSubject<Object>(null);
             this.user$.next(data);
         };
         UserService = __decorate([
