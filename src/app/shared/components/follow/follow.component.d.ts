@@ -1,8 +1,8 @@
-import { OnInit } from '@angular/core';
+import { OnInit, OnChanges, SimpleChanges } from '@angular/core';
 import { MatDialog } from '@angular/material';
 import { FollowService } from '../../services/follow.service';
 import { UserService } from '../../services/user-service';
-export declare class FollowComponent implements OnInit {
+export declare class FollowComponent implements OnInit, OnChanges {
     private userService;
     private followService;
     private dialog;
@@ -26,4 +26,5 @@ export declare class FollowComponent implements OnInit {
     checkFollowStatus: () => void;
     openLogin: ($event: any) => void;
     followedFn: ($event: any) => void;
+    ngOnChanges(changes: SimpleChanges): void;
 }
