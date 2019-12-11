@@ -216,7 +216,7 @@
             }
         }
         UserService.prototype.updateUser = function (data) {
-            this.user = new rxjs.BehaviorSubject(null);
+            this.user$ = new rxjs.BehaviorSubject(null);
             this.user$.next(data);
         };
         UserService = __decorate([
@@ -255,7 +255,7 @@
                 return _this.http.post(_this.listingsUrl + 'followData/unfollow/' + followDataId, {});
             };
             this.updateFollowData = function (data) {
-                _this.followData = new rxjs.BehaviorSubject(null);
+                _this.followData$ = new rxjs.BehaviorSubject(null);
                 _this.followData$.next(data);
             };
             this.userService.user.subscribe(function (data) {

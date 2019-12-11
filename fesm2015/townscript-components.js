@@ -143,7 +143,7 @@ let UserService = class UserService {
         }
     }
     updateUser(data) {
-        this.user = new BehaviorSubject(null);
+        this.user$ = new BehaviorSubject(null);
         this.user$.next(data);
     }
 };
@@ -180,7 +180,7 @@ let FollowService = class FollowService {
             return this.http.post(this.listingsUrl + 'followData/unfollow/' + followDataId, {});
         };
         this.updateFollowData = (data) => {
-            this.followData = new BehaviorSubject(null);
+            this.followData$ = new BehaviorSubject(null);
             this.followData$.next(data);
         };
         this.userService.user.subscribe(data => {
