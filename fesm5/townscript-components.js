@@ -151,6 +151,7 @@ var UserService = /** @class */ (function () {
         }
     }
     UserService.prototype.updateUser = function (data) {
+        this.user = new BehaviorSubject(null);
         this.user$.next(data);
     };
     UserService = __decorate([

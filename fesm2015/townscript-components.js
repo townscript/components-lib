@@ -143,6 +143,7 @@ let UserService = class UserService {
         }
     }
     updateUser(data) {
+        this.user = new BehaviorSubject(null);
         this.user$.next(data);
     }
 };
