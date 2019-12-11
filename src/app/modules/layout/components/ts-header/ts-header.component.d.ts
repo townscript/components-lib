@@ -33,7 +33,6 @@ export declare class TsHeaderComponent implements OnInit {
     createEventClick: () => void;
     navigateToMobileSearch: () => void;
     openMyProfileComponent: () => void;
-    closeMyProfileComponent: (event: any) => void;
     goBack: () => void;
     goToHomePage: () => void;
     getPopularPlaces: () => Promise<void>;
