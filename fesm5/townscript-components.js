@@ -275,7 +275,9 @@ var PlaceService = /** @class */ (function () {
             }
             else {
                 this.getLocationFromIpInfo().then(function (ipInfoData) {
-                    var data = { 'city': ipInfoData['city'], 'country': ipInfoData['countryCode'].toLowerCase(), 'currentPlace': ipInfoData['city'] };
+                    var data = { 'city': ipInfoData['city'],
+                        'country': ipInfoData['countryCode'] ? ipInfoData['countryCode'].toLowerCase() : 'in',
+                        'currentPlace': ipInfoData['city'] };
                     _this.updatePlace(data);
                 });
             }
