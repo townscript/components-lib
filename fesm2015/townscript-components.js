@@ -143,8 +143,10 @@ let UserService = class UserService {
         }
     }
     updateUser(data) {
-        // this.user$ = new BehaviorSubject<Object>(null);
-        this.user$.next(data);
+        if (data)
+            this.user$.next(data);
+        else
+            this.user$ = new BehaviorSubject(null);
     }
 };
 UserService = __decorate([

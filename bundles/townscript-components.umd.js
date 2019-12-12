@@ -216,8 +216,10 @@
             }
         }
         UserService.prototype.updateUser = function (data) {
-            // this.user$ = new BehaviorSubject<Object>(null);
-            this.user$.next(data);
+            if (data)
+                this.user$.next(data);
+            else
+                this.user$ = new rxjs.BehaviorSubject(null);
         };
         UserService = __decorate([
             core.Injectable(),
