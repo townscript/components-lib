@@ -786,7 +786,7 @@
             this.logout = function () {
                 _this.close.emit({ logout: true });
                 _this.cookieService.deleteCookie('townscript-user');
-                _this.userService.updateUser(null);
+                _this.userService.updateUser(undefined);
             };
         }
         UserMenuComponent.prototype.ngOnInit = function () { };
