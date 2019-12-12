@@ -6,8 +6,8 @@ import { BehaviorSubject, Subject } from 'rxjs';
 import { DOCUMENT, isPlatformBrowser, DatePipe, CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { take, debounceTime } from 'rxjs/operators';
 import * as algoliaSearchImported from 'algoliasearch';
-import { debounceTime, take } from 'rxjs/operators';
 import { FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RecaptchaComponent, RecaptchaModule } from 'ng-recaptcha';
 import * as clampLibImported from 'text-overflow-clamp';
@@ -592,12 +592,19 @@ var TsHeaderComponent = /** @class */ (function () {
             _this.router.navigate(['/mobile/search']);
         };
         this.openMyProfileComponent = function () {
-            if (_this.userService.user.source['value'] != undefined) {
-                _this.router.navigate(['/profile']);
-            }
-            else {
-                _this.openLogin();
-            }
+            // if (this.userService.user.source['value'] != undefined) {
+            //   this.router.navigate(['/profile']);
+            // } else {
+            //   this.openLogin();
+            // }
+            _this.userService.user.pipe(take(1)).subscribe(function (data) {
+                if (data != undefined) {
+                    _this.router.navigate(['/profile']);
+                }
+                else {
+                    _this.openLogin();
+                }
+            });
         };
         this.closeMyProfile = function (event) {
             _this.userMenu = !_this.userMenu;

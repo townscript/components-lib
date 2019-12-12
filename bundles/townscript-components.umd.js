@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/material'), require('luxon'), require('rxjs'), require('@angular/common'), require('@angular/common/http'), require('@angular/material/dialog'), require('algoliasearch'), require('rxjs/operators'), require('@angular/forms'), require('ng-recaptcha'), require('text-overflow-clamp'), require('@townscript/data-collector'), require('@townscript/elements'), require('@angular/material/core'), require('@angular/material/snack-bar'), require('ng-lazyload-image')) :
-    typeof define === 'function' && define.amd ? define('@townscript/components', ['exports', '@angular/core', '@angular/material', 'luxon', 'rxjs', '@angular/common', '@angular/common/http', '@angular/material/dialog', 'algoliasearch', 'rxjs/operators', '@angular/forms', 'ng-recaptcha', 'text-overflow-clamp', '@townscript/data-collector', '@townscript/elements', '@angular/material/core', '@angular/material/snack-bar', 'ng-lazyload-image'], factory) :
-    (global = global || self, factory((global.townscript = global.townscript || {}, global.townscript.components = {}), global.ng.core, global.ng.material, global.luxon, global.rxjs, global.ng.common, global.ng.common.http, global.ng.material.dialog, global.algoliaSearchImported, global.rxjs.operators, global.ng.forms, global.ngRecaptcha, global.clampLibImported, global.dataCollector, global.elements, global.ng.material.core, global.ng.material['snack-bar'], global.ngLazyloadImage));
-}(this, function (exports, core, material, luxon, rxjs, common, http, dialog, algoliaSearchImported, operators, forms, ngRecaptcha, clampLibImported, dataCollector, elements, core$1, snackBar, ngLazyloadImage) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/material'), require('luxon'), require('rxjs'), require('@angular/common'), require('@angular/common/http'), require('@angular/material/dialog'), require('rxjs/operators'), require('algoliasearch'), require('@angular/forms'), require('ng-recaptcha'), require('text-overflow-clamp'), require('@townscript/data-collector'), require('@townscript/elements'), require('@angular/material/core'), require('@angular/material/snack-bar'), require('ng-lazyload-image')) :
+    typeof define === 'function' && define.amd ? define('@townscript/components', ['exports', '@angular/core', '@angular/material', 'luxon', 'rxjs', '@angular/common', '@angular/common/http', '@angular/material/dialog', 'rxjs/operators', 'algoliasearch', '@angular/forms', 'ng-recaptcha', 'text-overflow-clamp', '@townscript/data-collector', '@townscript/elements', '@angular/material/core', '@angular/material/snack-bar', 'ng-lazyload-image'], factory) :
+    (global = global || self, factory((global.townscript = global.townscript || {}, global.townscript.components = {}), global.ng.core, global.ng.material, global.luxon, global.rxjs, global.ng.common, global.ng.common.http, global.ng.material.dialog, global.rxjs.operators, global.algoliaSearchImported, global.ng.forms, global.ngRecaptcha, global.clampLibImported, global.dataCollector, global.elements, global.ng.material.core, global.ng.material['snack-bar'], global.ngLazyloadImage));
+}(this, function (exports, core, material, luxon, rxjs, common, http, dialog, operators, algoliaSearchImported, forms, ngRecaptcha, clampLibImported, dataCollector, elements, core$1, snackBar, ngLazyloadImage) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -657,12 +657,19 @@
                 _this.router.navigate(['/mobile/search']);
             };
             this.openMyProfileComponent = function () {
-                if (_this.userService.user.source['value'] != undefined) {
-                    _this.router.navigate(['/profile']);
-                }
-                else {
-                    _this.openLogin();
-                }
+                // if (this.userService.user.source['value'] != undefined) {
+                //   this.router.navigate(['/profile']);
+                // } else {
+                //   this.openLogin();
+                // }
+                _this.userService.user.pipe(operators.take(1)).subscribe(function (data) {
+                    if (data != undefined) {
+                        _this.router.navigate(['/profile']);
+                    }
+                    else {
+                        _this.openLogin();
+                    }
+                });
             };
             this.closeMyProfile = function (event) {
                 _this.userMenu = !_this.userMenu;
