@@ -203,8 +203,7 @@ let FollowService = class FollowService {
             return this.http.post(this.listingsUrl + 'followData/unfollow/' + followDataId, {});
         };
         this.updateFollowData = (data) => {
-            this.followData$ = new BehaviorSubject(data);
-            this.followData = this.followData$.asObservable();
+            this.followData$.next(data);
         };
         this.userService.user.subscribe(data => {
             this.user = data;
