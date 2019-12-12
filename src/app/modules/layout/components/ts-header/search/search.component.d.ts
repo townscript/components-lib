@@ -5,7 +5,9 @@ import { Subject } from 'rxjs';
 import { TimeService } from '../../../../../shared/services/time.service';
 import { PlaceService } from '../place.service';
 import { HeaderService } from '../ts-header.service';
+import { UtilityService } from '../../../../../shared/services/utilities.service';
 export declare class SearchComponent implements OnInit {
+    private utilityService;
     private headerService;
     private placeService;
     private timeService;
@@ -32,7 +34,7 @@ export declare class SearchComponent implements OnInit {
     urlArray: any;
     host: any;
     popularPlaces: any;
-    constructor(headerService: HeaderService, placeService: PlaceService, timeService: TimeService, datepipe: DatePipe);
+    constructor(utilityService: UtilityService, headerService: HeaderService, placeService: PlaceService, timeService: TimeService, datepipe: DatePipe);
     callAlgolia: (text: any) => void;
     filterDataForSearchResult: (data: any) => void;
     clickout(event: any): void;

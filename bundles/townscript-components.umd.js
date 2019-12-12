@@ -199,8 +199,28 @@
         return TimeService;
     }());
 
+    var UtilityService = /** @class */ (function () {
+        function UtilityService() {
+            this.IsJsonString = function (str) {
+                try {
+                    JSON.parse(str);
+                }
+                catch (e) {
+                    return false;
+                }
+                return true;
+            };
+        }
+        UtilityService = __decorate([
+            core.Injectable(),
+            __metadata("design:paramtypes", [])
+        ], UtilityService);
+        return UtilityService;
+    }());
+
     var UserService = /** @class */ (function () {
-        function UserService(cookieService, document, platformId) {
+        function UserService(utilityService, cookieService, document, platformId) {
+            this.utilityService = utilityService;
             this.cookieService = cookieService;
             this.document = document;
             this.platformId = platformId;
@@ -210,7 +230,9 @@
             if (this.documentIsAccessible) {
                 var user = this.cookieService.getCookie('townscript-user');
                 console.log('got user from cookie');
-                if (user != null && user.length > 0) {
+                if (user != null && user.length > 0 &&
+                    this.utilityService.IsJsonString(user) &&
+                    this.utilityService.IsJsonString((JSON.parse(user)))) {
                     this.updateUser(JSON.parse(JSON.parse(user)));
                 }
             }
@@ -223,9 +245,9 @@
         };
         UserService = __decorate([
             core.Injectable(),
-            __param(1, core.Inject(common.DOCUMENT)),
-            __param(2, core.Inject(core.PLATFORM_ID)),
-            __metadata("design:paramtypes", [CookieService, Object, core.InjectionToken])
+            __param(2, core.Inject(common.DOCUMENT)),
+            __param(3, core.Inject(core.PLATFORM_ID)),
+            __metadata("design:paramtypes", [UtilityService, CookieService, Object, core.InjectionToken])
         ], UserService);
         return UserService;
     }());
@@ -291,8 +313,9 @@
     // import 'zone.js/dist/zone-error';  // Included with Angular CLI.
 
     var PlaceService = /** @class */ (function () {
-        function PlaceService(cookieService, document, platformId, http) {
+        function PlaceService(utilityService, cookieService, document, platformId, http) {
             var _this = this;
+            this.utilityService = utilityService;
             this.cookieService = cookieService;
             this.document = document;
             this.platformId = platformId;
@@ -303,7 +326,7 @@
             if (this.documentIsAccessible) {
                 var location_1 = this.cookieService.getCookie('location');
                 console.log('got location from cookie' + location_1);
-                if (location_1 != null && location_1.length > 0) {
+                if (location_1 != null && location_1.length > 0 && this.utilityService.IsJsonString(location_1)) {
                     this.updatePlace(JSON.parse(location_1));
                 }
                 else {
@@ -344,7 +367,9 @@
                             localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData));
                             return [3 /*break*/, 3];
                         case 2:
-                            ipInfoData = JSON.parse(localData);
+                            if (this.utilityService.IsJsonString(localData)) {
+                                ipInfoData = JSON.parse(localData);
+                            }
                             _a.label = 3;
                         case 3: return [2 /*return*/, ipInfoData];
                         case 4: return [2 /*return*/];
@@ -355,14 +380,14 @@
         PlaceService.prototype.getJsonFromIpInfo = function () {
             return this.http.get('//ipinfo.io/json?token=' + environment.IPINFO_ACCESS_TOKEN + '').toPromise();
         };
-        PlaceService.ngInjectableDef = core.ɵɵdefineInjectable({ factory: function PlaceService_Factory() { return new PlaceService(core.ɵɵinject(CookieService), core.ɵɵinject(common.DOCUMENT), core.ɵɵinject(core.PLATFORM_ID), core.ɵɵinject(http.HttpClient)); }, token: PlaceService, providedIn: "root" });
+        PlaceService.ngInjectableDef = core.ɵɵdefineInjectable({ factory: function PlaceService_Factory() { return new PlaceService(core.ɵɵinject(UtilityService), core.ɵɵinject(CookieService), core.ɵɵinject(common.DOCUMENT), core.ɵɵinject(core.PLATFORM_ID), core.ɵɵinject(http.HttpClient)); }, token: PlaceService, providedIn: "root" });
         PlaceService = __decorate([
             core.Injectable({
                 providedIn: 'root'
             }),
-            __param(1, core.Inject(common.DOCUMENT)),
-            __param(2, core.Inject(core.PLATFORM_ID)),
-            __metadata("design:paramtypes", [CookieService, Object, core.InjectionToken,
+            __param(2, core.Inject(common.DOCUMENT)),
+            __param(3, core.Inject(core.PLATFORM_ID)),
+            __metadata("design:paramtypes", [UtilityService, CookieService, Object, core.InjectionToken,
                 http.HttpClient])
         ], PlaceService);
         return PlaceService;
@@ -455,12 +480,13 @@
     }());
 
     var TsFooterComponent = /** @class */ (function () {
-        function TsFooterComponent(dialog, userService, footerService, placeService) {
+        function TsFooterComponent(dialog, userService, footerService, placeService, utilityService) {
             var _this = this;
             this.dialog = dialog;
             this.userService = userService;
             this.footerService = footerService;
             this.placeService = placeService;
+            this.utilityService = utilityService;
             this.source = 'landingPages';
             this.popularEvents = [];
             this.recentBlogs = [];
@@ -556,13 +582,15 @@
             var _this = this;
             if (this.popularEvents == undefined || this.popularEvents.length == 0) {
                 this.subObject = this.placeService.place.subscribe(function (res) {
-                    var data = JSON.parse(res);
-                    if (data != undefined && Object.keys(data).length > 0) {
-                        if (data['city']) {
-                            _this.getCityFromCityCode(data['city']);
-                        }
-                        else {
-                            _this.getPopularEvents(data['currentPlace']);
+                    if (_this.utilityService.IsJsonString(res)) {
+                        var data = JSON.parse(res);
+                        if (data != undefined && Object.keys(data).length > 0) {
+                            if (data['city']) {
+                                _this.getCityFromCityCode(data['city']);
+                            }
+                            else {
+                                _this.getPopularEvents(data['currentPlace']);
+                            }
                         }
                     }
                 });
@@ -603,14 +631,16 @@
             __metadata("design:paramtypes", [material.MatDialog,
                 UserService,
                 FooterService,
-                PlaceService])
+                PlaceService,
+                UtilityService])
         ], TsFooterComponent);
         return TsFooterComponent;
     }());
 
     var TsHeaderComponent = /** @class */ (function () {
-        function TsHeaderComponent(headerService, placeService, dialog, userService) {
+        function TsHeaderComponent(utilityService, headerService, placeService, dialog, userService) {
             var _this = this;
+            this.utilityService = utilityService;
             this.headerService = headerService;
             this.placeService = placeService;
             this.dialog = dialog;
@@ -693,6 +723,7 @@
                             switch (_a.label) {
                                 case 0:
                                     if (!res) return [3 /*break*/, 2];
+                                    if (!this.utilityService.IsJsonString(res)) return [3 /*break*/, 2];
                                     country = JSON.parse(res)['country'];
                                     return [4 /*yield*/, this.headerService.getPopularCities(country || this.urlArray[0])];
                                 case 1:
@@ -724,13 +755,15 @@
             });
             this.getPopularPlaces();
             this.placeService.place.subscribe(function (res) {
-                var data = JSON.parse(res);
-                if (data && Object.keys(data).length > 0) {
-                    _this.activePlace = data['currentPlace'];
-                    _this.activeCity = data['city'];
-                    _this.activeCountryCode = data['country'];
-                    if (_this.activeCountryCode != undefined && _this.activeCity != undefined) {
-                        _this.homePageUrl = '/' + _this.activeCountryCode.toLowerCase() + '/' + _this.activeCity.toLowerCase();
+                if (_this.utilityService.IsJsonString(res)) {
+                    var data = JSON.parse(res);
+                    if (data && Object.keys(data).length > 0) {
+                        _this.activePlace = data['currentPlace'];
+                        _this.activeCity = data['city'];
+                        _this.activeCountryCode = data['country'];
+                        if (_this.activeCountryCode != undefined && _this.activeCity != undefined) {
+                            _this.homePageUrl = '/' + _this.activeCountryCode.toLowerCase() + '/' + _this.activeCity.toLowerCase();
+                        }
                     }
                 }
             });
@@ -769,7 +802,7 @@
                 template: "<nav class=\"ts-header flex align-items-center\" *ngIf=\"source!='marketplace'\">\n    <div class=\"container flex align-items-center\">\n        <div class=\"navbar-header\">\n            <a appDataAnalytics eventLabel=\"logo\" clickLocation=\"\" class=\"navbar-brand flex align-items-center\"\n                href=\"/\">\n                <img src=\"assets/images/ts-logo.svg\" alt=\"Townscript Event Ticketing Logo\"\n                    title=\"Townscript Event Ticketing Logo\" />\n            </a>\n        </div>\n        <div id=\"navbar\" class=\"nav-right hidden-xs\">\n            <ul>\n                <li>\n                    <a href=\"/signup\" ts-data-analytics prop-event=\"click\" eventLabel=\"Get Started\"\n                        prop-clicked-location=\"Animated Header\">\n                        <!-- <ts-button text=\"Create Event\"></ts-button> -->\n                    </a>\n                </li>\n            </ul>\n        </div>\n    </div>\n</nav>\n\n<nav class=\"ts-header-new max-w-full w-screen fixed flex items-center\" [class.shadow]=\"shadow\"\n    *ngIf=\"source=='marketplace'\">\n    <div class=\"ts-container flex items-center w-full\">\n        <div class=\"hidden md:block lg:w-1/6\">\n            <a [href]=\"homePageUrl\">\n                <img appDataAnalytics eventLabel=\"logo\" clickLocation=\"\" (click)=\"goToHomePage()\"\n                    *ngIf=\"Components.indexOf('icon')>-1\" class=\"ts-logo cursor-pointer\" src=\"assets/images/ts-logo.svg\"\n                    alt=\"Townscript Event Ticketing Logo\" title=\"Townscript Event Ticketing Logo\" />\n            </a>\n        </div>\n        <div class=\"sm:w-1/4 max-50 flex md:hidden lg:hidden items-center\">\n            <!-- <i class=\"mdi mdi-menu mr-3 text-3xl color-blue\"></i> -->\n            <!-- <app-hamburger-menu class=\"mr-3\"></app-hamburger-menu> -->\n            <!-- <img class=\"ts-logo mr-3\" src=\"assets/images/ts-icon.svg\" alt=\"Townscript Event Ticketing Logo\"\n                title=\"Townscript Event Ticketing Logo\" /> -->\n            <div *ngIf=\"backState\" (click)=\"goBack()\"\n                class=\"rounded-full flex py-1 px-3 mr-1 justify-center items-center\" matRipple>\n                <i class=\"mdi mdi-arrow-left text-2xl color-blue\"></i>\n            </div>\n            <i *ngIf=\"Components.indexOf('mobileCitySearch')>-1 && !backState\"\n                class=\"mdi mdi-map-marker color-blue text-2xl mr-2\"></i>\n            <div *ngIf=\"Components.indexOf('mobileCitySearch')>-1\" #citySuggestions\n                class=\"city-selection text-lg cursor-pointer w-full\" (click)=\"cityPopupActive=true\">\n                <div class=\"flex items-center w-full\" matRipple>\n                    <span class=\"mr-1 text-gray-700 truncate capitalize\">{{activePlace}}</span>\n                    <i class=\"mdi mdi-menu-down color-blue\"></i>\n                </div>\n                <app-city-search-popup appDataAnalytics eventLabel=\"location-dropdown-search\" clickLocation=\"\"\n                    [(cityPopupActive)]=\"cityPopupActive\" [(activePlace)]=\"activePlace\" [showArrow]=\"false\"\n                    class=\"popup\" *ngIf=\"cityPopupActive\">\n                </app-city-search-popup>\n\n            </div>\n        </div>\n        <div class=\"lg:w-5/12 ml-3 hidden sm:hidden md:hidden lg:flex\">\n            <app-search *ngIf=\"Components.indexOf('eventSearch')>-1\" class=\"w-full\"></app-search>\n        </div>\n        <div class=\"invisible sm:w-1/4 lg:w-1/12 flex items-center ml-6 view-type text-xl color-blue\">\n            <!-- <i class=\"active text-xl mdi mdi-book-open mr-4\"></i>\n            <i class=\"mdi mdi-map-legend mr-4\"></i>\n            <i class=\"mdi mdi-calendar-today mr-4\"></i> -->\n        </div>\n        <div class=\"lg:w-1/6 hidden sm:hidden md:hidden h-full lg:flex items-center pr-8\">\n            <a [href]=\"host + 'dashboard/create-event'\" appDataAnalytics eventLabel=\"create-event\" clickLocation=\"\"\n                *ngIf=\"Components.indexOf('createEventBtn')>-1\"\n                class=\"create-btn cursor-pointer flex h-full justify-center items-center\">\n                <span class=\"text-base mr-2\">CREATE EVENT</span>\n                <i class=\"mdi mdi-ticket text-2xl\"></i>\n            </a>\n        </div>\n        <div #userMenuEle *ngIf=\"Components.indexOf('userMenu')>-1\"\n            class=\"position-relative sm:w-1/1 lg:w-1/6 justify-end hidden sm:hidden md:hidden lg:flex items-center\">\n            <div appDataAnalytics eventLabel=\"login-signup\" clickLocation=\"\"\n                class=\"flex items-center cursor-pointer px-2\" (click)=\"openLogin()\" *ngIf=\"!user\" matRipple>\n                <i class=\"mdi mdi-account-circle text-4xl mr-2 color-blue\"></i>\n                <span>Login | Signup</span>\n            </div>\n            <div class=\"flex items-center cursor-pointer\" (click)=\"userMenu=!userMenu\" *ngIf=\"user\" matRipple>\n                <img class=\"rounded-full mr-2\" width=\"36\" [src]=\"s3BucketUrl+'/images/'+user?.s3imagename\" />\n                <i class=\"mdi mdi-chevron-down text-xl text-gray-700\" [class.rotate-180]=\"userMenu\"></i>\n                <!-- <span>{{user.user}}</span> -->\n            </div>\n            <div class=\"user-menu position-absolute shadow-md px-2 enter-slide-bottom\" *ngIf=\"userMenu\">\n                <app-user-menu [user]=\"user\" (close)=\"closeMyProfile($event)\"></app-user-menu>\n            </div>\n            <!-- <ts-button text=\"Login | Signup\" class=\"text-base\"></ts-button> -->\n        </div>\n\n        <!-- Mobile Menu -->\n        <div class=\"sm:w-1/1 ml-auto mr-2 flex  sm:flex md:flex lg:hidden items-center\">\n            <div *ngIf=\"Components.indexOf('mobileSearch')>-1\" class=\"rounded-full flex items-center\" matRipple\n                (click)=\"navigateToMobileSearch()\">\n                <i class=\"mdi mdi-magnify text-2xl ml-2 mr-2 color-blue\"></i>\n            </div>\n            <div *ngIf=\"Components.indexOf('mobileProfile')>-1\" class=\"rounded-full flex items-center\" matRipple>\n                <i class=\"mdi mdi-account text-2xl  ml-2 color-blue\" matRipple (click)=\"openMyProfileComponent()\"></i>\n            </div>\n        </div>\n    </div>\n</nav>\n<nav class=\"ts-header-new max-w-full w-screen flex items-center\" [class.shadow]=\"shadow\" *ngIf=\"source=='marketplace'\">\n\n</nav>\n",
                 styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.ts-header{min-height:85px;background-color:#fff;width:100%;position:fixed;top:0;z-index:1000;box-shadow:0 15px 40px -20px rgba(40,44,63,.2)}.ts-header .container{display:-webkit-box;display:flex;width:100%;padding:0 10%}.ts-header .container .navbar-header .navbar-brand img{width:165px}.ts-header .container .nav-right{margin-left:auto}.ts-header .container .nav-right li,.ts-header .container .nav-right ul{margin-bottom:0}.ts-header-new{min-height:56px;background-color:#f7f7f7;top:0;z-index:1000}.ts-header-new .shadow{box-shadow:0 2px 4px 0 rgba(0,0,0,.11)}.ts-header-new .ts-logo{height:28px}.ts-header-new .popup{position:absolute;top:90%;width:100%;left:0}.ts-header-new .max-50{max-width:50%}@media (min-width:991px){.ts-container{padding:0 80px!important}.ts-header-new{min-height:68px}.ts-header-new .ts-logo{height:35px}.ts-header-new .view-type i{opacity:.8;padding:3px 9px}.ts-header-new .view-type i.active{opacity:1;background:#3782c4;border-radius:50%;color:#fff;box-shadow:0 0 5px 0 #8ec0ec}.ts-header-new .create-btn{width:100%;min-width:200px;border-radius:20.5px;color:#fff;white-space:nowrap;background:linear-gradient(138.55deg,#a165c4 0,#4d2370 100%);box-shadow:0 2px 4px 0 #d4b1f0;-webkit-transition:.1s;transition:.1s}.ts-header-new .create-btn:hover{box-shadow:0 4px 6px 0 #d4b1f0;-webkit-transform:translateY(-2px);transform:translateY(-2px)}.ts-header-new .user-menu{position:absolute;top:145%;width:142%;left:-33%;background:#fff}.ts-header-new .user-menu:before{content:\" \";width:0;height:0;position:absolute;top:-11px;left:84%;border-left:15px solid transparent;border-right:15px solid transparent;border-bottom:15px solid #fff;-webkit-filter:drop-shadow(0 -2px 1px rgba(0, 0, 0, .09));filter:drop-shadow(0 -2px 1px rgba(0, 0, 0, .09))}}:host ::ng-deep .mat-button-wrapper{font-size:16px!important}"]
             }),
-            __metadata("design:paramtypes", [HeaderService, PlaceService, material.MatDialog, UserService])
+            __metadata("design:paramtypes", [UtilityService, HeaderService, PlaceService, material.MatDialog, UserService])
         ], TsHeaderComponent);
         return TsHeaderComponent;
     }());
@@ -823,8 +856,9 @@
 
     var algoliasearch = algoliaSearchImported;
     var SearchComponent = /** @class */ (function () {
-        function SearchComponent(headerService, placeService, timeService, datepipe) {
+        function SearchComponent(utilityService, headerService, placeService, timeService, datepipe) {
             var _this = this;
+            this.utilityService = utilityService;
             this.headerService = headerService;
             this.placeService = placeService;
             this.timeService = timeService;
@@ -910,6 +944,7 @@
                             switch (_a.label) {
                                 case 0:
                                     if (!res) return [3 /*break*/, 2];
+                                    if (!this.utilityService.IsJsonString(res)) return [3 /*break*/, 2];
                                     country = JSON.parse(res)['country'];
                                     return [4 /*yield*/, this.headerService.getPopularCities(country || this.urlArray[0])];
                                 case 1:
@@ -950,12 +985,14 @@
             this.getPopularPlaces();
             this.placeService.place.subscribe(function (res) {
                 if (res) {
-                    var data = JSON.parse(res);
-                    if (data['currentPlace'] != undefined) {
-                        _this.activePlace = data['currentPlace'];
-                    }
-                    if (data['country'] != undefined && data['city'] != undefined) {
-                        _this.homeUrl = ('/' + data['country'] + '/' + data['city']).toLowerCase();
+                    if (_this.utilityService.IsJsonString(res)) {
+                        var data = JSON.parse(res);
+                        if (data['currentPlace'] != undefined) {
+                            _this.activePlace = data['currentPlace'];
+                        }
+                        if (data['country'] != undefined && data['city'] != undefined) {
+                            _this.homeUrl = ('/' + data['country'] + '/' + data['city']).toLowerCase();
+                        }
                     }
                 }
             });
@@ -984,7 +1021,7 @@
                 template: "<div class=\"w-full lg:flex search-container relative\" [class.active]=\"searchActive\">\n    <div #searchResultsEle class=\"w-2/3 p-2 flex items-center relative left-section\">\n        <i class=\"mdi mdi-magnify text-2xl color-blue p-2\"></i>\n        <input appDataAnalytics eventLabel=\"search\" clickLocation=\"\" [(ngModel)]=\"searchText\"\n            (ngModelChange)=\"search($event)\" (focus)=\"searchActive = true;citySearchActive=false\"\n            class=\"text-sm w-full h-full bg-transparent  p-2\" type=\"text\"\n            placeholder=\"Search for an Event, Interest or Organizer\" />\n        <div class=\"suggestions enter-slide-bottom w-full p-2 absolute\" *ngIf=\"searchResults && searchActive\">\n            <ul class=\"ts-enter\" *ngIf=\"searchResults?.interests.length>0\">\n                <li class=\"list-head\">\n                    INTERESTS\n                </li>\n                <li class=\"p-2 text-xs font-bold cursor-pointer\" (click)=\"navigateToListing(interest.urlCode)\"\n                    *ngFor=\"let interest of searchResults.interests\">\n                    <div class=\"flex items-center\">\n                        <div class=\"avatar mr-3 bg-cover\" [style.backgroundImage]=\"'url('+ interest.imageUrl +')'\">\n                        </div>\n                        <div>\n                            <span class=\"mb-1 block\">{{interest.name | titlecase}} </span>\n                            <div class=\"flex items-center\" *ngIf=\"interest.location\">\n                                <i class=\"mdi mdi-map-marker color-blue\"></i>\n                                <small class=\"capitalize\">{{interest.location}}</small>\n                            </div>\n                        </div>\n                    </div>\n                </li>\n            </ul>\n            <ul class=\"ts-enter\" *ngIf=\"searchResults?.events.length>0\">\n                <li class=\"list-head\">\n                    EVENTS\n                </li>\n                <li class=\"p-2 text-xs font-bold cursor-pointer\" *ngFor=\"let event of searchResults.events\"\n                    (click)=\"navigateToEventPage(event.urlCode)\">\n                    <div class=\"flex items-center\">\n                        <div class=\"avatar mr-3 bg-cover\" [style.backgroundImage]=\"'url('+ event.imageUrl +')'\"></div>\n                        <div>\n                            <span class=\"mb-1 block\">{{event.name | titlecase}} </span>\n                            <div class=\"flex items-center\">\n                                <div class=\"flex items-center\" *ngIf=\"event.location\">\n                                    <i class=\"mdi mdi-map-marker color-blue\"></i>\n                                    <small>{{event.location}}</small>\n                                </div>\n                                <div class=\"flex items-center ml-2\" *ngIf=\"event?.secondaryTextProperties?.startTime\">\n                                    <i class=\"mdi mdi-calendar-today color-blue mr-1\"></i>\n                                    <small>{{event.secondaryTextProperties.startTime}}</small>\n                                </div>\n                            </div>\n                        </div>\n                    </div>\n                </li>\n            </ul>\n            <ul class=\"ts-enter\" *ngIf=\"searchResults?.organizers.length>0\">\n                <li class=\"list-head\">\n                    ORGANIZERS\n                </li>\n                <li class=\"p-2 text-xs font-bold cursor-pointer\" *ngFor=\"let organizer of searchResults.organizers\">\n                    <a [href]=\"host+'o/'+organizer.urlCode\">\n                        <div class=\"flex items-center\">\n                            <div class=\"avatar mr-3 bg-cover\" [style.backgroundImage]=\"'url('+ organizer.imageUrl +')'\">\n                            </div>\n                            <div>\n                                <span class=\"mb-1 block\">{{organizer.name | titlecase}} </span>\n                                <div class=\"flex items-center\" *ngIf=\"organizer.location\">\n                                    <i class=\"mdi mdi-map-marker color-blue\"></i>\n                                    <small>{{organizer.location}}</small>\n                                </div>\n                            </div>\n                        </div>\n                    </a>\n                </li>\n            </ul>\n        </div>\n    </div>\n    <div appDataAnalytics eventLabel=\"location\" clickLocation=\"\" #citySuggestions\n        class=\"w-auto flex items-center py-2  px-4 cursor-pointer relative city-search-container\"\n        [class.active]=\"cityPopupActive\" (click)=\"cityPopupActive = true\">\n        <div class=\"flex items-center w-10/12 mr-2 \" [title]=\" activePlace\">\n            <i class=\"mdi mdi-map-marker text-2xl color-blue\"></i>\n            <span class=\"truncate capitalize\">{{activePlace}}</span>\n        </div>\n        <i class=\"mdi mdi-chevron-down text-2xl\"></i>\n        <app-city-search-popup [popularPlaces]=\"popularPlaces\" class=\"popup\" [(cityPopupActive)]=\"cityPopupActive\"\n            [(activePlace)]=\"activePlace\" *ngIf=\"cityPopupActive\">\n        </app-city-search-popup>\n    </div>\n</div>",
                 styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}@media (min-width:991px){.search-container{height:42px;border-radius:2px;-webkit-transition:.3s;transition:.3s}.search-container .left-section{background-color:#ededed;border-radius:4px}.search-container .left-section input{-webkit-transition:.3s;transition:.3s}.search-container .left-section input:focus{background:#fafafa}.search-container .left-section .suggestions{top:100%;left:0;background:#fafafa;border-top:1px solid rgba(151,151,151,.4)}.search-container .left-section .suggestions ul{margin:2% 0}.search-container .left-section .suggestions ul li{color:#636363;-webkit-transition:.15s;transition:.15s;border-bottom:1px solid rgba(151,151,151,.25)}.search-container .left-section .suggestions ul li.list-head{font-size:10px;color:#636363;border:none;font-weight:400}.search-container .left-section .suggestions ul li.list-head:hover{background:#fafafa}.search-container .left-section .suggestions ul li .avatar{border-radius:50%;height:41px;width:41px}.search-container .left-section .suggestions ul li:hover{background:#ededed}.search-container .city-search-container{-webkit-transition:.3s;transition:.3s;max-width:33.33%}.search-container .city-search-container.active{background:#fafafa;box-shadow:0 5px 10px 0 rgba(0,0,0,.15)}.search-container .city-search-container .popup{position:absolute;top:135%;width:135%;left:-34%}.search-container.active .left-section{background:#fafafa;box-shadow:0 5px 10px 0 rgba(0,0,0,.15)}.search-container.active .suggestions{box-shadow:0 11px 15px 0 rgba(0,0,0,.15)}}"]
             }),
-            __metadata("design:paramtypes", [HeaderService, PlaceService, TimeService, common.DatePipe])
+            __metadata("design:paramtypes", [UtilityService, HeaderService, PlaceService, TimeService, common.DatePipe])
         ], SearchComponent);
         return SearchComponent;
     }());
@@ -1144,8 +1181,9 @@
 
     var emailRegex = '^[a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,15})$';
     var TsLoginSignupComponent = /** @class */ (function () {
-        function TsLoginSignupComponent(cookieService, userService, notificationService, tsLoginSignupService, placeService) {
+        function TsLoginSignupComponent(utilityService, cookieService, userService, notificationService, tsLoginSignupService, placeService) {
             var _this_1 = this;
+            this.utilityService = utilityService;
             this.cookieService = cookieService;
             this.userService = userService;
             this.notificationService = notificationService;
@@ -1465,8 +1503,10 @@
             var _this_1 = this;
             this.initForm();
             this.subObject = this.placeService.place.subscribe(function (res) {
-                var placeData = JSON.parse(res);
-                _this_1.countryCode = placeData['country'];
+                if (_this_1.utilityService.IsJsonString(res)) {
+                    var placeData = JSON.parse(res);
+                    _this_1.countryCode = placeData['country'];
+                }
             });
         };
         TsLoginSignupComponent.prototype.ngOnDestroy = function () {
@@ -1509,7 +1549,8 @@
                 encapsulation: core.ViewEncapsulation.None,
                 styles: ["@-webkit-keyframes fadeInUp{from{opacity:0;-webkit-transform:translate3d(0,100%,0);transform:translate3d(0,100%,0)}to{opacity:1;-webkit-transform:none;transform:none}}@keyframes fadeInUp{from{opacity:0;-webkit-transform:translate3d(0,50%,0);transform:translate3d(0,50%,0)}to{opacity:1;-webkit-transform:none;transform:none}}@-webkit-keyframes fadeIn{from{opacity:0}to{opacity:1}}@keyframes fadeIn{from{opacity:0}to{opacity:1}}.ts-login-tooltip{background-color:#666;color:#fff;font-size:12px;opacity:.98;white-space:pre-line}.login-signup-view{max-height:90vh;overflow:hidden}.login-signup-view .color-blue{color:#3782c4}.login-signup-view .fadeIn .primary-header,.login-signup-view .fadeIn .secondary-header{-webkit-animation-duration:.4s;animation-duration:.4s;-webkit-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-delay:0s;animation-delay:0s;-webkit-animation-name:fadeIn;animation-name:fadeIn}.login-signup-view .fadeIn .secondary-header{-webkit-animation-delay:.1s;animation-delay:.1s}.login-signup-view .fadeInUp .login-form .form-group{-webkit-animation-duration:.4s;animation-duration:.4s;-webkit-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-name:fadeInUp;animation-name:fadeInUp}.login-signup-view .fadeInUp .login-form .form-group:nth-child(1){-webkit-animation-delay:.1s;animation-delay:.1s}.login-signup-view .fadeInUp .login-form .form-group:nth-child(2){-webkit-animation-delay:.2s;animation-delay:.2s}.login-signup-view .fadeInUp .login-form .form-group:nth-child(3){-webkit-animation-delay:.3s;animation-delay:.3s}.login-signup-view .fadeInUp .login-form .form-group:nth-child(4){-webkit-animation-delay:.4s;animation-delay:.4s}.login-signup-view .fadeInUp .login-form .form-group:nth-child(5){-webkit-animation-delay:.5s;animation-delay:.5s}.login-signup-view .fadeInUp .login-form .form-group:nth-child(6){-webkit-animation-delay:.6s;animation-delay:.6s}.login-signup-view .fadeInUp .login-form .form-group:nth-child(7){-webkit-animation-delay:.7s;animation-delay:.7s}.login-signup-view .ts-loader{-webkit-animation-duration:.2s;animation-duration:.2s;-webkit-animation-fill-mode:both;animation-fill-mode:both;-webkit-animation-name:fadeInUp;animation-name:fadeInUp}.login-signup-view .ts-loader circle{stroke-width:5%!important}.login-signup-view .view-body .blue-btn{background:#3782c4;color:#fff;-webkit-transition:.15s;transition:.15s}.login-signup-view .view-body .blue-btn:hover{background:#1369b5}.login-signup-view .view-body .default-view-body .strike-through-margin{margin:30px 0;text-align:center;border-bottom:1px solid #dcdcdc;line-height:.1em}.login-signup-view .view-body .default-view-body .strike-through-margin span{background-color:#fff;padding:3px 30px}.login-signup-view .view-body .default-view-body .strike-through{text-align:center;border-bottom:1px solid #dcdcdc;line-height:.1em;margin:30px auto}.login-signup-view .view-body .default-view-body .strike-through span{background-color:#fff;padding:3px 30px}.login-signup-view .view-body .default-view-body .logo{height:auto;width:25px}.login-signup-view .view-body .hor-linear-grad{height:1px;width:100%;background-image:-webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,0)),color-stop(48%,#e2e2e2),to(rgba(255,255,255,0)));background-image:linear-gradient(to bottom,rgba(255,255,255,0) 0,#e2e2e2 48%,rgba(255,255,255,0) 100%)}"]
             }),
-            __metadata("design:paramtypes", [CookieService,
+            __metadata("design:paramtypes", [UtilityService,
+                CookieService,
                 UserService,
                 NotificationService,
                 TsLoginSignupService,
@@ -1700,8 +1741,9 @@
     }());
 
     var TsListingCardComponent = /** @class */ (function () {
-        function TsListingCardComponent(dialog, browser, placeService) {
+        function TsListingCardComponent(utilityService, dialog, browser, placeService) {
             var _this = this;
+            this.utilityService = utilityService;
             this.dialog = dialog;
             this.browser = browser;
             this.placeService = placeService;
@@ -1731,8 +1773,10 @@
         TsListingCardComponent.prototype.ngOnInit = function () {
             var _this = this;
             this.placeService.place.pipe(operators.take(1)).subscribe(function (res) {
-                var data = JSON.parse(res);
-                _this.homeUrl = ('/' + data['country'] + '/' + data['city']).toLowerCase();
+                if (_this.utilityService.IsJsonString(res)) {
+                    var data = JSON.parse(res);
+                    _this.homeUrl = ('/' + data['country'] + '/' + data['city']).toLowerCase();
+                }
             });
         };
         __decorate([
@@ -1757,7 +1801,7 @@
                 template: "<div class=\"listing-container cursor-pointer overflow-hidden\"\n    [ngClass]=\"gridType=='list' ? 'rounded  my-4 mx-auto  flex' :'bg-white lg:flex lg:flex-col my-1 rounded w-full'\">\n    <div class=\"relative flex-none overflow-hidden text-center event-image\"\n        [ngClass]=\"gridType=='list' ? 'h-auto w-4/12 lg:w-2/5' : ' h-48 lg:h-auto lg:w-3/5 lg:w-full md:w-full p-24 sm:w-full '\"\n        [defaultImage]=\"defaultCardImageUrl\"\n        [lazyLoad]=\"eventData.cardImageUrl ? eventData.cardImageUrl : defaultCardImageUrl\">\n        <i class=\"top-0 right-0 pt-2 pr-2 text-white absolute mdi mdi-checkbox-marked-circle ml-1 pt-1 text-lg\"\n            *ngIf=\"eventData?.organizerIsTrusted\" matTooltip=\"VERIFIED\" matTooltipPosition=\"above\"\n            matTooltipClass=\"ts-card-tooltip\"></i>\n    </div>\n    <div class=\"flex flex-col justify-between leading-normal listing-container--content overflow-hidden\" [ngClass]=\"gridType=='list' ?' w-8/12  md:w-full'\n                     : ' w-full'\">\n        <div class=\"px-2 md:px-4 pt-3 pb-1\">\n            <div class=\"flex flex-row justify-between align-items-center\">\n                <span *ngIf=\"urgencyMessage \" class=\"text-md bg-orange-500 rounded text-md px-2 mr-2\">Featured</span>\n                <span *ngIf=\"urgencyMessage\" class=\"text-xs text-red-400\">Booked 20 times in the last 24 hrs</span>\n                <span *ngIf=\"urgencyMessage\" class=\"bg-white rounded-l-full px-2\">\n                    <i class=\"material-icons align-bottom pr-1 hidden\">remove_red_eye</i>\n                    <strong class=\"text-xs\">12 Viewing right now</strong>\n                </span>\n            </div>\n            <div class=\"font-303030 capitalize text-base md:text-lg mb-1\" [clamp]=\"2\">{{eventData.name | titlecase}}\n            </div>\n            <div class=\"md:flex text-xs md:flex-wrap\" [ngClass]=\"gridType=='list' ? '' : 'flex flex-wrap'\">\n                <div class=\"mr-2 flex items-center\">\n                    <i class=\"mdi mdi-calendar-today text-base md:text-xl pr-1  align-bottom\"></i>\n                    <span\n                        class=\"text-gray-700 font-bold\">{{[eventData.startTime, eventData.endTime] | dateRange: eventData.recurrent: {'startTime': eventData.recurrenceStartTime,'endTime': eventData.recurrenceEndTime,'recurrenceRule': eventData.recurrenceRule} }}</span>\n                </div>\n                <div class=\"mr-2 flex items-center\">\n                    <i class=\"mdi mdi-map-marker pr-1 text-base md:text-xl  align-bottom\"></i>\n                    <span class=\"text-gray-700 font-bold\">{{eventData.city}}</span>\n                </div>\n                <div *ngIf=\"goingCounter\" class=\"mr-2\">\n                    <i class=\"material-icons pr-1  align-bottom text-purple-900\">supervisor_account</i>\n                    <span class=\"font-323E48 font-bold\">700</span>\n                </div>\n            </div>\n            <!-- <div *ngIf=\"featuredCard\" class=\"text-sm\">Heres goes some 2 line data which describes about the event.</div> -->\n            <div class=\"py-2 pr-2 flex justify-between\">\n                <div *ngIf=\"moreIcons\" id=\"set-of-icons\" class=\"flex\">\n                    <i class=\"material-icons pr-1  align-bottom text-purple-900\">supervisor_account</i>\n                    <i class=\"material-icons pr-1  align-bottom text-purple-900\">supervisor_account</i>\n                    <i class=\"material-icons pr-1  align-bottom text-purple-900\">supervisor_account</i>\n                    <i class=\"material-icons pr-1  align-bottom text-purple-900\">supervisor_account</i>\n                </div>\n                <div class=\"overflow-hidden\"\n                    [ngClass]=\"gridType=='list' ? 'hidden md:flex md:flex-wrap' : 'flex flex-wrap'\">\n                    <a *ngFor=\"let key of eventData?.keywords| slice:0:3\" [href]=\"homeUrl + '/' + key.topicKeywordCode\">\n                        <span appDataAnalytics eventLabel=\"keyword\" clickLocation=\"\"\n                            class=\"pr-2 text-gray-600 font-normal text-sm sm:text-xs hover:text-gray-900 hover:underline\">\n                            #{{key.topicKeywordName}}\n                        </span>\n                    </a>\n                </div>\n            </div>\n        </div>\n        <div class=\"h-10 relative bottom-purple-bar border-t border-gray-300 flex items-center justify-between py-2 px-4 sm:rounded-b-lg lg:rounded-none\"\n            *ngIf=\"eventData\">\n            <div class=\"text-sm flex items-center z-50\">\n                <app-follow type=\"icon\" [followTypeId]=\"eventData.eventId\" [followType]=\"'EVENT'\" color=\"#553c9a\"\n                    (click)=\"$event.stopPropagation()\"></app-follow>\n                <!-- <i class=\"mdi mdi-heart-outline text-2xl mr-2\"></i> -->\n                <div class=\"px-2 rounded-full\" matRipple (click)=\"$event.stopPropagation()\">\n                    <i appDataAnalytics eventLabel=\"share\" clickLocation=\"\" class=\"mdi mdi-share-variant text-2xl share\"\n                        (click)=\"shareEvent($event)\"></i>\n                </div>\n            </div>\n            <div class=\"flex items-center z-50\">\n                <span class=\"align-text-bottom price-container font-323E48 text-base font-semibold\"\n                    *ngIf=\"eventData.minimumTicketPrice\">\n                    {{eventData.minimumTicketPrice | currency:eventData.minimumTicketPriceCurrency : 'symbol':'1.0-0'}}\n                    <span class=\"hidden md:inline text-sm font-normal\">onwards</span></span>\n                <span *ngIf=\"!eventData.minimumTicketPrice \">Free</span>\n                <i class=\"mdi mdi-arrow-right text-2xl ml-2\"></i>\n            </div>\n        </div>\n    </div>\n</div>\n",
                 styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}::ng-deep .ts-card-tooltip{background-color:#666;color:#fff;font-size:12px;opacity:.98;white-space:pre-line}.listing-container{border:1px solid rgba(0,0,0,.13);border-radius:5px;font-family:Lato,sans-serif}.listing-container:hover{box-shadow:0 2px 8px 0 rgba(0,0,0,.2)}.listing-container:hover .bottom-purple-bar{box-shadow:0 2px 8px 0 rgba(0,0,0,.2);border-radius:0 0 4px}.listing-container:hover .bottom-purple-bar i,.listing-container:hover .bottom-purple-bar span{color:#fff!important}.listing-container:hover .bottom-purple-bar .mdi-arrow-right{-webkit-transform:translateX(5px);transform:translateX(5px)}.listing-container:hover .bottom-purple-bar::after{left:0!important;width:100%!important;opacity:1!important;border-radius:0!important}.listing-container .event-image{background-size:100% 100%}.listing-container .font-323E48{color:#323e48}.listing-container .font-303030{color:#303030}.listing-container .listing-container--content{background-color:#eee}.listing-container .listing-container--content .bottom-purple-bar{z-index:100;background-color:transparent}.listing-container .listing-container--content .bottom-purple-bar::after{content:'';position:absolute;left:0;top:0;right:0;bottom:0;background:linear-gradient(138.55deg,#a165c4 0,#4d2370 100%);opacity:0;z-index:0}.listing-container .listing-container--content .bottom-purple-bar .mdi-arrow-right,.listing-container .listing-container--content .bottom-purple-bar::after{-webkit-transition:.3s ease-in-out;transition:.3s ease-in-out}.listing-container .listing-container--content .price-container{font-size:15px}.listing-container .listing-container--featured-content{background-color:#fff}.listing-container .listing-container--featured-content .bottom-purple-bar{-webkit-transition:1s ease-in;transition:1s ease-in}.listing-container .listing-container--featured-content .price-container{font-size:15px}.listing-container i{color:#683592}.listing-container .share:hover{-webkit-transition:.15s;transition:.15s;font-size:1.875rem}:host ::ng-deep .listing-container:hover .bottom-purple-bar i{color:#fff}@media (min-width:991px){.listing-container .listing-container--content{min-height:195px}}.topic-container{font-family:Lato;min-height:460px}.topic-container .subTitle{color:#263240}.topic-container .keywords,.topic-container i{color:#683592}.topic-container .keywords span{border:1.57px solid #683592}"]
             }),
-            __metadata("design:paramtypes", [material.MatDialog, BrowserService, PlaceService])
+            __metadata("design:paramtypes", [UtilityService, material.MatDialog, BrowserService, PlaceService])
         ], TsListingCardComponent);
         return TsListingCardComponent;
     }());
@@ -2046,7 +2090,7 @@
                     TextOverflowClampDirective,
                     DataAnalyticsDirective
                 ],
-                providers: [TimeService, UserService, FollowService, DataCollectorService]
+                providers: [TimeService, UserService, FollowService, DataCollectorService, UtilityService]
             })
         ], SharedModule);
         return SharedModule;
@@ -2200,6 +2244,7 @@
     exports.TsLoginSignupService = TsLoginSignupService;
     exports.UserMenuComponent = UserMenuComponent;
     exports.UserService = UserService;
+    exports.UtilityService = UtilityService;
     exports.config = config;
     exports.initializeDataCollector = initializeDataCollector;
     exports.ɵa = FooterService;

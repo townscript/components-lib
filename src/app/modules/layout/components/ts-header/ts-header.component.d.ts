@@ -3,7 +3,9 @@ import { MatDialog } from '@angular/material';
 import { UserService } from '../../../../shared/services/user-service';
 import { PlaceService } from './place.service';
 import { HeaderService } from './ts-header.service';
+import { UtilityService } from '../../../../shared/services/utilities.service';
 export declare class TsHeaderComponent implements OnInit {
+    private utilityService;
     private headerService;
     private placeService;
     private dialog;
@@ -26,7 +28,7 @@ export declare class TsHeaderComponent implements OnInit {
     s3BucketUrl: any;
     cityPopupActive: boolean;
     popularPlaces: any;
-    constructor(headerService: HeaderService, placeService: PlaceService, dialog: MatDialog, userService: UserService);
+    constructor(utilityService: UtilityService, headerService: HeaderService, placeService: PlaceService, dialog: MatDialog, userService: UserService);
     clickout: (event: any) => void;
     openLogin: (callback?: any) => void;
     navigateToDashboard: () => void;

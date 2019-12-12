@@ -3,11 +3,13 @@ import { MatDialog } from '@angular/material';
 import { FooterService } from './ts-footer.service';
 import { PlaceService } from '../ts-header/place.service';
 import { UserService } from '../../../../shared/services/user-service';
+import { UtilityService } from '../../../../shared/services/utilities.service';
 export declare class TsFooterComponent implements OnInit, OnDestroy {
     private dialog;
     private userService;
     private footerService;
     private placeService;
+    private utilityService;
     source: string;
     popularEvents: any;
     recentBlogs: any;
@@ -22,7 +24,7 @@ export declare class TsFooterComponent implements OnInit, OnDestroy {
     placeId: string;
     myBookingsURL: string;
     subObject: any;
-    constructor(dialog: MatDialog, userService: UserService, footerService: FooterService, placeService: PlaceService);
+    constructor(dialog: MatDialog, userService: UserService, footerService: FooterService, placeService: PlaceService, utilityService: UtilityService);
     openContactUs: () => void;
     openMyBooking: () => void;
     redirectToMyBookings: () => void;

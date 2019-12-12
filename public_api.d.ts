@@ -5,6 +5,7 @@ export * from './src/app/shared/services/notification.service';
 export * from './src/app/shared/services/time.service';
 export * from './src/app/shared/services/user-service';
 export * from './src/app/shared/services/follow.service';
+export * from './src/app/shared/services/utilities.service';
 export * from './src/app/modules/layout/components/ts-header/place.service';
 export * from './src/app/modules/layout/components/ts-header/ts-header.service';
 export * from './src/app/modules/layout/components/ts-footer/ts-footer.component';
