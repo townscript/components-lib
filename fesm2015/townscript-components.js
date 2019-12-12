@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { isPlatformBrowser, DOCUMENT, DatePipe, CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { NavigationEnd, Router } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { take, debounceTime } from 'rxjs/operators';
 import * as algoliaSearchImported from 'algoliasearch';
@@ -178,9 +179,10 @@ UserService = __decorate([
 ], UserService);
 
 let FollowService = class FollowService {
-    constructor(http, userService) {
+    constructor(http, userService, router) {
         this.http = http;
         this.userService = userService;
+        this.router = router;
         this.baseUrl = config.baseUrl;
         this.apiServerUrl = this.baseUrl + 'api/';
         this.listingsUrl = this.baseUrl + 'listings/';
@@ -210,12 +212,20 @@ let FollowService = class FollowService {
             if (this.user && this.user.userId) {
                 this.getFollowData(this.user.userId);
             }
+            this.router.events.subscribe((ev) => {
+                if (ev instanceof NavigationEnd) {
+                    if (this.user && this.user.userId) {
+                        this.getFollowData(this.user.userId);
+                    }
+                }
+            });
         });
     }
 };
 FollowService = __decorate([
     Injectable(),
-    __metadata("design:paramtypes", [HttpClient, UserService])
+    __metadata("design:paramtypes", [HttpClient, UserService,
+        Router])
 ], FollowService);
 
 // This file can be replaced during build by using the `fileReplacements` array.

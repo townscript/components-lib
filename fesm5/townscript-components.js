@@ -5,6 +5,7 @@ import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { DOCUMENT, isPlatformBrowser, DatePipe, CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
+import { Router, NavigationEnd } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { take, debounceTime } from 'rxjs/operators';
 import * as algoliaSearchImported from 'algoliasearch';
@@ -188,10 +189,11 @@ var UserService = /** @class */ (function () {
 }());
 
 var FollowService = /** @class */ (function () {
-    function FollowService(http, userService) {
+    function FollowService(http, userService, router) {
         var _this = this;
         this.http = http;
         this.userService = userService;
+        this.router = router;
         this.baseUrl = config.baseUrl;
         this.apiServerUrl = this.baseUrl + 'api/';
         this.listingsUrl = this.baseUrl + 'listings/';
@@ -221,11 +223,19 @@ var FollowService = /** @class */ (function () {
             if (_this.user && _this.user.userId) {
                 _this.getFollowData(_this.user.userId);
             }
+            _this.router.events.subscribe(function (ev) {
+                if (ev instanceof NavigationEnd) {
+                    if (_this.user && _this.user.userId) {
+                        _this.getFollowData(_this.user.userId);
+                    }
+                }
+            });
         });
     }
     FollowService = __decorate([
         Injectable(),
-        __metadata("design:paramtypes", [HttpClient, UserService])
+        __metadata("design:paramtypes", [HttpClient, UserService,
+            Router])
     ], FollowService);
     return FollowService;
 }());

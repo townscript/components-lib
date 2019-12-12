@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/material'), require('luxon'), require('rxjs'), require('@angular/common'), require('@angular/common/http'), require('@angular/material/dialog'), require('rxjs/operators'), require('algoliasearch'), require('@angular/forms'), require('ng-recaptcha'), require('text-overflow-clamp'), require('@townscript/data-collector'), require('@townscript/elements'), require('@angular/material/core'), require('@angular/material/snack-bar'), require('ng-lazyload-image')) :
-    typeof define === 'function' && define.amd ? define('@townscript/components', ['exports', '@angular/core', '@angular/material', 'luxon', 'rxjs', '@angular/common', '@angular/common/http', '@angular/material/dialog', 'rxjs/operators', 'algoliasearch', '@angular/forms', 'ng-recaptcha', 'text-overflow-clamp', '@townscript/data-collector', '@townscript/elements', '@angular/material/core', '@angular/material/snack-bar', 'ng-lazyload-image'], factory) :
-    (global = global || self, factory((global.townscript = global.townscript || {}, global.townscript.components = {}), global.ng.core, global.ng.material, global.luxon, global.rxjs, global.ng.common, global.ng.common.http, global.ng.material.dialog, global.rxjs.operators, global.algoliaSearchImported, global.ng.forms, global.ngRecaptcha, global.clampLibImported, global.dataCollector, global.elements, global.ng.material.core, global.ng.material['snack-bar'], global.ngLazyloadImage));
-}(this, function (exports, core, material, luxon, rxjs, common, http, dialog, operators, algoliaSearchImported, forms, ngRecaptcha, clampLibImported, dataCollector, elements, core$1, snackBar, ngLazyloadImage) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/material'), require('luxon'), require('rxjs'), require('@angular/common'), require('@angular/common/http'), require('@angular/router'), require('@angular/material/dialog'), require('rxjs/operators'), require('algoliasearch'), require('@angular/forms'), require('ng-recaptcha'), require('text-overflow-clamp'), require('@townscript/data-collector'), require('@townscript/elements'), require('@angular/material/core'), require('@angular/material/snack-bar'), require('ng-lazyload-image')) :
+    typeof define === 'function' && define.amd ? define('@townscript/components', ['exports', '@angular/core', '@angular/material', 'luxon', 'rxjs', '@angular/common', '@angular/common/http', '@angular/router', '@angular/material/dialog', 'rxjs/operators', 'algoliasearch', '@angular/forms', 'ng-recaptcha', 'text-overflow-clamp', '@townscript/data-collector', '@townscript/elements', '@angular/material/core', '@angular/material/snack-bar', 'ng-lazyload-image'], factory) :
+    (global = global || self, factory((global.townscript = global.townscript || {}, global.townscript.components = {}), global.ng.core, global.ng.material, global.luxon, global.rxjs, global.ng.common, global.ng.common.http, global.ng.router, global.ng.material.dialog, global.rxjs.operators, global.algoliaSearchImported, global.ng.forms, global.ngRecaptcha, global.clampLibImported, global.dataCollector, global.elements, global.ng.material.core, global.ng.material['snack-bar'], global.ngLazyloadImage));
+}(this, function (exports, core, material, luxon, rxjs, common, http, router, dialog, operators, algoliaSearchImported, forms, ngRecaptcha, clampLibImported, dataCollector, elements, core$1, snackBar, ngLazyloadImage) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -253,10 +253,11 @@
     }());
 
     var FollowService = /** @class */ (function () {
-        function FollowService(http, userService) {
+        function FollowService(http, userService, router$1) {
             var _this = this;
             this.http = http;
             this.userService = userService;
+            this.router = router$1;
             this.baseUrl = config.baseUrl;
             this.apiServerUrl = this.baseUrl + 'api/';
             this.listingsUrl = this.baseUrl + 'listings/';
@@ -286,11 +287,19 @@
                 if (_this.user && _this.user.userId) {
                     _this.getFollowData(_this.user.userId);
                 }
+                _this.router.events.subscribe(function (ev) {
+                    if (ev instanceof router.NavigationEnd) {
+                        if (_this.user && _this.user.userId) {
+                            _this.getFollowData(_this.user.userId);
+                        }
+                    }
+                });
             });
         }
         FollowService = __decorate([
             core.Injectable(),
-            __metadata("design:paramtypes", [http.HttpClient, UserService])
+            __metadata("design:paramtypes", [http.HttpClient, UserService,
+                router.Router])
         ], FollowService);
         return FollowService;
     }());
