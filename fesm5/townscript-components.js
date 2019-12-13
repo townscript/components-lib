@@ -1009,9 +1009,9 @@ var CitySearchPopupComponent = /** @class */ (function () {
                 var name_1 = place.name.replace(/,/g, '').replace(/ /g, '-');
                 var secondaryText = '';
                 if (place.secondaryText) {
-                    secondaryText = place.secondaryText.replace(/,/g, '').replace(/ /g, '-');
+                    secondaryText = '--' + place.secondaryText.replace(/,/g, '').replace(/ /g, '-');
                 }
-                _this.router.navigate(['/s/' + name_1 + '--' + secondaryText + tsTypeUrl], { state: { place: place } });
+                _this.router.navigate(['/s/' + name_1 + secondaryText + tsTypeUrl], { state: { place: place } });
             }
             // this.placeService.updatePlace(place.name);
             _this.activePlace = place.name;

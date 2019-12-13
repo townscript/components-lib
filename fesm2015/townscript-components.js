@@ -920,9 +920,9 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
                 const name = place.name.replace(/,/g, '').replace(/ /g, '-');
                 let secondaryText = '';
                 if (place.secondaryText) {
-                    secondaryText = place.secondaryText.replace(/,/g, '').replace(/ /g, '-');
+                    secondaryText = '--' + place.secondaryText.replace(/,/g, '').replace(/ /g, '-');
                 }
-                this.router.navigate(['/s/' + name + '--' + secondaryText + tsTypeUrl], { state: { place: place } });
+                this.router.navigate(['/s/' + name + secondaryText + tsTypeUrl], { state: { place: place } });
             }
             // this.placeService.updatePlace(place.name);
             this.activePlace = place.name;
