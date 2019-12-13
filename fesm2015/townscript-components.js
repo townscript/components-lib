@@ -543,6 +543,14 @@ let TsHeaderComponent = class TsHeaderComponent {
         this.host = config.baseUrl;
         this.s3BucketUrl = config.s3BaseUrl + config.s3Bucket;
         this.cityPopupActive = false;
+        this.buildUrlArray = () => {
+            if (this.router.url) {
+                this.urlArray = this.router.url.replace('/', '').split('/');
+            }
+            else {
+                this.urlArray = ['in'];
+            }
+        };
         this.clickout = (event) => {
             if (!this.citySuggestions.nativeElement.contains(event.target)) {
                 this.cityPopupActive = false;
@@ -618,12 +626,7 @@ let TsHeaderComponent = class TsHeaderComponent {
                 }
             }));
         });
-        if (this.router.url) {
-            this.urlArray = this.router.url.replace('/', '').split('/');
-        }
-        else {
-            this.urlArray = ['in'];
-        }
+        this.buildUrlArray();
     }
     ngOnInit() {
         this.userService.user.subscribe(data => {
@@ -744,6 +747,14 @@ let SearchComponent = class SearchComponent {
         this.cityQueryChanged = new Subject();
         this.router = config.router;
         this.host = config.baseUrl;
+        this.buildUrlArray = () => {
+            if (this.router.url) {
+                this.urlArray = this.router.url.replace('/', '').split('/');
+            }
+            else {
+                this.urlArray = ['in'];
+            }
+        };
         this.callAlgolia = (text) => {
             this.index.search({
                 query: text,
@@ -789,6 +800,7 @@ let SearchComponent = class SearchComponent {
             this.searchResults = { 'interests': interests, 'organizers': organizers, 'events': events };
         };
         this.navigateToListing = (interest) => {
+            this.buildUrlArray();
             let listingUrl = this.urlArray[0] + '/' + this.urlArray[1];
             if (this.urlArray && this.urlArray.length > 1) {
                 this.router.navigate([listingUrl + '/' + interest]);
@@ -825,12 +837,7 @@ let SearchComponent = class SearchComponent {
         this.searchTextChanged.pipe(debounceTime(300)).subscribe(text => this.callAlgolia(text));
         this.client = algoliasearch('AT5UB8FMSR', 'c7e946f5b740ef035bd824f69dcc1612');
         this.index = this.client.initIndex(this.algoliaIndexName);
-        if (this.router.url) {
-            this.urlArray = this.router.url.replace('/', '').split('/');
-        }
-        else {
-            this.urlArray = ['in'];
-        }
+        this.buildUrlArray();
     }
     clickout(event) {
         if (!this.citySuggestions.nativeElement.contains(event.target)) {
@@ -896,6 +903,14 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
         this.router = config.router;
         this.cityQueryChanged = new Subject();
         this.cityLoading = false;
+        this.buildUrlArray = () => {
+            if (this.router.url) {
+                this.urlArray = this.router.url.replace('/', '').split('/');
+            }
+            else {
+                this.urlArray = ['in'];
+            }
+        };
         this.callSearchCity = (query) => {
             this.cityLoading = true;
             this.headerService.getplaceSearchResults(query).subscribe(res => {
@@ -943,12 +958,7 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
             }
         };
         this.cityQueryChanged.pipe(debounceTime(300)).subscribe(text => this.callSearchCity(text));
-        if (this.router.url) {
-            this.urlArray = this.router.url.replace('/', '').split('/');
-        }
-        else {
-            this.urlArray = ['in'];
-        }
+        this.buildUrlArray();
     }
     ngAfterViewInit() {
         this.citySearchActive = true;
@@ -1552,6 +1562,14 @@ let TsListingCardComponent = class TsListingCardComponent {
         this.goingCounter = false;
         this.moreIcons = false;
         this.defaultCardImageUrl = config.s3BaseUrl + 'townscript-common-resources/ListingsStatic/default-card.jpg';
+        this.buildUrlArray = () => {
+            if (this.router.url) {
+                this.urlArray = this.router.url.replace('/', '').split('/');
+            }
+            else {
+                this.urlArray = ['in'];
+            }
+        };
         this.shareEvent = (event) => {
             event.stopPropagation();
             event.preventDefault();
@@ -1569,12 +1587,7 @@ let TsListingCardComponent = class TsListingCardComponent {
                 });
             }
         };
-        if (this.router.url) {
-            this.urlArray = this.router.url.replace('/', '').split('/');
-        }
-        else {
-            this.urlArray = ['in'];
-        }
+        this.buildUrlArray();
     }
     ngOnInit() {
         this.placeService.place.pipe(take(1)).subscribe(res => {

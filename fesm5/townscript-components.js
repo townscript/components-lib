@@ -600,6 +600,14 @@ var TsHeaderComponent = /** @class */ (function () {
         this.host = config.baseUrl;
         this.s3BucketUrl = config.s3BaseUrl + config.s3Bucket;
         this.cityPopupActive = false;
+        this.buildUrlArray = function () {
+            if (_this.router.url) {
+                _this.urlArray = _this.router.url.replace('/', '').split('/');
+            }
+            else {
+                _this.urlArray = ['in'];
+            }
+        };
         this.clickout = function (event) {
             if (!_this.citySuggestions.nativeElement.contains(event.target)) {
                 _this.cityPopupActive = false;
@@ -687,12 +695,7 @@ var TsHeaderComponent = /** @class */ (function () {
                 return [2 /*return*/];
             });
         }); };
-        if (this.router.url) {
-            this.urlArray = this.router.url.replace('/', '').split('/');
-        }
-        else {
-            this.urlArray = ['in'];
-        }
+        this.buildUrlArray();
     }
     TsHeaderComponent.prototype.ngOnInit = function () {
         var _this = this;
@@ -818,6 +821,14 @@ var SearchComponent = /** @class */ (function () {
         this.cityQueryChanged = new Subject();
         this.router = config.router;
         this.host = config.baseUrl;
+        this.buildUrlArray = function () {
+            if (_this.router.url) {
+                _this.urlArray = _this.router.url.replace('/', '').split('/');
+            }
+            else {
+                _this.urlArray = ['in'];
+            }
+        };
         this.callAlgolia = function (text) {
             _this.index.search({
                 query: text,
@@ -863,6 +874,7 @@ var SearchComponent = /** @class */ (function () {
             _this.searchResults = { 'interests': interests, 'organizers': organizers, 'events': events };
         };
         this.navigateToListing = function (interest) {
+            _this.buildUrlArray();
             var listingUrl = _this.urlArray[0] + '/' + _this.urlArray[1];
             if (_this.urlArray && _this.urlArray.length > 1) {
                 _this.router.navigate([listingUrl + '/' + interest]);
@@ -911,12 +923,7 @@ var SearchComponent = /** @class */ (function () {
         this.searchTextChanged.pipe(debounceTime(300)).subscribe(function (text) { return _this.callAlgolia(text); });
         this.client = algoliasearch('AT5UB8FMSR', 'c7e946f5b740ef035bd824f69dcc1612');
         this.index = this.client.initIndex(this.algoliaIndexName);
-        if (this.router.url) {
-            this.urlArray = this.router.url.replace('/', '').split('/');
-        }
-        else {
-            this.urlArray = ['in'];
-        }
+        this.buildUrlArray();
     }
     SearchComponent.prototype.clickout = function (event) {
         if (!this.citySuggestions.nativeElement.contains(event.target)) {
@@ -985,6 +992,14 @@ var CitySearchPopupComponent = /** @class */ (function () {
         this.router = config.router;
         this.cityQueryChanged = new Subject();
         this.cityLoading = false;
+        this.buildUrlArray = function () {
+            if (_this.router.url) {
+                _this.urlArray = _this.router.url.replace('/', '').split('/');
+            }
+            else {
+                _this.urlArray = ['in'];
+            }
+        };
         this.callSearchCity = function (query) {
             _this.cityLoading = true;
             _this.headerService.getplaceSearchResults(query).subscribe(function (res) {
@@ -1032,12 +1047,7 @@ var CitySearchPopupComponent = /** @class */ (function () {
             }
         };
         this.cityQueryChanged.pipe(debounceTime(300)).subscribe(function (text) { return _this.callSearchCity(text); });
-        if (this.router.url) {
-            this.urlArray = this.router.url.replace('/', '').split('/');
-        }
-        else {
-            this.urlArray = ['in'];
-        }
+        this.buildUrlArray();
     }
     CitySearchPopupComponent.prototype.ngAfterViewInit = function () {
         this.citySearchActive = true;
@@ -1698,6 +1708,14 @@ var TsListingCardComponent = /** @class */ (function () {
         this.goingCounter = false;
         this.moreIcons = false;
         this.defaultCardImageUrl = config.s3BaseUrl + 'townscript-common-resources/ListingsStatic/default-card.jpg';
+        this.buildUrlArray = function () {
+            if (_this.router.url) {
+                _this.urlArray = _this.router.url.replace('/', '').split('/');
+            }
+            else {
+                _this.urlArray = ['in'];
+            }
+        };
         this.shareEvent = function (event) {
             event.stopPropagation();
             event.preventDefault();
@@ -1715,12 +1733,7 @@ var TsListingCardComponent = /** @class */ (function () {
                 });
             }
         };
-        if (this.router.url) {
-            this.urlArray = this.router.url.replace('/', '').split('/');
-        }
-        else {
-            this.urlArray = ['in'];
-        }
+        this.buildUrlArray();
     }
     TsListingCardComponent.prototype.ngOnInit = function () {
         var _this = this;

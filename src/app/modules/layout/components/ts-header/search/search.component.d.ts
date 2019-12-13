@@ -35,6 +35,7 @@ export declare class SearchComponent implements OnInit {
     host: any;
     popularPlaces: any;
     constructor(utilityService: UtilityService, headerService: HeaderService, placeService: PlaceService, timeService: TimeService, datepipe: DatePipe);
+    buildUrlArray: () => void;
     callAlgolia: (text: any) => void;
     filterDataForSearchResult: (data: any) => void;
     clickout(event: any): void;

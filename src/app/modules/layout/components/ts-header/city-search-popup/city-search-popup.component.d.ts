@@ -25,6 +25,7 @@ export declare class CitySearchPopupComponent implements OnInit, AfterViewInit {
     cityLoading: boolean;
     index: any;
     constructor(placeService: PlaceService, headerService: HeaderService, datepipe: DatePipe);
+    buildUrlArray: () => void;
     callSearchCity: (query: any) => void;
     placeChanged: (place: any) => void;
     openCityPopup: () => void;
