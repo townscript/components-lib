@@ -282,7 +282,6 @@
                 return _this.http.post(_this.listingsUrl + 'followData/unfollow/' + followDataId, {});
             };
             this.updateFollowData = function (data) {
-                _this.followData = new rxjs.BehaviorSubject({});
                 _this.followData$.next(data);
             };
             this.userService.user.subscribe(function (data) {
