@@ -224,7 +224,7 @@
             this.cookieService = cookieService;
             this.document = document;
             this.platformId = platformId;
-            this.user$ = new rxjs.BehaviorSubject({});
+            this.user$ = new rxjs.BehaviorSubject(null);
             this.user = this.user$.asObservable();
             this.documentIsAccessible = common.isPlatformBrowser(this.platformId);
             if (this.documentIsAccessible) {
@@ -242,7 +242,7 @@
                 this.user$.next(data);
             }
             else {
-                this.user$ = new rxjs.BehaviorSubject({});
+                this.user$ = new rxjs.BehaviorSubject(null);
             }
         };
         UserService = __decorate([
@@ -255,15 +255,15 @@
     }());
 
     var FollowService = /** @class */ (function () {
-        function FollowService(http, userService, router$1) {
+        function FollowService(http, userService) {
             var _this = this;
             this.http = http;
             this.userService = userService;
-            this.router = router$1;
             this.baseUrl = config.baseUrl;
             this.apiServerUrl = this.baseUrl + 'api/';
             this.listingsUrl = this.baseUrl + 'listings/';
-            this.followData$ = new rxjs.BehaviorSubject({});
+            this.router = config.router;
+            this.followData$ = new rxjs.BehaviorSubject(null);
             this.followData = this.followData$.asObservable();
             this.createFollowData = function (type, typeId, userId) {
                 var data = {
@@ -289,19 +289,20 @@
                 if (_this.user && _this.user.userId) {
                     _this.getFollowData(_this.user.userId);
                 }
-                _this.router.events.subscribe(function (ev) {
-                    if (ev instanceof router.NavigationEnd) {
-                        if (_this.user && _this.user.userId) {
-                            _this.getFollowData(_this.user.userId);
+                if (_this.router && _this.router.events) {
+                    _this.router.events.subscribe(function (ev) {
+                        if (ev instanceof router.NavigationEnd) {
+                            if (_this.user && _this.user.userId) {
+                                _this.getFollowData(_this.user.userId);
+                            }
                         }
-                    }
-                });
+                    });
+                }
             });
         }
         FollowService = __decorate([
             core.Injectable(),
-            __metadata("design:paramtypes", [http.HttpClient, UserService,
-                router.Router])
+            __metadata("design:paramtypes", [http.HttpClient, UserService])
         ], FollowService);
         return FollowService;
     }());

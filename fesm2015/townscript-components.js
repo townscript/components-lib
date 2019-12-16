@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { isPlatformBrowser, DOCUMENT, DatePipe, CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { NavigationEnd, Router } from '@angular/router';
+import { NavigationEnd } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { take, debounceTime } from 'rxjs/operators';
 import * as algoliaSearchImported from 'algoliasearch';
@@ -151,7 +151,7 @@ let UserService = class UserService {
         this.cookieService = cookieService;
         this.document = document;
         this.platformId = platformId;
-        this.user$ = new BehaviorSubject({});
+        this.user$ = new BehaviorSubject(null);
         this.user = this.user$.asObservable();
         this.documentIsAccessible = isPlatformBrowser(this.platformId);
         if (this.documentIsAccessible) {
@@ -169,7 +169,7 @@ let UserService = class UserService {
             this.user$.next(data);
         }
         else {
-            this.user$ = new BehaviorSubject({});
+            this.user$ = new BehaviorSubject(null);
         }
     }
 };
@@ -181,14 +181,14 @@ UserService = __decorate([
 ], UserService);
 
 let FollowService = class FollowService {
-    constructor(http, userService, router) {
+    constructor(http, userService) {
         this.http = http;
         this.userService = userService;
-        this.router = router;
         this.baseUrl = config.baseUrl;
         this.apiServerUrl = this.baseUrl + 'api/';
         this.listingsUrl = this.baseUrl + 'listings/';
-        this.followData$ = new BehaviorSubject({});
+        this.router = config.router;
+        this.followData$ = new BehaviorSubject(null);
         this.followData = this.followData$.asObservable();
         this.createFollowData = (type, typeId, userId) => {
             const data = {
@@ -214,20 +214,21 @@ let FollowService = class FollowService {
             if (this.user && this.user.userId) {
                 this.getFollowData(this.user.userId);
             }
-            this.router.events.subscribe((ev) => {
-                if (ev instanceof NavigationEnd) {
-                    if (this.user && this.user.userId) {
-                        this.getFollowData(this.user.userId);
+            if (this.router && this.router.events) {
+                this.router.events.subscribe((ev) => {
+                    if (ev instanceof NavigationEnd) {
+                        if (this.user && this.user.userId) {
+                            this.getFollowData(this.user.userId);
+                        }
                     }
-                }
-            });
+                });
+            }
         });
     }
 };
 FollowService = __decorate([
     Injectable(),
-    __metadata("design:paramtypes", [HttpClient, UserService,
-        Router])
+    __metadata("design:paramtypes", [HttpClient, UserService])
 ], FollowService);
 
 // This file can be replaced during build by using the `fileReplacements` array.

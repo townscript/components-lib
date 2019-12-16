@@ -5,7 +5,7 @@ import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { DOCUMENT, isPlatformBrowser, DatePipe, CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { Router, NavigationEnd } from '@angular/router';
+import { NavigationEnd } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { take, debounceTime } from 'rxjs/operators';
 import * as algoliaSearchImported from 'algoliasearch';
@@ -160,7 +160,7 @@ var UserService = /** @class */ (function () {
         this.cookieService = cookieService;
         this.document = document;
         this.platformId = platformId;
-        this.user$ = new BehaviorSubject({});
+        this.user$ = new BehaviorSubject(null);
         this.user = this.user$.asObservable();
         this.documentIsAccessible = isPlatformBrowser(this.platformId);
         if (this.documentIsAccessible) {
@@ -178,7 +178,7 @@ var UserService = /** @class */ (function () {
             this.user$.next(data);
         }
         else {
-            this.user$ = new BehaviorSubject({});
+            this.user$ = new BehaviorSubject(null);
         }
     };
     UserService = __decorate([
@@ -191,15 +191,15 @@ var UserService = /** @class */ (function () {
 }());
 
 var FollowService = /** @class */ (function () {
-    function FollowService(http, userService, router) {
+    function FollowService(http, userService) {
         var _this = this;
         this.http = http;
         this.userService = userService;
-        this.router = router;
         this.baseUrl = config.baseUrl;
         this.apiServerUrl = this.baseUrl + 'api/';
         this.listingsUrl = this.baseUrl + 'listings/';
-        this.followData$ = new BehaviorSubject({});
+        this.router = config.router;
+        this.followData$ = new BehaviorSubject(null);
         this.followData = this.followData$.asObservable();
         this.createFollowData = function (type, typeId, userId) {
             var data = {
@@ -225,19 +225,20 @@ var FollowService = /** @class */ (function () {
             if (_this.user && _this.user.userId) {
                 _this.getFollowData(_this.user.userId);
             }
-            _this.router.events.subscribe(function (ev) {
-                if (ev instanceof NavigationEnd) {
-                    if (_this.user && _this.user.userId) {
-                        _this.getFollowData(_this.user.userId);
+            if (_this.router && _this.router.events) {
+                _this.router.events.subscribe(function (ev) {
+                    if (ev instanceof NavigationEnd) {
+                        if (_this.user && _this.user.userId) {
+                            _this.getFollowData(_this.user.userId);
+                        }
                     }
-                }
-            });
+                });
+            }
         });
     }
     FollowService = __decorate([
         Injectable(),
-        __metadata("design:paramtypes", [HttpClient, UserService,
-            Router])
+        __metadata("design:paramtypes", [HttpClient, UserService])
     ], FollowService);
     return FollowService;
 }());
