@@ -345,7 +345,8 @@
                         var data = { 'city': ipInfoData['city'],
                             'country': ipInfoData['countryCode'] ? ipInfoData['countryCode'].toLowerCase() : 'in',
                             'currentPlace': ipInfoData['city'] };
-                        _this.updatePlace(data);
+                        if (_this.cookieService.getCookie('location') != null)
+                            _this.updatePlace(data);
                     });
                 }
             }
