@@ -1,9 +1,9 @@
 import { __decorate, __metadata, __param, __awaiter, __generator, __assign } from 'tslib';
 import { Injectable, Inject, PLATFORM_ID, InjectionToken, ɵɵdefineInjectable, ɵɵinject, Component, Input, ViewChild, ElementRef, HostListener, Output, EventEmitter, ViewEncapsulation, Pipe, Directive, NgModule } from '@angular/core';
+import { isPlatformBrowser, DOCUMENT, DatePipe, CommonModule } from '@angular/common';
 import { MatSnackBar, MatSnackBarConfig, MatDialog, MatDialogConfig, MAT_DIALOG_DATA as MAT_DIALOG_DATA$1, MatDialogRef as MatDialogRef$1, MatRippleModule, MatSnackBarModule, MatInputModule, MatTooltipModule, MatProgressSpinnerModule } from '@angular/material';
 import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { DOCUMENT, isPlatformBrowser, DatePipe, CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { NavigationEnd } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -52,36 +52,42 @@ var BrowserService = /** @class */ (function () {
 }());
 
 var CookieService = /** @class */ (function () {
-    function CookieService() {
+    function CookieService(platformId) {
         var _this = this;
+        this.platformId = platformId;
         this.deleteCookie = function (name) {
             _this.setCookie(name, '', -1, '/');
         };
         this.setCookie = function (name, value, expireDays, path) {
             if (path === void 0) { path = ''; }
-            var d = new Date();
-            d.setTime(d.getTime() + expireDays * 24 * 60 * 60 * 1000);
-            var expires = 'expires=' + d.toUTCString();
-            var host = '.' + window.location.host.split('.').splice(1).join('.');
-            document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '') + ';domain=' + host;
+            if (isPlatformBrowser(_this.platformId)) {
+                var d = new Date();
+                d.setTime(d.getTime() + expireDays * 24 * 60 * 60 * 1000);
+                var expires = 'expires=' + d.toUTCString();
+                var host = '.' + window.location.host.split('.').splice(1).join('.');
+                document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '') + ';domain=' + host;
+            }
         };
     }
     CookieService.prototype.getCookie = function (name) {
-        var ca = document.cookie.split(';');
-        var caLen = ca.length;
-        var cookieName = name + "=";
-        var c;
-        for (var i = 0; i < caLen; i += 1) {
-            c = ca[i].replace(/^\s+/g, '');
-            if (c.indexOf(cookieName) === 0) {
-                return c.substring(cookieName.length, c.length);
+        if (isPlatformBrowser(this.platformId)) {
+            var ca = document.cookie.split(';');
+            var caLen = ca.length;
+            var cookieName = name + "=";
+            var c = void 0;
+            for (var i = 0; i < caLen; i += 1) {
+                c = ca[i].replace(/^\s+/g, '');
+                if (c.indexOf(cookieName) === 0) {
+                    return c.substring(cookieName.length, c.length);
+                }
             }
         }
         return null;
     };
     CookieService = __decorate([
         Injectable(),
-        __metadata("design:paramtypes", [])
+        __param(0, Inject(PLATFORM_ID)),
+        __metadata("design:paramtypes", [InjectionToken])
     ], CookieService);
     return CookieService;
 }());

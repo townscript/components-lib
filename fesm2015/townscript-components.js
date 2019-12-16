@@ -1,9 +1,9 @@
 import { __decorate, __metadata, __param, __awaiter } from 'tslib';
 import { Injectable, Inject, PLATFORM_ID, InjectionToken, ɵɵdefineInjectable, ɵɵinject, Component, Input, ViewChild, ElementRef, HostListener, EventEmitter, Output, ViewEncapsulation, Pipe, Directive, NgModule } from '@angular/core';
+import { isPlatformBrowser, DOCUMENT, DatePipe, CommonModule } from '@angular/common';
 import { MatSnackBarConfig, MatSnackBar, MatDialogConfig, MatDialog, MAT_DIALOG_DATA as MAT_DIALOG_DATA$1, MatDialogRef as MatDialogRef$1, MatRippleModule, MatSnackBarModule, MatInputModule, MatTooltipModule, MatProgressSpinnerModule } from '@angular/material';
 import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
-import { isPlatformBrowser, DOCUMENT, DatePipe, CommonModule } from '@angular/common';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { NavigationEnd } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
@@ -51,27 +51,32 @@ BrowserService = __decorate([
 ], BrowserService);
 
 let CookieService = class CookieService {
-    constructor() {
+    constructor(platformId) {
+        this.platformId = platformId;
         this.deleteCookie = (name) => {
             this.setCookie(name, '', -1, '/');
         };
         this.setCookie = (name, value, expireDays, path = '') => {
-            const d = new Date();
-            d.setTime(d.getTime() + expireDays * 24 * 60 * 60 * 1000);
-            const expires = 'expires=' + d.toUTCString();
-            const host = '.' + window.location.host.split('.').splice(1).join('.');
-            document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '') + ';domain=' + host;
+            if (isPlatformBrowser(this.platformId)) {
+                const d = new Date();
+                d.setTime(d.getTime() + expireDays * 24 * 60 * 60 * 1000);
+                const expires = 'expires=' + d.toUTCString();
+                const host = '.' + window.location.host.split('.').splice(1).join('.');
+                document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '') + ';domain=' + host;
+            }
         };
     }
     getCookie(name) {
-        const ca = document.cookie.split(';');
-        const caLen = ca.length;
-        const cookieName = `${name}=`;
-        let c;
-        for (let i = 0; i < caLen; i += 1) {
-            c = ca[i].replace(/^\s+/g, '');
-            if (c.indexOf(cookieName) === 0) {
-                return c.substring(cookieName.length, c.length);
+        if (isPlatformBrowser(this.platformId)) {
+            const ca = document.cookie.split(';');
+            const caLen = ca.length;
+            const cookieName = `${name}=`;
+            let c;
+            for (let i = 0; i < caLen; i += 1) {
+                c = ca[i].replace(/^\s+/g, '');
+                if (c.indexOf(cookieName) === 0) {
+                    return c.substring(cookieName.length, c.length);
+                }
             }
         }
         return null;
@@ -79,7 +84,8 @@ let CookieService = class CookieService {
 };
 CookieService = __decorate([
     Injectable(),
-    __metadata("design:paramtypes", [])
+    __param(0, Inject(PLATFORM_ID)),
+    __metadata("design:paramtypes", [InjectionToken])
 ], CookieService);
 
 let NotificationService = class NotificationService {

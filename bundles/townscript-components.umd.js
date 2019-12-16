@@ -1,8 +1,8 @@
 (function (global, factory) {
-    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/material'), require('luxon'), require('rxjs'), require('@angular/common'), require('@angular/common/http'), require('@angular/router'), require('@angular/material/dialog'), require('rxjs/operators'), require('algoliasearch'), require('@angular/forms'), require('ng-recaptcha'), require('text-overflow-clamp'), require('@townscript/data-collector'), require('@townscript/elements'), require('@angular/material/core'), require('@angular/material/snack-bar'), require('ng-lazyload-image')) :
-    typeof define === 'function' && define.amd ? define('@townscript/components', ['exports', '@angular/core', '@angular/material', 'luxon', 'rxjs', '@angular/common', '@angular/common/http', '@angular/router', '@angular/material/dialog', 'rxjs/operators', 'algoliasearch', '@angular/forms', 'ng-recaptcha', 'text-overflow-clamp', '@townscript/data-collector', '@townscript/elements', '@angular/material/core', '@angular/material/snack-bar', 'ng-lazyload-image'], factory) :
-    (global = global || self, factory((global.townscript = global.townscript || {}, global.townscript.components = {}), global.ng.core, global.ng.material, global.luxon, global.rxjs, global.ng.common, global.ng.common.http, global.ng.router, global.ng.material.dialog, global.rxjs.operators, global.algoliaSearchImported, global.ng.forms, global.ngRecaptcha, global.clampLibImported, global.dataCollector, global.elements, global.ng.material.core, global.ng.material['snack-bar'], global.ngLazyloadImage));
-}(this, function (exports, core, material, luxon, rxjs, common, http, router, dialog, operators, algoliaSearchImported, forms, ngRecaptcha, clampLibImported, dataCollector, elements, core$1, snackBar, ngLazyloadImage) { 'use strict';
+    typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports, require('@angular/core'), require('@angular/common'), require('@angular/material'), require('luxon'), require('rxjs'), require('@angular/common/http'), require('@angular/router'), require('@angular/material/dialog'), require('rxjs/operators'), require('algoliasearch'), require('@angular/forms'), require('ng-recaptcha'), require('text-overflow-clamp'), require('@townscript/data-collector'), require('@townscript/elements'), require('@angular/material/core'), require('@angular/material/snack-bar'), require('ng-lazyload-image')) :
+    typeof define === 'function' && define.amd ? define('@townscript/components', ['exports', '@angular/core', '@angular/common', '@angular/material', 'luxon', 'rxjs', '@angular/common/http', '@angular/router', '@angular/material/dialog', 'rxjs/operators', 'algoliasearch', '@angular/forms', 'ng-recaptcha', 'text-overflow-clamp', '@townscript/data-collector', '@townscript/elements', '@angular/material/core', '@angular/material/snack-bar', 'ng-lazyload-image'], factory) :
+    (global = global || self, factory((global.townscript = global.townscript || {}, global.townscript.components = {}), global.ng.core, global.ng.common, global.ng.material, global.luxon, global.rxjs, global.ng.common.http, global.ng.router, global.ng.material.dialog, global.rxjs.operators, global.algoliaSearchImported, global.ng.forms, global.ngRecaptcha, global.clampLibImported, global.dataCollector, global.elements, global.ng.material.core, global.ng.material['snack-bar'], global.ngLazyloadImage));
+}(this, function (exports, core, common, material, luxon, rxjs, http, router, dialog, operators, algoliaSearchImported, forms, ngRecaptcha, clampLibImported, dataCollector, elements, core$1, snackBar, ngLazyloadImage) { 'use strict';
 
     /*! *****************************************************************************
     Copyright (c) Microsoft Corporation. All rights reserved.
@@ -116,36 +116,42 @@
     }());
 
     var CookieService = /** @class */ (function () {
-        function CookieService() {
+        function CookieService(platformId) {
             var _this = this;
+            this.platformId = platformId;
             this.deleteCookie = function (name) {
                 _this.setCookie(name, '', -1, '/');
             };
             this.setCookie = function (name, value, expireDays, path) {
                 if (path === void 0) { path = ''; }
-                var d = new Date();
-                d.setTime(d.getTime() + expireDays * 24 * 60 * 60 * 1000);
-                var expires = 'expires=' + d.toUTCString();
-                var host = '.' + window.location.host.split('.').splice(1).join('.');
-                document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '') + ';domain=' + host;
+                if (common.isPlatformBrowser(_this.platformId)) {
+                    var d = new Date();
+                    d.setTime(d.getTime() + expireDays * 24 * 60 * 60 * 1000);
+                    var expires = 'expires=' + d.toUTCString();
+                    var host = '.' + window.location.host.split('.').splice(1).join('.');
+                    document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '') + ';domain=' + host;
+                }
             };
         }
         CookieService.prototype.getCookie = function (name) {
-            var ca = document.cookie.split(';');
-            var caLen = ca.length;
-            var cookieName = name + "=";
-            var c;
-            for (var i = 0; i < caLen; i += 1) {
-                c = ca[i].replace(/^\s+/g, '');
-                if (c.indexOf(cookieName) === 0) {
-                    return c.substring(cookieName.length, c.length);
+            if (common.isPlatformBrowser(this.platformId)) {
+                var ca = document.cookie.split(';');
+                var caLen = ca.length;
+                var cookieName = name + "=";
+                var c = void 0;
+                for (var i = 0; i < caLen; i += 1) {
+                    c = ca[i].replace(/^\s+/g, '');
+                    if (c.indexOf(cookieName) === 0) {
+                        return c.substring(cookieName.length, c.length);
+                    }
                 }
             }
             return null;
         };
         CookieService = __decorate([
             core.Injectable(),
-            __metadata("design:paramtypes", [])
+            __param(0, core.Inject(core.PLATFORM_ID)),
+            __metadata("design:paramtypes", [core.InjectionToken])
         ], CookieService);
         return CookieService;
     }());
