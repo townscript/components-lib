@@ -268,7 +268,7 @@ let PlaceService = class PlaceService {
                     const data = { 'city': ipInfoData['city'],
                         'country': ipInfoData['countryCode'] ? ipInfoData['countryCode'].toLowerCase() : 'in',
                         'currentPlace': ipInfoData['city'] };
-                    if (this.cookieService.getCookie('location') != null)
+                    if (!this.cookieService.getCookie('location'))
                         this.updatePlace(data);
                 });
             }
