@@ -673,7 +673,7 @@ var TsHeaderComponent = /** @class */ (function () {
                 window.location.reload();
         };
         this.goBack = function () {
-            _this.router.navigate(['../']);
+            _this.router.navigate([_this.homePageUrl]);
         };
         this.goToHomePage = function () {
             _this.router.navigate([_this.homePageUrl]);

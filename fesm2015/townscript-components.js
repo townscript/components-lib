@@ -616,7 +616,7 @@ let TsHeaderComponent = class TsHeaderComponent {
                 window.location.reload();
         };
         this.goBack = () => {
-            this.router.navigate(['../']);
+            this.router.navigate([this.homePageUrl]);
         };
         this.goToHomePage = () => {
             this.router.navigate([this.homePageUrl]);
