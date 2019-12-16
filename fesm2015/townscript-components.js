@@ -549,7 +549,7 @@ let TsHeaderComponent = class TsHeaderComponent {
         this.cityPopupActive = false;
         this.buildUrlArray = () => {
             if (this.router.url) {
-                this.urlArray = this.router.url.replace('/', '').split('/');
+                this.urlArray = this.router.url.split("?")[0].replace('/', '').split('/');
             }
             else {
                 this.urlArray = ['in'];
@@ -753,7 +753,7 @@ let SearchComponent = class SearchComponent {
         this.host = config.baseUrl;
         this.buildUrlArray = () => {
             if (this.router.url) {
-                this.urlArray = this.router.url.replace('/', '').split('/');
+                this.urlArray = this.router.url.split("?")[0].replace('/', '').split('/');
             }
             else {
                 this.urlArray = ['in'];
@@ -909,7 +909,7 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
         this.cityLoading = false;
         this.buildUrlArray = () => {
             if (this.router.url) {
-                this.urlArray = this.router.url.replace('/', '').split('/');
+                this.urlArray = this.router.url.split("?")[0].replace('/', '').split('/');
             }
             else {
                 this.urlArray = ['in'];
@@ -1568,7 +1568,7 @@ let TsListingCardComponent = class TsListingCardComponent {
         this.defaultCardImageUrl = config.s3BaseUrl + 'townscript-common-resources/ListingsStatic/default-card.jpg';
         this.buildUrlArray = () => {
             if (this.router.url) {
-                this.urlArray = this.router.url.replace('/', '').split('/');
+                this.urlArray = this.router.url.split("?")[0].replace('/', '').split('/');
             }
             else {
                 this.urlArray = ['in'];

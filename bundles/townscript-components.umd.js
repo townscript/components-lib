@@ -670,7 +670,7 @@
             this.cityPopupActive = false;
             this.buildUrlArray = function () {
                 if (_this.router.url) {
-                    _this.urlArray = _this.router.url.replace('/', '').split('/');
+                    _this.urlArray = _this.router.url.split("?")[0].replace('/', '').split('/');
                 }
                 else {
                     _this.urlArray = ['in'];
@@ -891,7 +891,7 @@
             this.host = config.baseUrl;
             this.buildUrlArray = function () {
                 if (_this.router.url) {
-                    _this.urlArray = _this.router.url.replace('/', '').split('/');
+                    _this.urlArray = _this.router.url.split("?")[0].replace('/', '').split('/');
                 }
                 else {
                     _this.urlArray = ['in'];
@@ -1062,7 +1062,7 @@
             this.cityLoading = false;
             this.buildUrlArray = function () {
                 if (_this.router.url) {
-                    _this.urlArray = _this.router.url.replace('/', '').split('/');
+                    _this.urlArray = _this.router.url.split("?")[0].replace('/', '').split('/');
                 }
                 else {
                     _this.urlArray = ['in'];
@@ -1778,7 +1778,7 @@
             this.defaultCardImageUrl = config.s3BaseUrl + 'townscript-common-resources/ListingsStatic/default-card.jpg';
             this.buildUrlArray = function () {
                 if (_this.router.url) {
-                    _this.urlArray = _this.router.url.replace('/', '').split('/');
+                    _this.urlArray = _this.router.url.split("?")[0].replace('/', '').split('/');
                 }
                 else {
                     _this.urlArray = ['in'];
