@@ -648,7 +648,7 @@ let TsHeaderComponent = class TsHeaderComponent {
                 let data = JSON.parse(res);
                 if (data && Object.keys(data).length > 0) {
                     this.activePlace = data['currentPlace'];
-                    this.activeCity = data['city'];
+                    this.activeCity = data['city'].replace(' ', '-');
                     this.activeCountryCode = data['country'];
                     if (this.activeCountryCode != undefined && this.activeCity != undefined) {
                         this.homePageUrl = '/' + this.activeCountryCode.toLowerCase() + '/' + this.activeCity.toLowerCase();

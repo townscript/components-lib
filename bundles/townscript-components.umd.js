@@ -782,7 +782,7 @@
                     var data = JSON.parse(res);
                     if (data && Object.keys(data).length > 0) {
                         _this.activePlace = data['currentPlace'];
-                        _this.activeCity = data['city'];
+                        _this.activeCity = data['city'].replace(' ', '-');
                         _this.activeCountryCode = data['country'];
                         if (_this.activeCountryCode != undefined && _this.activeCity != undefined) {
                             _this.homePageUrl = '/' + _this.activeCountryCode.toLowerCase() + '/' + _this.activeCity.toLowerCase();
