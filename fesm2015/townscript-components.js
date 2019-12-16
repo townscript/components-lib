@@ -1402,7 +1402,7 @@ let RangeDatePipe = class RangeDatePipe {
         this.transform = (rangeDates, isRecurrent, args) => {
             if (rangeDates) {
                 // for Recurring events
-                if (isRecurrent && args['startTime'] != undefined) {
+                if (isRecurrent && args['startTime'] && args['recurrenceRule']) {
                     const startTime = args['startTime'];
                     const freq = args['recurrenceRule'].split(';')[0].split('=')[1];
                     let freqLabel = 'Daily';
