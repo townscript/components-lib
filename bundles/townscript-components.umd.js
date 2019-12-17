@@ -216,7 +216,7 @@
     var environment = {
         production: false,
         IPINFO_ACCESS_TOKEN: 'a27cfbcc77e854',
-        FB_APP_ID: '1811425212507048',
+        FB_APP_ID: '303059286557418',
     };
     /*
      * For easier debugging in development mode, you can import the following file
