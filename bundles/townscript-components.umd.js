@@ -955,7 +955,7 @@
             this.navigateToListing = function (interest) {
                 _this.buildUrlArray();
                 var listingUrl = _this.urlArray[0] + '/' + _this.urlArray[1];
-                if (_this.urlArray && _this.urlArray.length > 1) {
+                if (_this.urlArray && _this.urlArray.length > 1 && _this.urlArray[0] != 'e') {
                     _this.router.navigate([listingUrl + '/' + interest]);
                 }
                 else {
