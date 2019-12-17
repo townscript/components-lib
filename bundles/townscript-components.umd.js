@@ -1767,7 +1767,7 @@
             this.shareLink.whatsapp = 'https://web.whatsapp.com/send?' +
                 'text=' + config.baseUrl + 'e/' + this.event.shortName;
             if (this.event.absoluteMobileImageUrl.indexOf('https://') > -1 ||
-                this.event.absoluteMobileImageUrl.indexOf('http://')) {
+                this.event.absoluteMobileImageUrl.indexOf('http://') > -1) {
                 this.imageLink = this.event.absoluteMobileImageUrl;
             }
             else {
