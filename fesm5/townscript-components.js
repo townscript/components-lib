@@ -1684,7 +1684,7 @@ var ShareEventModalComponent = /** @class */ (function () {
                     method: 'feed',
                     name: _this.event.name,
                     link: _this.baseUrl + "/e/" + _this.event.shortName,
-                    picture: _this.event.absoluteMobileImageUrl
+                    picture: _this.imageLink
                 });
             });
         };
@@ -1702,6 +1702,13 @@ var ShareEventModalComponent = /** @class */ (function () {
             '&title=' + this.eventName;
         this.shareLink.whatsapp = 'https://web.whatsapp.com/send?' +
             'text=' + config.baseUrl + 'e/' + this.event.shortName;
+        if (this.event.absoluteMobileImageUrl.indexOf('https://') > -1 ||
+            this.event.absoluteMobileImageUrl.indexOf('http://')) {
+            this.imageLink = this.event.absoluteMobileImageUrl;
+        }
+        else {
+            this.imageLink = 'https://' + this.event.absoluteMobileImageUrl;
+        }
     };
     ShareEventModalComponent = __decorate([
         Component({

@@ -1539,7 +1539,7 @@ let ShareEventModalComponent = class ShareEventModalComponent {
                     method: 'feed',
                     name: this.event.name,
                     link: `${this.baseUrl}/e/${this.event.shortName}`,
-                    picture: this.event.absoluteMobileImageUrl
+                    picture: this.imageLink
                 });
             });
         };
@@ -1557,6 +1557,13 @@ let ShareEventModalComponent = class ShareEventModalComponent {
             '&title=' + this.eventName;
         this.shareLink.whatsapp = 'https://web.whatsapp.com/send?' +
             'text=' + config.baseUrl + 'e/' + this.event.shortName;
+        if (this.event.absoluteMobileImageUrl.indexOf('https://') > -1 ||
+            this.event.absoluteMobileImageUrl.indexOf('http://')) {
+            this.imageLink = this.event.absoluteMobileImageUrl;
+        }
+        else {
+            this.imageLink = 'https://' + this.event.absoluteMobileImageUrl;
+        }
     }
 };
 ShareEventModalComponent = __decorate([

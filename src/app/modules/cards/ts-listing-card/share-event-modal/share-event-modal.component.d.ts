@@ -11,6 +11,7 @@ export declare class ShareEventModalComponent implements OnInit {
     shareLink: any;
     baseUrl: string;
     copied: boolean;
+    imageLink: string;
     constructor(dialogRef: MatDialogRef<ShareEventModalComponent>, data: any, utilityService: UtilityService);
     close: () => void;
     copyLink: () => void;
