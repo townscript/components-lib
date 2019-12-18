@@ -1744,8 +1744,10 @@
             };
             this.shareOnFB = function () {
                 setTimeout(function () {
+                    window.scrollTo(0, 0);
+                    _this.close();
                     FB.ui({
-                        method: 'share',
+                        method: 'feed',
                         name: _this.event.name,
                         link: _this.baseUrl + "/e/" + _this.event.shortName,
                         picture: _this.imageLink
