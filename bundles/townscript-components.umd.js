@@ -1750,7 +1750,8 @@
                         method: 'feed',
                         name: _this.event.name,
                         link: _this.baseUrl + "/e/" + _this.event.shortName,
-                        picture: _this.imageLink
+                        picture: _this.imageLink,
+                        hashtag: '#Townscript'
                     });
                 });
             };

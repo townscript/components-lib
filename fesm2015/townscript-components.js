@@ -1541,7 +1541,8 @@ let ShareEventModalComponent = class ShareEventModalComponent {
                     method: 'feed',
                     name: this.event.name,
                     link: `${this.baseUrl}/e/${this.event.shortName}`,
-                    picture: this.imageLink
+                    picture: this.imageLink,
+                    hashtag: '#Townscript'
                 });
             });
         };
