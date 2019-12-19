@@ -18,6 +18,7 @@ export declare class TsFooterComponent implements OnInit, OnDestroy {
         url: string;
     }[];
     popularCities: any;
+    trending: any;
     popularEventsData: any;
     countryCityMap: any;
     city: any;
@@ -33,5 +34,6 @@ export declare class TsFooterComponent implements OnInit, OnDestroy {
     getPopularEvents: (country?: string) => Promise<any>;
     getPopularCities: () => Promise<any>;
     ngOnInit(): void;
+    setTrending: () => void;
     ngOnDestroy(): void;
 }
