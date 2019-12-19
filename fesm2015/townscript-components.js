@@ -5,7 +5,7 @@ import { MatSnackBarConfig, MatSnackBar, MatDialogConfig, MatDialog, MAT_DIALOG_
 import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { NavigationEnd } from '@angular/router';
+import { NavigationEnd, ActivatedRoute } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { take, debounceTime } from 'rxjs/operators';
 import * as algoliaSearchImported from 'algoliasearch';
@@ -1118,13 +1118,14 @@ TsLoginSignupService = __decorate([
 
 const emailRegex = '^[a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,15})$';
 let TsLoginSignupComponent = class TsLoginSignupComponent {
-    constructor(utilityService, cookieService, userService, notificationService, tsLoginSignupService, placeService) {
+    constructor(utilityService, cookieService, userService, notificationService, tsLoginSignupService, placeService, activatedRoute) {
         this.utilityService = utilityService;
         this.cookieService = cookieService;
         this.userService = userService;
         this.notificationService = notificationService;
         this.tsLoginSignupService = tsLoginSignupService;
         this.placeService = placeService;
+        this.activatedRoute = activatedRoute;
         this.defaultHeader = 'Let\'s get started';
         this.defaultSubHeader = 'Your one stop tool for organizing events';
         this.showSocial = true;
@@ -1401,6 +1402,10 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
                 this.countryCode = placeData['country'];
             }
         });
+        this.activatedRoute.queryParams.subscribe(params => {
+            if (params['rdurl'])
+                this.rdurl = params['rdurl'];
+        });
     }
     ngOnDestroy() {
         if (this.subObject !== undefined) {
@@ -1448,7 +1453,8 @@ TsLoginSignupComponent = __decorate([
         UserService,
         NotificationService,
         TsLoginSignupService,
-        PlaceService])
+        PlaceService,
+        ActivatedRoute])
 ], TsLoginSignupComponent);
 
 let EmailSentSVGComponent = class EmailSentSVGComponent {

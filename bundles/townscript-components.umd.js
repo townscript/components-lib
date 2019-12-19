@@ -1275,7 +1275,7 @@
 
     var emailRegex = '^[a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,15})$';
     var TsLoginSignupComponent = /** @class */ (function () {
-        function TsLoginSignupComponent(utilityService, cookieService, userService, notificationService, tsLoginSignupService, placeService) {
+        function TsLoginSignupComponent(utilityService, cookieService, userService, notificationService, tsLoginSignupService, placeService, activatedRoute) {
             var _this_1 = this;
             this.utilityService = utilityService;
             this.cookieService = cookieService;
@@ -1283,6 +1283,7 @@
             this.notificationService = notificationService;
             this.tsLoginSignupService = tsLoginSignupService;
             this.placeService = placeService;
+            this.activatedRoute = activatedRoute;
             this.defaultHeader = 'Let\'s get started';
             this.defaultSubHeader = 'Your one stop tool for organizing events';
             this.showSocial = true;
@@ -1602,6 +1603,10 @@
                     _this_1.countryCode = placeData['country'];
                 }
             });
+            this.activatedRoute.queryParams.subscribe(function (params) {
+                if (params['rdurl'])
+                    _this_1.rdurl = params['rdurl'];
+            });
         };
         TsLoginSignupComponent.prototype.ngOnDestroy = function () {
             if (this.subObject !== undefined) {
@@ -1648,7 +1653,8 @@
                 UserService,
                 NotificationService,
                 TsLoginSignupService,
-                PlaceService])
+                PlaceService,
+                router.ActivatedRoute])
         ], TsLoginSignupComponent);
         return TsLoginSignupComponent;
     }());

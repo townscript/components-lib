@@ -6,6 +6,7 @@ import { NotificationService } from '../../../shared/services/notification.servi
 import { TsLoginSignupService } from './ts-login-signup.service';
 import { PlaceService } from '../../layout/components/ts-header/place.service';
 import { UtilityService } from '../../../shared/services/utilities.service';
+import { ActivatedRoute } from '@angular/router';
 export declare class TsLoginSignupComponent implements OnInit, OnDestroy {
     private utilityService;
     private cookieService;
@@ -13,6 +14,7 @@ export declare class TsLoginSignupComponent implements OnInit, OnDestroy {
     private notificationService;
     private tsLoginSignupService;
     private placeService;
+    private activatedRoute;
     mode: any;
     defaultHeader: any;
     defaultSubHeader: any;
@@ -48,7 +50,7 @@ export declare class TsLoginSignupComponent implements OnInit, OnDestroy {
     showConfirmation: boolean;
     baseUrl: any;
     userName: any;
-    constructor(utilityService: UtilityService, cookieService: CookieService, userService: UserService, notificationService: NotificationService, tsLoginSignupService: TsLoginSignupService, placeService: PlaceService);
+    constructor(utilityService: UtilityService, cookieService: CookieService, userService: UserService, notificationService: NotificationService, tsLoginSignupService: TsLoginSignupService, placeService: PlaceService, activatedRoute: ActivatedRoute);
     ngOnInit(): void;
     ngOnDestroy(): void;
     initForm: () => void;

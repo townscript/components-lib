@@ -5,7 +5,7 @@ import { MatSnackBar, MatSnackBarConfig, MatDialog, MatDialogConfig, MAT_DIALOG_
 import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
-import { NavigationEnd } from '@angular/router';
+import { NavigationEnd, ActivatedRoute } from '@angular/router';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { take, debounceTime } from 'rxjs/operators';
 import * as algoliaSearchImported from 'algoliasearch';
@@ -1211,7 +1211,7 @@ var TsLoginSignupService = /** @class */ (function () {
 
 var emailRegex = '^[a-z0-9]+(\.[_a-z0-9]+)*@[a-z0-9-]+(\.[a-z0-9-]+)*(\.[a-z]{2,15})$';
 var TsLoginSignupComponent = /** @class */ (function () {
-    function TsLoginSignupComponent(utilityService, cookieService, userService, notificationService, tsLoginSignupService, placeService) {
+    function TsLoginSignupComponent(utilityService, cookieService, userService, notificationService, tsLoginSignupService, placeService, activatedRoute) {
         var _this_1 = this;
         this.utilityService = utilityService;
         this.cookieService = cookieService;
@@ -1219,6 +1219,7 @@ var TsLoginSignupComponent = /** @class */ (function () {
         this.notificationService = notificationService;
         this.tsLoginSignupService = tsLoginSignupService;
         this.placeService = placeService;
+        this.activatedRoute = activatedRoute;
         this.defaultHeader = 'Let\'s get started';
         this.defaultSubHeader = 'Your one stop tool for organizing events';
         this.showSocial = true;
@@ -1538,6 +1539,10 @@ var TsLoginSignupComponent = /** @class */ (function () {
                 _this_1.countryCode = placeData['country'];
             }
         });
+        this.activatedRoute.queryParams.subscribe(function (params) {
+            if (params['rdurl'])
+                _this_1.rdurl = params['rdurl'];
+        });
     };
     TsLoginSignupComponent.prototype.ngOnDestroy = function () {
         if (this.subObject !== undefined) {
@@ -1584,7 +1589,8 @@ var TsLoginSignupComponent = /** @class */ (function () {
             UserService,
             NotificationService,
             TsLoginSignupService,
-            PlaceService])
+            PlaceService,
+            ActivatedRoute])
     ], TsLoginSignupComponent);
     return TsLoginSignupComponent;
 }());
