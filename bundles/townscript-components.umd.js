@@ -95,7 +95,8 @@
         CAPTCHA_SITE_KEY: '6LeblCYTAAAAANcBoTHB41G0gBdbRARm-V8_mePB',
         CAPTCHA_SECRET_KEY: '6LeblCYTAAAAACjO8dEZaP2Mud_gDiSxIE_ZiS_b',
         CAPTCHA_SITE_INVISIBLE_CAPTCHA_KEY: '6LcAq4QUAAAAABrOnp0xwsaRk7PgnCgmE-FDcbLG',
-        FB_APP_ID: '303059286557418',
+        FB_APP_ID: '',
+        IPINFO_ACCESS_TOKEN: '',
     };
 
     var BrowserService = /** @class */ (function () {
@@ -336,22 +337,6 @@
         return FollowService;
     }());
 
-    // This file can be replaced during build by using the `fileReplacements` array.
-    // `ng build --prod` replaces `environment.ts` with `environment.prod.ts`.
-    // The list of file replacements can be found in `angular.json`.
-    var environment = {
-        production: false,
-        IPINFO_ACCESS_TOKEN: 'a27cfbcc77e854',
-    };
-    /*
-     * For easier debugging in development mode, you can import the following file
-     * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
-     *
-     * This import should be commented out in production mode because it will have a negative impact
-     * on performance if an error is thrown.
-     */
-    // import 'zone.js/dist/zone-error';  // Included with Angular CLI.
-
     var PlaceService = /** @class */ (function () {
         function PlaceService(utilityService, cookieService, document, platformId, http) {
             var _this = this;
@@ -421,7 +406,7 @@
             });
         };
         PlaceService.prototype.getJsonFromIpInfo = function () {
-            return this.http.get('//ipinfo.io/json?token=' + environment.IPINFO_ACCESS_TOKEN + '').toPromise();
+            return this.http.get('//ipinfo.io/json?token=' + config.IPINFO_ACCESS_TOKEN + '').toPromise();
         };
         PlaceService.ngInjectableDef = core.ɵɵdefineInjectable({ factory: function PlaceService_Factory() { return new PlaceService(core.ɵɵinject(UtilityService), core.ɵɵinject(CookieService), core.ɵɵinject(common.DOCUMENT), core.ɵɵinject(core.PLATFORM_ID), core.ɵɵinject(http.HttpClient)); }, token: PlaceService, providedIn: "root" });
         PlaceService = __decorate([
