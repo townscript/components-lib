@@ -141,7 +141,6 @@ TimeService = __decorate([
 
 let UtilityService = class UtilityService {
     constructor() {
-        this.FB_APP_ID = config.FB_APP_ID;
         this.IsJsonString = (str) => {
             try {
                 JSON.parse(str);
@@ -152,6 +151,7 @@ let UtilityService = class UtilityService {
             return true;
         };
         this.addFBSDK = () => {
+            this.FB_APP_ID = config.FB_APP_ID;
             var that = this;
             (function (d, s, id) {
                 var js, fjs = d.getElementsByTagName(s)[0];

@@ -215,7 +215,6 @@
     var UtilityService = /** @class */ (function () {
         function UtilityService() {
             var _this = this;
-            this.FB_APP_ID = config.FB_APP_ID;
             this.IsJsonString = function (str) {
                 try {
                     JSON.parse(str);
@@ -226,6 +225,7 @@
                 return true;
             };
             this.addFBSDK = function () {
+                _this.FB_APP_ID = config.FB_APP_ID;
                 var that = _this;
                 (function (d, s, id) {
                     var js, fjs = d.getElementsByTagName(s)[0];
