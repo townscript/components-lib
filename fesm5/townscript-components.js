@@ -1723,9 +1723,10 @@ var ShareEventModalComponent = /** @class */ (function () {
                 });
             });
         };
-        this.utilityService.addFBSDK();
     }
     ShareEventModalComponent.prototype.ngOnInit = function () {
+        var _this = this;
+        setTimeout(function () { return _this.utilityService.addFBSDK(); }, 500);
         this.event = this.data.event;
         this.eventURL = 'https://www.townscript.com/e/' + this.event.shortName;
         this.eventName = this.event.name;

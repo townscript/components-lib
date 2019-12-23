@@ -1579,9 +1579,9 @@ let ShareEventModalComponent = class ShareEventModalComponent {
                 });
             });
         };
-        this.utilityService.addFBSDK();
     }
     ngOnInit() {
+        setTimeout(() => this.utilityService.addFBSDK(), 500);
         this.event = this.data.event;
         this.eventURL = 'https://www.townscript.com/e/' + this.event.shortName;
         this.eventName = this.event.name;
