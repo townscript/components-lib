@@ -1377,7 +1377,7 @@
                 }
             };
             this.signIn = function () { return __awaiter(_this_1, void 0, void 0, function () {
-                var retData, tokenData, userData, rdurl;
+                var retData, tokenData, userData;
                 var _this_1 = this;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
@@ -1410,10 +1410,9 @@
                             }, 1400);
                             if (this.rdurl != undefined) {
                                 this.rdurl = decodeURIComponent(this.rdurl);
-                                rdurl = this.rdurl.split("?").length > -1 ? this.rdurl.split("?")[0]
-                                    + "?" + encodeURIComponent(this.rdurl.substring(this.rdurl.indexOf("?") + 1))
-                                    : this.rdurl;
-                                window.open(rdurl, '_self');
+                                this.rdurl = this.rdurl.replace("[", "%5B");
+                                this.rdurl = this.rdurl.replace("]", "%5D");
+                                window.open(this.rdurl, '_self');
                             }
                             return [2 /*return*/];
                     }
