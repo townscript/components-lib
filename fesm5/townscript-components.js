@@ -1313,7 +1313,7 @@ var TsLoginSignupComponent = /** @class */ (function () {
             }
         };
         this.signIn = function () { return __awaiter(_this_1, void 0, void 0, function () {
-            var retData, tokenData, userData;
+            var retData, tokenData, userData, rdurl;
             var _this_1 = this;
             return __generator(this, function (_a) {
                 switch (_a.label) {
@@ -1345,7 +1345,11 @@ var TsLoginSignupComponent = /** @class */ (function () {
                             }
                         }, 1400);
                         if (this.rdurl != undefined) {
-                            window.open(encodeURIComponent(this.rdurl), '_self');
+                            this.rdurl = decodeURIComponent(this.rdurl);
+                            rdurl = this.rdurl.split("?").length > -1 ? this.rdurl.split("?")[0]
+                                + "?" + encodeURIComponent(this.rdurl.substring(this.rdurl.indexOf("?") + 1))
+                                : this.rdurl;
+                            window.open(rdurl, '_self');
                         }
                         return [2 /*return*/];
                 }
