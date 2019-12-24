@@ -1345,7 +1345,7 @@ var TsLoginSignupComponent = /** @class */ (function () {
                             }
                         }, 1400);
                         if (this.rdurl != undefined) {
-                            window.open(this.rdurl, '_self');
+                            window.open(encodeURIComponent(this.rdurl), '_self');
                         }
                         return [2 /*return*/];
                 }

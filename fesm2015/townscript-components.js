@@ -1234,7 +1234,7 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
                 }
             }, 1400);
             if (this.rdurl != undefined) {
-                window.open(this.rdurl, '_self');
+                window.open(encodeURIComponent(this.rdurl), '_self');
             }
         });
         this.signUp = () => __awaiter(this, void 0, void 0, function* () {
