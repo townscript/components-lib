@@ -1409,9 +1409,6 @@
                                 }
                             }, 1400);
                             if (this.rdurl != undefined) {
-                                this.rdurl = decodeURIComponent(this.rdurl);
-                                this.rdurl = this.rdurl.replace("[", "%5B");
-                                this.rdurl = this.rdurl.replace("]", "%5D");
                                 window.open(this.rdurl, '_self');
                             }
                             return [2 /*return*/];
@@ -1592,8 +1589,12 @@
                 }
             });
             this.activatedRoute.queryParams.subscribe(function (params) {
-                if (params['rdurl'])
+                if (params['rdurl']) {
                     _this_1.rdurl = params['rdurl'];
+                    _this_1.rdurl = decodeURIComponent(_this_1.rdurl);
+                    _this_1.rdurl = _this_1.rdurl.replace("[", "%5B");
+                    _this_1.rdurl = _this_1.rdurl.replace("]", "%5D");
+                }
             });
         };
         TsLoginSignupComponent.prototype.ngOnDestroy = function () {

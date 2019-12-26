@@ -1234,9 +1234,6 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
                 }
             }, 1400);
             if (this.rdurl != undefined) {
-                this.rdurl = decodeURIComponent(this.rdurl);
-                this.rdurl = this.rdurl.replace("[", "%5B");
-                this.rdurl = this.rdurl.replace("]", "%5D");
                 window.open(this.rdurl, '_self');
             }
         });
@@ -1391,8 +1388,12 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
             }
         });
         this.activatedRoute.queryParams.subscribe(params => {
-            if (params['rdurl'])
+            if (params['rdurl']) {
                 this.rdurl = params['rdurl'];
+                this.rdurl = decodeURIComponent(this.rdurl);
+                this.rdurl = this.rdurl.replace("[", "%5B");
+                this.rdurl = this.rdurl.replace("]", "%5D");
+            }
         });
     }
     ngOnDestroy() {
