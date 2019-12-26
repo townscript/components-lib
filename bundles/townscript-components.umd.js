@@ -2324,7 +2324,6 @@
                     TsCardSkeletonComponent
                 ],
                 exports: [
-                    elements.TsFormsModule,
                     TsListingCardComponent,
                     ShareEventModalComponent,
                     TsCardSkeletonComponent

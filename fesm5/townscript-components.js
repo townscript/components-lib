@@ -2260,7 +2260,6 @@ var CardsModule = /** @class */ (function () {
                 TsCardSkeletonComponent
             ],
             exports: [
-                TsFormsModule,
                 TsListingCardComponent,
                 ShareEventModalComponent,
                 TsCardSkeletonComponent
