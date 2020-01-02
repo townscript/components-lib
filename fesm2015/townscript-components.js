@@ -945,8 +945,9 @@ let SearchComponent = class SearchComponent {
         };
         this.navigateToListing = (interest) => {
             this.buildUrlArray();
+            const stopWords = ['e', 'o'];
             let listingUrl = this.urlArray[0] + '/' + this.urlArray[1];
-            if (this.urlArray && this.urlArray.length > 1 && this.urlArray[0] != 'e') {
+            if (this.urlArray && this.urlArray.length > 1 && stopWords.indexOf(this.urlArray[0]) === -1) {
                 this.router.navigate([listingUrl + '/' + interest]);
             }
             else {

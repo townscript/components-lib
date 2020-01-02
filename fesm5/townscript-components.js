@@ -1020,8 +1020,9 @@ var SearchComponent = /** @class */ (function () {
         };
         this.navigateToListing = function (interest) {
             _this.buildUrlArray();
+            var stopWords = ['e', 'o'];
             var listingUrl = _this.urlArray[0] + '/' + _this.urlArray[1];
-            if (_this.urlArray && _this.urlArray.length > 1 && _this.urlArray[0] != 'e') {
+            if (_this.urlArray && _this.urlArray.length > 1 && stopWords.indexOf(_this.urlArray[0]) === -1) {
                 _this.router.navigate([listingUrl + '/' + interest]);
             }
             else {
