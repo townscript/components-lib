@@ -1045,6 +1045,7 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
         this.activePlaceChange = new EventEmitter();
         this.cityPopupActiveChange = new EventEmitter();
         this.closeSuggestions = false;
+        this.closeSuggestionsChange = new EventEmitter();
         this.citySearchActive = true;
         this.router = config.router;
         this.cityQueryChanged = new Subject();
@@ -1102,7 +1103,11 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
             if (text != undefined && text.length > 0) {
                 this.cityQueryChanged.next(text);
             }
-            this.closeSuggestions = false;
+            this.updateAndEmitCloseCitySuggestion(false);
+        };
+        this.updateAndEmitCloseCitySuggestion = (val) => {
+            this.closeSuggestions = val;
+            this.closeSuggestionsChange.emit(this.closeSuggestions);
         };
         this.cityQueryChanged.pipe(debounceTime(300)).subscribe(text => this.callSearchCity(text));
         this.buildUrlArray();
@@ -1146,6 +1151,10 @@ __decorate([
     Input(),
     __metadata("design:type", Boolean)
 ], CitySearchPopupComponent.prototype, "closeSuggestions", void 0);
+__decorate([
+    Output(),
+    __metadata("design:type", EventEmitter)
+], CitySearchPopupComponent.prototype, "closeSuggestionsChange", void 0);
 CitySearchPopupComponent = __decorate([
     Component({
         selector: 'app-city-search-popup',

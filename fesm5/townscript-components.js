@@ -1135,6 +1135,7 @@ var CitySearchPopupComponent = /** @class */ (function () {
         this.activePlaceChange = new EventEmitter();
         this.cityPopupActiveChange = new EventEmitter();
         this.closeSuggestions = false;
+        this.closeSuggestionsChange = new EventEmitter();
         this.citySearchActive = true;
         this.router = config.router;
         this.cityQueryChanged = new Subject();
@@ -1192,7 +1193,11 @@ var CitySearchPopupComponent = /** @class */ (function () {
             if (text != undefined && text.length > 0) {
                 _this.cityQueryChanged.next(text);
             }
-            _this.closeSuggestions = false;
+            _this.updateAndEmitCloseCitySuggestion(false);
+        };
+        this.updateAndEmitCloseCitySuggestion = function (val) {
+            _this.closeSuggestions = val;
+            _this.closeSuggestionsChange.emit(_this.closeSuggestions);
         };
         this.cityQueryChanged.pipe(debounceTime(300)).subscribe(function (text) { return _this.callSearchCity(text); });
         this.buildUrlArray();
@@ -1235,6 +1240,10 @@ var CitySearchPopupComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Boolean)
     ], CitySearchPopupComponent.prototype, "closeSuggestions", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], CitySearchPopupComponent.prototype, "closeSuggestionsChange", void 0);
     CitySearchPopupComponent = __decorate([
         Component({
             selector: 'app-city-search-popup',

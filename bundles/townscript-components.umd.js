@@ -1199,6 +1199,7 @@
             this.activePlaceChange = new core.EventEmitter();
             this.cityPopupActiveChange = new core.EventEmitter();
             this.closeSuggestions = false;
+            this.closeSuggestionsChange = new core.EventEmitter();
             this.citySearchActive = true;
             this.router = config.router;
             this.cityQueryChanged = new rxjs.Subject();
@@ -1256,7 +1257,11 @@
                 if (text != undefined && text.length > 0) {
                     _this.cityQueryChanged.next(text);
                 }
-                _this.closeSuggestions = false;
+                _this.updateAndEmitCloseCitySuggestion(false);
+            };
+            this.updateAndEmitCloseCitySuggestion = function (val) {
+                _this.closeSuggestions = val;
+                _this.closeSuggestionsChange.emit(_this.closeSuggestions);
             };
             this.cityQueryChanged.pipe(operators.debounceTime(300)).subscribe(function (text) { return _this.callSearchCity(text); });
             this.buildUrlArray();
@@ -1299,6 +1304,10 @@
             core.Input(),
             __metadata("design:type", Boolean)
         ], CitySearchPopupComponent.prototype, "closeSuggestions", void 0);
+        __decorate([
+            core.Output(),
+            __metadata("design:type", core.EventEmitter)
+        ], CitySearchPopupComponent.prototype, "closeSuggestionsChange", void 0);
         CitySearchPopupComponent = __decorate([
             core.Component({
                 selector: 'app-city-search-popup',
