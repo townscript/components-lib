@@ -24,6 +24,7 @@ export declare class SearchComponent implements OnInit {
     placeSearchResults: any;
     searchResults: any;
     activePlace: string;
+    emptyResult: boolean;
     cityQuery: string;
     cityQueryChanged: Subject<string>;
     activePlaceBackup: string;
