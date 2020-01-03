@@ -1256,6 +1256,7 @@
                 if (text != undefined && text.length > 0) {
                     _this.cityQueryChanged.next(text);
                 }
+                _this.closeSuggestions = false;
             };
             this.cityQueryChanged.pipe(operators.debounceTime(300)).subscribe(function (text) { return _this.callSearchCity(text); });
             this.buildUrlArray();

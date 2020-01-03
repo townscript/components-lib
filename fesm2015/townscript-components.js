@@ -1102,6 +1102,7 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
             if (text != undefined && text.length > 0) {
                 this.cityQueryChanged.next(text);
             }
+            this.closeSuggestions = false;
         };
         this.cityQueryChanged.pipe(debounceTime(300)).subscribe(text => this.callSearchCity(text));
         this.buildUrlArray();
