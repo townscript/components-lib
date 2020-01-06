@@ -23,6 +23,7 @@ export declare class TsFooterComponent implements OnInit, OnDestroy {
     countryCityMap: any;
     city: any;
     placeId: string;
+    copyrightYear: number;
     myBookingsURL: string;
     subObject: any;
     constructor(dialog: MatDialog, userService: UserService, footerService: FooterService, placeService: PlaceService, utilityService: UtilityService);
