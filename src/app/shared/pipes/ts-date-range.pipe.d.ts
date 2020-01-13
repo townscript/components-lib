@@ -5,5 +5,5 @@ export declare class RangeDatePipe implements PipeTransform {
     days: any;
     deprecatedVsNewTimeZones: any;
     constructor(utilityService: UtilityService);
-    transform: (rangeDates: any, eventTimeZone: any, isRecurrent?: any, args?: any) => any;
+    transform: (rangeDates: any, eventTimeZone: any, isRecurrent?: any, args?: any, hideTime?: boolean) => any;
 }

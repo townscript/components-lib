@@ -1941,7 +1941,7 @@
             this.utilityService = utilityService;
             this.days = { 'SU': 'Sun', 'MO': 'Mon', 'TU': 'Tue', 'WE': 'Wed', 'TH': 'Thu', 'FR': 'Fri', 'SA': 'Sat' };
             this.deprecatedVsNewTimeZones = this.utilityService.deprecatedVsNewTimeZones;
-            this.transform = function (rangeDates, eventTimeZone, isRecurrent, args) {
+            this.transform = function (rangeDates, eventTimeZone, isRecurrent, args, hideTime) {
                 if (!eventTimeZone) {
                     eventTimeZone = "Asia/Kolkata";
                 }
@@ -1988,18 +1988,18 @@
                         var time = luxon.DateTime.fromISO(rangeDates[0], { zone: eventTimeZone }).toFormat('hh:mm a');
                         var currYear = new Date().getUTCFullYear() % 100;
                         if (year[0] !== year[1]) {
-                            return month[0] + ' ' + date[0] + '\'' + year[0] + ' - ' + month[1] + ' ' + date[1] + '\'' + year[1] + ' | ' + time;
+                            return month[0] + ' ' + date[0] + '\'' + year[0] + ' - ' + month[1] + ' ' + date[1] + '\'' + year[1] + (hideTime ? '' : ' | ' + time);
                         }
                         else {
                             var yearSt = (year[0] - currYear) != 0 ? " '" + year[0] : '';
                             if ((date[0] === date[1]) && (month[0] === month[1])) {
-                                return month[0] + ' ' + date[0] + yearSt + ' | ' + time;
+                                return month[0] + ' ' + date[0] + yearSt + (hideTime ? '' : ' | ' + time);
                             }
                             else if ((month[0] !== month[1])) {
-                                return month[0] + ' ' + date[0] + yearSt + ' - ' + month[1] + ' ' + date[1] + yearSt + ' | ' + time;
+                                return month[0] + ' ' + date[0] + yearSt + ' - ' + month[1] + ' ' + date[1] + yearSt + (hideTime ? '' : ' | ' + time);
                             }
                             else {
-                                return month[0] + ' ' + date[0] + ' - ' + date[1] + yearSt + ' | ' + time;
+                                return month[0] + ' ' + date[0] + ' - ' + date[1] + yearSt + (hideTime ? '' : ' | ' + time);
                             }
                         }
                     }
@@ -2121,7 +2121,7 @@
         TsCardSkeletonComponent = __decorate([
             core.Component({
                 selector: 'ts-card-skeleton',
-                template: "<div class=\"w-full flex\">\n    <div class=\"w-full\">\n        <div class=\"bg-white border border-gray-300 card flex flex-col  overflow-hidden rounded translate-3d-none-after w-full\"\n            [ngClass]=\"{'md:flex-row': gridType=='list'}\">\n            <div class=\"w-full relative p-24 text-primary-500\"\n                [ngClass]=\"{'lg:w-2/3 md:w-2/3 md:p-0': gridType=='list'}\">\n                <div class=\"absolute top-0 left-0 h-full w-full\">\n                    <span class=\"skeleton-box group-hover:scale-110 transition-transform transform-center block h-full\">\n                    </span>\n                </div>\n            </div>\n            <div class=\"flex flex-col flex-grow w-full\">\n                <div class=\"pl-4 pr-4 pt-4 mb-4 text-left relative flex-grow\">\n                    <h3 class=\"text-lg font-bold text-gray-darkest mr-10\">\n                        <span class=\"skeleton-box h-5 w-1/6 inline-block\"></span>\n                        <span class=\"skeleton-box h-5 w-1/2 inline-block\"></span>\n                        <span class=\"skeleton-box h-5 w-2/4 inline-block\"></span>\n                        <span class=\"skeleton-box h-5 w-2/5 inline-block\"></span>\n                        <span class=\"skeleton-box h-5 w-2/3 inline-block\"></span>\n                        <span class=\"skeleton-box h-5 w-3/4 inline-block\"></span>\n                    </h3>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>",
+                template: "<div class=\"w-full flex\">\n    <div class=\"w-full\">\n        <div class=\"bg-white border border-gray-300 card flex flex-col  overflow-hidden rounded translate-3d-none-after w-full\"\n            [ngClass]=\"{'md:flex-row': gridType=='list'}\">\n            <div class=\"w-full relative p-20 text-primary-500\"\n                [ngClass]=\"{'lg:w-2/3 md:w-2/3 md:p-0': gridType=='list'}\">\n                <div class=\"p-2\">\n                  <div class=\"absolute top-0 left-0 h-full w-full\">\n                      <span class=\"skeleton-box group-hover:scale-110 transition-transform transform-center block h-full\">\n                      </span>\n                  </div>\n                </div>\n            </div>\n            <div class=\"flex flex-col flex-grow w-full\">\n                <div class=\"pl-4 pr-4 pt-4 text-left relative flex-grow\">\n                    <h3 class=\"text-lg text-gray-darkest mr-10\">\n                        <span class=\"skeleton-box h-6 w-5/6 block\"></span>\n                        <span class=\"skeleton-box h-6 w-1/2 mt-1 block\"></span>\n\n                        <div class=\"location-date mt-2\">\n                          <span class=\"skeleton-box h-3 w-1/4 inline-block\"></span>\n                          <span class=\"text-base px-2\">|</span>\n                          <span class=\"skeleton-box h-3 w-2/5 inline-block\"></span>\n                        </div>\n\n                        <div class=\"tags mt-2\" *ngIf=\"gridType=='list'\">\n                          <span class=\"skeleton-box h-3 w-1/6 inline-block\"></span>\n                          <span class=\"skeleton-box h-3 w-1/5 inline-block mx-2\"></span>\n                          <span class=\"skeleton-box h-3 w-1/6 inline-block\"></span>\n                        </div>\n\n                        <div class=\"min mb-2\">\n                          <span class=\"skeleton-box h-5 w-1/3 mt-3 inline-block\"></span>\n                        </div>\n                    </h3>\n                </div>\n            </div>\n        </div>\n    </div>\n</div>\n",
                 styles: [".skeleton-box{position:relative;overflow:hidden;background-color:#e2e8f0}.skeleton-box::after{position:absolute;top:0;right:0;bottom:0;left:0;-webkit-transform:translateX(-100%);transform:translateX(-100%);background-image:-webkit-gradient(linear,left top,right top,color-stop(0,rgba(255,255,255,0)),color-stop(20%,rgba(255,255,255,.2)),color-stop(60%,rgba(255,255,255,.5)),to(rgba(255,255,255,0)));background-image:linear-gradient(90deg,rgba(255,255,255,0) 0,rgba(255,255,255,.2) 20%,rgba(255,255,255,.5) 60%,rgba(255,255,255,0));-webkit-animation:1.5s infinite shimmer;animation:1.5s infinite shimmer;content:''}@-webkit-keyframes shimmer{100%{-webkit-transform:translateX(100%);transform:translateX(100%)}}@keyframes shimmer{100%{-webkit-transform:translateX(100%);transform:translateX(100%)}}"]
             }),
             __metadata("design:paramtypes", [])
@@ -2594,6 +2594,84 @@
         return LayoutModule;
     }());
 
+    var TsListingEventCardComponent = /** @class */ (function () {
+        function TsListingEventCardComponent(utilityService, dialog, browser, placeService) {
+            var _this = this;
+            this.utilityService = utilityService;
+            this.dialog = dialog;
+            this.browser = browser;
+            this.placeService = placeService;
+            this.router = config.router;
+            this.hideTime = true;
+            this.defaultCardImageUrl = config.s3BaseUrl + 'townscript-common-resources/ListingsStatic/default-card.jpg';
+            this.buildUrlArray = function () {
+                if (_this.router.url) {
+                    _this.urlArray = _this.router.url.split("?")[0].replace('/', '').split('/');
+                }
+                else {
+                    _this.urlArray = ['in'];
+                }
+            };
+            this.shareEvent = function (event) {
+                event.stopPropagation();
+                event.preventDefault();
+                if (_this.browser.isMobile() && window.navigator && window.navigator['share']) {
+                    window.navigator['share']({
+                        title: _this.eventData.name,
+                        text: _this.eventData.name,
+                        url: config.baseUrl + 'e/' + _this.eventData.shortName,
+                    });
+                }
+                else {
+                    _this.dialog.open(ShareEventModalComponent, {
+                        // width: '500px',
+                        data: { event: _this.eventData }
+                    });
+                }
+            };
+        }
+        TsListingEventCardComponent.prototype.ngOnInit = function () {
+            var _this = this;
+            this.buildUrlArray();
+            this.subObject = this.placeService.place.subscribe(function (res) {
+                if (_this.utilityService.IsJsonString(res)) {
+                    var data = JSON.parse(res);
+                    if (data && data['country'] && data['city']) {
+                        _this.homeUrl = ('/' + data['country'] + '/' + data['city']).toLowerCase();
+                    }
+                }
+            });
+        };
+        TsListingEventCardComponent.prototype.ngOnDestroy = function () {
+            if (this.subObject)
+                this.subObject.unsubscribe();
+        };
+        __decorate([
+            core.Input(),
+            __metadata("design:type", Object)
+        ], TsListingEventCardComponent.prototype, "eventData", void 0);
+        __decorate([
+            core.Input(),
+            __metadata("design:type", Object)
+        ], TsListingEventCardComponent.prototype, "type", void 0);
+        __decorate([
+            core.Input(),
+            __metadata("design:type", Object)
+        ], TsListingEventCardComponent.prototype, "gridType", void 0);
+        TsListingEventCardComponent = __decorate([
+            core.Component({
+                selector: 'ts-listings-event-card',
+                template: "<div class=\"card-container rounded overflow-hidden relative\" [ngClass]=\"gridType == 'list' ? 'flex' : ''\">\n\n  <div class=\"card-header absolute top-0 w-full flex items-center justify-between black-gradient py-1 px-3 z-50\" *ngIf=\"gridType == 'grid'\">\n    <div class=\"topic-bubble opacity-0\" *ngIf=\"eventData?.keywords\">\n      <a *ngFor=\"let key of eventData?.keywords| slice:0:1\"\n          [href]=\"urlArray && urlArray.length > 1 ? urlArray[0] + '/' + urlArray[1]  + '/' + key.topicKeywordCode : homeUrl + '/' + key.topicKeywordCode\">\n          <span class=\"bubble background-blue px-2 p-1 text-xs rounded-lg text-white uppercase\" appDataAnalytics eventLabel=\"keyword\" clickLocation=\"\">\n              {{key.topicKeywordName}}\n          </span>\n      </a>\n    </div>\n    <div class=\"actions flex\">\n      <div class=\"follow self-end px-3\">\n        <app-follow type=\"icon\" [followTypeId]=\"eventData.eventId\" [followType]=\"'EVENT'\" color=\"#fff\"\n        (click)=\"$event.stopPropagation()\"></app-follow>\n      </div>\n      <div class=\"share px-2 rounded-full self-end cursor-pointer\" matRipple (click)=\"$event.stopPropagation()\">\n        <i appDataAnalytics eventLabel=\"share\" clickLocation=\"\" class=\"text-white mdi mdi-share-variant text-2xl share\"\n        (click)=\"shareEvent($event)\"></i>\n      </div>\n    </div>\n  </div>\n\n  <div class=\"image-container relative\" [ngClass]=\"gridType == 'list' ? 'flex-2' : ''\">\n    <img [ngClass]=\"gridType == 'list' ? 'absolute w-full h-full' : ''\" [src]=\"eventData.cardImageUrl ? eventData.cardImageUrl : defaultCardImageUrl\"/>\n  </div>\n\n  <div class=\"card-body overflow-hidden w-full flex flex-wrap flex-col\"\n    [ngClass]=\"gridType == 'list' ? 'flex-3  pl-3 pt-3 md:pl-5' : 'px-3 py-2 md:px-5'\"\n    *ngIf=\"eventData\">\n\n    <div class=\"content w-full\"\n      [ngClass]=\"gridType == 'list' ? 'pr-3 md:pr-5' : ''\">\n      <div class=\"event-name-box text-gray-900 text-base items-baseline flex\"\n        [ngClass]=\"gridType == 'list' ? ' lg:text-xl pb-2 ' : 'lg:text-lg'\">\n        <div class=\"font-semibold event-name w-11/12\" [clamp]=\"2\">\n          {{eventData.name}}\n        </div>\n        <i class=\"mdi mdi-check-decagram text-primary px-1 md:text-lg\"\n        *ngIf=\"eventData?.organizerIsTrusted\" matTooltip=\"VERIFIED\" matTooltipPosition=\"above\"\n        matTooltipClass=\"ts-card-tooltip\"></i>\n      </div>\n      <div class=\"secondary-details flex flex-wrap items-center justify-start text-xs md:text-sm text-gray-800 py-2\">\n        <div class=\"date\">\n          <span class=\"\">{{[eventData.startTime, eventData.endTime] | dateRange: eventData.eventTimeZone : eventData.recurrent: {'startTime': eventData.recurrenceStartTime,'endTime': eventData.recurrenceEndTime,'recurrenceRule': eventData.recurrenceRule} : hideTime }}\n          </span>\n        </div>\n        <div class=\"px-2\"> | </div>\n        <div class=\"location\">\n          <span class=\"\">{{eventData.city}}</span>\n        </div>\n      </div>\n\n    </div>\n\n    <div class=\"hidden md:flex overflow-hidden py-2 w-full keywords-box\" *ngIf=\"gridType=='list'\">\n      <a *ngFor=\"let key of eventData?.keywords| slice:0:3\"\n        [href]=\"urlArray && urlArray.length > 1 ? urlArray[0] + '/' + urlArray[1]  + '/' + key.topicKeywordCode : homeUrl + '/' + key.topicKeywordCode\">\n        <span appDataAnalytics eventLabel=\"keyword\" clickLocation=\"\"\n          class=\"pr-2 text-gray-600 font-normal text-xs md:text-sm hover:text-gray-900 hover:underline\">\n          #{{key.topicKeywordName}}\n        </span>\n      </a>\n    </div>\n\n    <div class=\"gradient-separator w-full\" *ngIf=\"gridType=='list'\"></div>\n\n    <div class=\"footer\"\n      [ngClass]=\"gridType == 'list' ? 'flex-1 flex items-center justify-between pr-3' : ''\">\n      <div class=\"price\">\n        <div class=\"paid flex items-baseline\" *ngIf=\"eventData.minimumTicketPrice\">\n          <div class=\"min-price\">\n            <span class=\"text-primary md:text-lg font-semibold\">\n              {{eventData.minimumTicketPrice | currency:eventData.minimumTicketPriceCurrency : 'symbol':'1.0-0'}}\n            </span>\n          </div>\n          <span class=\"text-xs px-1 opacity-75\">onwards</span>\n        </div>\n        <div class=\"free\" *ngIf=\"!eventData.minimumTicketPrice\">\n          <span >Free</span>\n        </div>\n      </div>\n\n      <div class=\"actions flex\" *ngIf=\"gridType=='list'\">\n        <div class=\"follow self-end px-2 md:px-3 lg:px-5\">\n          <app-follow type=\"icon\" [followTypeId]=\"eventData.eventId\" [followType]=\"'EVENT'\" color=\"#683592\"\n          (click)=\"$event.stopPropagation()\"></app-follow>\n        </div>\n        <div class=\"share rounded-full self-end cursor-pointer\" matRipple (click)=\"$event.stopPropagation()\">\n          <i appDataAnalytics eventLabel=\"share\" clickLocation=\"\" class=\"text-primary mdi mdi-share-variant text-2xl share\"\n          (click)=\"shareEvent($event)\"></i>\n        </div>\n      </div>\n    </div>\n\n  </div>\n\n</div>\n",
+                styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.card-container{-webkit-transition:.2s ease-in;transition:.2s ease-in;box-shadow:0 2px 8px rgba(0,0,0,.08)}.card-container:hover{-webkit-transform:translateY(-2%);transform:translateY(-2%);box-shadow:0 2px 15px rgba(0,0,0,.129189)}.card-container .black-gradient{background:-webkit-gradient(linear,left top,left bottom,from(black),to(transparent));background:linear-gradient(180deg,#000 0,transparent 100%)}.card-container .flex-2{-webkit-box-flex:2;flex:2}.card-container .flex-3{-webkit-box-flex:3;flex:3}.card-container .share{-webkit-transition:.15s;transition:.15s}.card-container .share:hover{-webkit-transform:scale(1.1);transform:scale(1.1)}.card-container .card-body .content{min-height:4.5em}@media (min-width:991px){.card-container .card-body .content .event-name{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;text-overflow:ellipsis}}@media (min-width:480px) and (max-width:991px){.card-container .card-body .content{min-height:5.5em}}@media (min-width:992px){.card-container .card-body .content{min-height:6.5em}}.card-container .card-body .gradient-separator{height:1px;background:-webkit-gradient(linear,left top,right top,from(transparent),color-stop(60%,#efefef),to(#ddd));background:linear-gradient(90deg,transparent 0,#efefef 60%,#ddd 100%)}"]
+            }),
+            __metadata("design:paramtypes", [UtilityService,
+                material.MatDialog,
+                BrowserService,
+                PlaceService])
+        ], TsListingEventCardComponent);
+        return TsListingEventCardComponent;
+    }());
+
     var CardsModule = /** @class */ (function () {
         function CardsModule() {
         }
@@ -2609,12 +2687,14 @@
                 declarations: [
                     TsListingCardComponent,
                     ShareEventModalComponent,
-                    TsCardSkeletonComponent
+                    TsCardSkeletonComponent,
+                    TsListingEventCardComponent
                 ],
                 exports: [
                     TsListingCardComponent,
                     ShareEventModalComponent,
-                    TsCardSkeletonComponent
+                    TsCardSkeletonComponent,
+                    TsListingEventCardComponent
                 ],
                 entryComponents: [
                     ShareEventModalComponent
@@ -2664,6 +2744,7 @@
     exports.ɵa = FooterService;
     exports.ɵb = SharedService;
     exports.ɵc = ConfirmationSVGComponent;
+    exports.ɵd = TsListingEventCardComponent;
 
     Object.defineProperty(exports, '__esModule', { value: true });
 
