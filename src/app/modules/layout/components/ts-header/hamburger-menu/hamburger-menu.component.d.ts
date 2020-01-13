@@ -9,6 +9,7 @@ export declare class HamburgerMenuComponent implements OnInit {
     active: boolean;
     constructor(dialog: MatDialog, datepipe: DatePipe);
     openLogin: (callback?: any) => void;
+    reloadOnLogout: (event: any) => void;
     openCityPopup: () => void;
     ngAfterViewInit(): void;
     ngOnInit(): void;
