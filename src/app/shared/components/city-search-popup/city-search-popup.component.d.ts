@@ -2,8 +2,8 @@ import { OnInit, ElementRef, EventEmitter, AfterViewInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { DatePipe } from '@angular/common';
 import { Subject } from 'rxjs';
-import { HeaderService } from '../ts-header.service';
-import { PlaceService } from '../place.service';
+import { HeaderService } from '../../../modules/layout/components/ts-header/ts-header.service';
+import { PlaceService } from '../../../modules/layout/components/ts-header/place.service';
 export declare class CitySearchPopupComponent implements OnInit, AfterViewInit {
     private placeService;
     private headerService;

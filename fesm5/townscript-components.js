@@ -1,13 +1,13 @@
 import { __decorate, __param, __metadata, __awaiter, __generator, __assign } from 'tslib';
-import { Injectable, Inject, PLATFORM_ID, InjectionToken, ɵɵdefineInjectable, ɵɵinject, Component, Input, ViewChild, ElementRef, HostListener, Output, EventEmitter, ViewEncapsulation, Pipe, Directive, NgModule } from '@angular/core';
+import { Injectable, Inject, PLATFORM_ID, InjectionToken, ɵɵdefineInjectable, ɵɵinject, ViewChild, ElementRef, Input, Output, EventEmitter, Component, HostListener, ViewEncapsulation, Pipe, Directive, NgModule } from '@angular/core';
 import { isPlatformBrowser, DOCUMENT, DatePipe, CommonModule } from '@angular/common';
-import { MatSnackBar, MatSnackBarConfig, MatDialog, MatDialogConfig, MAT_DIALOG_DATA as MAT_DIALOG_DATA$1, MatDialogRef as MatDialogRef$1, MatRippleModule, MatSnackBarModule, MatInputModule, MatTooltipModule, MatProgressSpinnerModule } from '@angular/material';
+import { MatSnackBar, MatSnackBarConfig, MatDialog, MatDialogConfig, MAT_DIALOG_DATA as MAT_DIALOG_DATA$1, MatDialogRef as MatDialogRef$1, MatRippleModule, MatSnackBarModule, MatInputModule, MatTooltipModule, MatProgressSpinnerModule as MatProgressSpinnerModule$1 } from '@angular/material';
 import { DateTime } from 'luxon';
 import { BehaviorSubject, Subject } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { NavigationEnd, ActivatedRoute } from '@angular/router';
-import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { take, debounceTime } from 'rxjs/operators';
+import { debounceTime, take } from 'rxjs/operators';
+import { MAT_DIALOG_DATA, MatDialogRef, MatDialog as MatDialog$1, MatDialogConfig as MatDialogConfig$1 } from '@angular/material/dialog';
 import * as algoliaSearchImported from 'algoliasearch';
 import { FormGroup, FormControl, Validators, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { RecaptchaComponent, RecaptchaModule } from 'ng-recaptcha';
@@ -16,6 +16,7 @@ import { DataProducer } from '@townscript/data-collector';
 import { TsFormsModule } from '@townscript/elements';
 import { MatRippleModule as MatRippleModule$1 } from '@angular/material/core';
 import { MatSnackBarModule as MatSnackBarModule$1 } from '@angular/material/snack-bar';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { LazyLoadImageModule } from 'ng-lazyload-image';
 
 var config = {
@@ -359,6 +360,26 @@ var FollowService = /** @class */ (function () {
     return FollowService;
 }());
 
+var HeaderService = /** @class */ (function () {
+    function HeaderService(http) {
+        var _this = this;
+        this.http = http;
+        this.baseUrl = config.baseUrl;
+        this.apiServerUrl = this.baseUrl + 'api/';
+        this.getplaceSearchResults = function (query) {
+            return _this.http.get(_this.baseUrl + 'listings/place/autocomplete?query=' + query);
+        };
+    }
+    HeaderService.prototype.getPopularCities = function (countryCode) {
+        return this.http.get(this.baseUrl + 'listings/city/popular/' + countryCode).toPromise();
+    };
+    HeaderService = __decorate([
+        Injectable(),
+        __metadata("design:paramtypes", [HttpClient])
+    ], HeaderService);
+    return HeaderService;
+}());
+
 var PlaceService = /** @class */ (function () {
     function PlaceService(utilityService, cookieService, document, platformId, http) {
         var _this = this;
@@ -443,24 +464,134 @@ var PlaceService = /** @class */ (function () {
     return PlaceService;
 }());
 
-var HeaderService = /** @class */ (function () {
-    function HeaderService(http) {
+var CitySearchPopupComponent = /** @class */ (function () {
+    function CitySearchPopupComponent(placeService, headerService, datepipe) {
         var _this = this;
-        this.http = http;
-        this.baseUrl = config.baseUrl;
-        this.apiServerUrl = this.baseUrl + 'api/';
-        this.getplaceSearchResults = function (query) {
-            return _this.http.get(_this.baseUrl + 'listings/place/autocomplete?query=' + query);
+        this.placeService = placeService;
+        this.headerService = headerService;
+        this.datepipe = datepipe;
+        this.showArrow = true;
+        this.activePlaceChange = new EventEmitter();
+        this.cityPopupActiveChange = new EventEmitter();
+        this.closeSuggestions = false;
+        this.closeSuggestionsChange = new EventEmitter();
+        this.citySearchActive = true;
+        this.router = config.router;
+        this.cityQueryChanged = new Subject();
+        this.cityLoading = false;
+        this.buildUrlArray = function () {
+            if (_this.router.url) {
+                _this.urlArray = _this.router.url.split("?")[0].replace('/', '').split('/');
+            }
+            else {
+                _this.urlArray = ['in'];
+            }
         };
+        this.callSearchCity = function (query) {
+            _this.cityLoading = true;
+            _this.headerService.getplaceSearchResults(query).subscribe(function (res) {
+                _this.placeSearchResults = res['data'];
+                _this.cityLoading = false;
+            });
+        };
+        this.placeChanged = function (place) {
+            var tsType = _this.urlArray[2];
+            var tsTypeUrl = tsType && tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
+            if (place.type === 'country') {
+                _this.router.navigate(['/' + place.twoDigitCode.toLowerCase() +
+                        '/' + place.country.split(' ').join('-').toLowerCase() + tsTypeUrl], { state: { place: place } });
+            }
+            if (place.type === 'city') {
+                _this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.cityCode + tsTypeUrl], { state: { place: place } });
+            }
+            if (place.type === 'locality') {
+                _this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.localityCode + '--' + place.cityCode + tsTypeUrl], { state: { place: place } });
+            }
+            if (place.type === 'unstructured') {
+                var name_1 = place.name.replace(/,/g, '').replace(/ /g, '-');
+                var secondaryText = '';
+                if (place.secondaryText) {
+                    secondaryText = '--' + place.secondaryText.replace(/,/g, '').replace(/ /g, '-');
+                }
+                _this.router.navigate(['/s/' + name_1 + secondaryText + tsTypeUrl], { state: { place: place } });
+            }
+            // this.placeService.updatePlace(place.name);
+            _this.activePlace = place.name;
+            _this.activePlaceChange.emit(place.name);
+            _this.cityPopupActive = false;
+            _this.cityPopupActiveChange.emit(false);
+        };
+        this.openCityPopup = function () {
+            _this.cityPopupActive = true;
+            _this.cityInput.nativeElement.focus();
+        };
+        this.searchCity = function (text) {
+            if (!text || text.length === 0) {
+                _this.placeSearchResults = [];
+            }
+            if (text != undefined && text.length > 0) {
+                _this.cityQueryChanged.next(text);
+            }
+            _this.updateAndEmitCloseCitySuggestion(false);
+        };
+        this.updateAndEmitCloseCitySuggestion = function (val) {
+            _this.closeSuggestions = val;
+            _this.closeSuggestionsChange.emit(_this.closeSuggestions);
+        };
+        this.cityQueryChanged.pipe(debounceTime(300)).subscribe(function (text) { return _this.callSearchCity(text); });
+        this.buildUrlArray();
     }
-    HeaderService.prototype.getPopularCities = function (countryCode) {
-        return this.http.get(this.baseUrl + 'listings/city/popular/' + countryCode).toPromise();
+    CitySearchPopupComponent.prototype.ngAfterViewInit = function () {
+        this.citySearchActive = true;
+        this.cityInput.nativeElement.focus();
     };
-    HeaderService = __decorate([
-        Injectable(),
-        __metadata("design:paramtypes", [HttpClient])
-    ], HeaderService);
-    return HeaderService;
+    CitySearchPopupComponent.prototype.ngOnInit = function () {
+    };
+    __decorate([
+        ViewChild('cityInput', { static: true }),
+        __metadata("design:type", ElementRef)
+    ], CitySearchPopupComponent.prototype, "cityInput", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CitySearchPopupComponent.prototype, "showArrow", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", String)
+    ], CitySearchPopupComponent.prototype, "activePlace", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], CitySearchPopupComponent.prototype, "activePlaceChange", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], CitySearchPopupComponent.prototype, "cityPopupActive", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], CitySearchPopupComponent.prototype, "cityPopupActiveChange", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Object)
+    ], CitySearchPopupComponent.prototype, "popularPlaces", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], CitySearchPopupComponent.prototype, "closeSuggestions", void 0);
+    __decorate([
+        Output(),
+        __metadata("design:type", EventEmitter)
+    ], CitySearchPopupComponent.prototype, "closeSuggestionsChange", void 0);
+    CitySearchPopupComponent = __decorate([
+        Component({
+            selector: 'app-city-search-popup',
+            template: "<div class=\"city-suggestions enter-slide-bottom\" [class.arrow]=\"showArrow\">\n    <div class=\"suggestions-container\">\n        <ul>\n            <li [class.active]=\"citySearchActive\" class=\"p-2 capitalize cursor-pointer flex items-center truncate\">\n                <i class=\"mdi mdi-magnify mr-2\"></i>\n                <input appDataAnalytics eventLabel=\"locationDropdownSearch\" clickLocation=\"\" #cityInput\n                    autocomplete=\"off\" id=\"cityInput\" type=\"text\" placeholder=\"Type here to search...\"\n                    [(ngModel)]=\"cityQuery\" (ngModelChange)=\"searchCity($event)\" (focus)=\"citySearchActive=true\"\n                    class=\"w-full bg-transparent text-sm\" />\n                <i *ngIf=\"cityLoading\" class=\"mdi mdi-loading mdi-spin\"></i>\n            </li>\n            <div *ngIf=\"!closeSuggestions\">\n              <li matRipple (click)=\"placeChanged(place);\"\n                class=\"p-2 capitalize cursor-pointer flex items-center truncate\"\n                *ngFor=\"let place of placeSearchResults\">\n                <i class=\"mdi mdi-map-marker text-base mr-1 color-blue\"></i>\n                <span class=\"text-sm flex items-end truncate\">\n                  <span class=\"mr-1 whitespace-no-wrap\">{{place.name}} </span>\n                  <small class=\"text-2xs text-gray-600\"\n                    *ngIf=\"place.city && place?.city.length>0 && place?.type!='city'\">\n                    {{place.city}},\n                  </small>\n                  <small class=\"text-2xs text-gray-600\"\n                    *ngIf=\"place.country && place?.country.length>0 && place?.type!='country'\">{{place.country}}\n                  </small>\n                  <small class=\"text-2xs truncate text-gray-600\">{{place.secondaryText}}</small>\n                </span>\n              </li>\n            </div>\n            <ng-container matRipple *ngIf=\"!placeSearchResults || placeSearchResults.length==0\">\n                <li appDataAnalytics eventLabel=\"locationDropdownItem\" clickLocation=\"\" (click)=\"placeChanged(city);\"\n                    class=\"p-2 px-4 cursor-pointer capitalize\" *ngFor=\"let city of popularPlaces\">\n                    <i class=\"mdi mdi-map-marker text-base mr-1 color-blue\"></i>\n                    <span class=\"text-base capitalize\">{{city.name}}</span>\n                </li>\n            </ng-container>\n        </ul>\n    </div>\n</div>\n",
+            styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.city-suggestions{width:100%;background:#fafafa;position:absolute;box-shadow:0 5px 10px 0 rgba(0,0,0,.15)}.city-suggestions .mdi-spin::before{-webkit-animation-duration:.5s;animation-duration:.5s}.city-suggestions li.active,.city-suggestions li:hover{background:#ededed}.city-suggestions.arrow{border-top:3px solid #3782c4}.city-suggestions.arrow:before{content:\" \";width:10px;position:absolute;top:-7px;left:88%;height:10px;-webkit-filter:drop-shadow(0 -5px 10px rgba(0, 0, 0, .15));filter:drop-shadow(0 -5px 10px rgba(0, 0, 0, .15));background:#ededed;-webkit-transform:rotate(45deg);transform:rotate(45deg);border-top:3px solid #3782c4;border-left:3px solid #3782c4}@media (min-width:991px){.city-suggestions{width:140%;left:-40%}}"]
+        }),
+        __metadata("design:paramtypes", [PlaceService, HeaderService, DatePipe])
+    ], CitySearchPopupComponent);
+    return CitySearchPopupComponent;
 }());
 
 var LoginModalComponent = /** @class */ (function () {
@@ -717,7 +848,7 @@ var TsFooterComponent = /** @class */ (function () {
     TsFooterComponent = __decorate([
         Component({
             selector: 'ts-footer',
-            template: "<footer class=\"ts-footer text-center pt-8 pb-4 md:pt-24 md:pb-12 lg:pt-32 lg:pb-16\"\n    [class.new-footer]=\"source=='marketplace'\">\n    <div class=\"ts-container content-footer\">\n        <div class=\"flex md:mb-4\">\n            <div class=\"w-1/5 hidden-xs px-4\">\n                <h5>ORGANISE EVENTS</h5>\n                <ul class=\"list-unstyled\">\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/conference-registration\">Conferences</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/workshops-and-trainings\">Workshops and Trainings</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/college-fest-payment-portal\">College Festivals</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/marathon-cycling-trips-treks-registration\">Sports and Fitness Events</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/entertainment-events-ticketing\">Entertainment Events</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/meetup-registration\">Meetups and Reunions</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/treks-trips-registration\">Treks and Trips</a></li>\n                    <!-- <li><a href=\"/i/fundraising-crowdfunding\">Fundraisings</a></li> -->\n                </ul>\n            </div>\n            <div class=\"w-1/5 px-4 hidden-xs\">\n                <h5>POPULAR SEARCHES</h5>\n                <ul class=\"list-unstyled\">\n                    <!--<li><a href=\"/pune/new-year-party\">New Year Parties In Pune</a></li>\n\t\t\t\t<li><a href=\"/mumbai/new-year-party\">New Year Parties In Mumbai</a></li>\n\t\t\t\t<li><a href=\"/delhi/new-year-party\">New Year Parties In Delhi</a></li>\n\t\t\t\t<li><a href=\"/bangalore/new-year-party\">New Year Parties In Bangalore</a></li>-->\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"http://support.townscript.com/support/solutions/articles/1000265220-list-of-countries-supported-by-townscript-\">\n                            List of Countries supported by Townscript</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/sell-event-tickets-online\">Sell Event Tickets Online</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/event-management-software\">Event Management Software</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/event-registration-software\">Event Registration Software</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/conference-management-system\">Conference management System</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/event-planning-software\">Event Planning Software</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/online-event-ticketing\">Online Event Ticketing</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/corporate-event-management\">Corporate Event Management</a></li>\n                </ul>\n            </div>\n            <div class=\"w-1/5 px-4 hidden-xs\" *ngIf=\"source=='landingPages'\">\n                <h5>RECENT BLOGS</h5>\n                <ul class=\"list-unstyled blog-links\">\n                    <li appDataAnalytics eventLabel=\"recentBlogs\" clickLocation=\"\" *ngFor=\"let blog of recentBlogs\"><a\n                            [href]=\"blog.url\">{{blog.title}}</a></li>\n                </ul>\n            </div>\n            <div class=\"w-1/5 px-4 hidden-xs\" *ngIf=\"source=='marketplace'\">\n                <!-- <h5>POPULAR EVENTS</h5>\n                <ul class=\"list-unstyled blog-links\">\n                    <li appDataAnalytics eventLabel=\"popular-events\" clickLocation=\"\"\n                        *ngFor=\"let event of popularEvents\"><a [href]=\"'e/'+event.shortName\">{{event.name}}</a></li>\n                </ul> -->\n                <h5>Trending on Townscript</h5>\n                <ul class=\"list-unstyled blog-links\">\n                    <li appDataAnalytics eventLabel=\"trendingTownscript\" clickLocation=\"\"\n                        *ngFor=\" let trend of trending\"><a [href]=\"trend.url\">{{trend.name}}</a></li>\n                </ul>\n            </div>\n            <div class=\"w-1/5 px-4 hidden-xs\">\n                <h5>POPULAR READS</h5>\n                <ul class=\"list-unstyled blog-links\">\n                    <li appDataAnalytics eventLabel=\"popularReads\" clickLocation=\"\" *ngFor=\"let read of popularReads\">\n                        <a [href]=\"read.url\" target=\"_blank\">{{read.title}}</a></li>\n                </ul>\n            </div>\n            <div class=\"w-1/5 hidden-xs pl-12\">\n                <h5>BOOKINGS</h5>\n                <ul class=\"list-unstyled\">\n                    <li appDataAnalytics eventLabel=\"bookings\" clickLocation=\"\">\n                        <div class=\"mybookings cursor-pointer\" (click)=\"openMyBooking()\">My Bookings</div>\n                    </li>\n                </ul>\n                <h5 (click)=\"openContactUs()\">GET IN TOUCH</h5>\n                <!--<h5><a href=\"mailto:service@townscript.com\" target=\"_blank\" class=\"mail-to visible-xs\">service@townscript.com</a></h5>-->\n                <ul class=\"list-unstyled\">\n                    <!-- \t\t\t\t<li class=\"hidden-xs\">\n\t\t\t\t\t<a href=\"#\">Contact us</a>\n\t\t\t\t</li> -->\n                    <li class=\"social-list-item\">\n                        <ul class=\"social-list clearfix\">\n                            <li appDataAnalytics eventLabel=\"socialFb\" clickLocation=\"\">\n                                <a href=\"https://www.facebook.com/townscript\" target=\"_blank\"><i\n                                        class=\"mdi mdi-facebook\"></i></a>\n                            </li>\n                            <li appDataAnalytics eventLabel=\"socialTwitter\" clickLocation=\"\">\n                                <a href=\"https://twitter.com/townscript\" target=\"_blank\"><i\n                                        class=\"mdi mdi-twitter\"></i></a>\n                            </li>\n                            <li appDataAnalytics eventLabel=\"socialGoogle\" clickLocation=\"\">\n                                <a href=\"https://plus.google.com/+Townscript\" target=\"_blank\"><i\n                                        class=\"mdi mdi-google-plus\"></i></a>\n                            </li>\n                            <li appDataAnalytics eventLabel=\"socialLinkedin\" clickLocation=\"\">\n                                <a href=\"https://www.linkedin.com/company/townscript\" target=\"_blank\"><i\n                                        class=\"mdi mdi-linkedin\"></i></a>\n                            </li>\n                            <!--<li>\n\t\t\t\t\t\t\t<a href=\"mailto:service@townscript.com\" target=\"_blank\"><i class=\"ion-email\"></i></a>\n\t\t\t\t\t\t</li>-->\n                        </ul>\n                    </li>\n                </ul>\n                <h5 class=\"hidden-xs\">ORGANIZER APP</h5>\n                <ul class=\"list-apps hidden-xs\">\n                    <li appDataAnalytics eventLabel=\"appAndroid\" clickLocation=\"\">\n                        <a href=\"//play.google.com/store/apps/details?id=com.dyulok.android.organizerapp&hl=en_IN\"\n                            title=\"Download on Google play\" class=\"store-icon google-play-icon\" target=\"_blank\">Download\n                            on Google\n                            play</a>\n                    </li>\n                    <li appDataAnalytics eventLabel=\"appIos\" clickLocation=\"\">\n                        <a href=\"//itunes.apple.com/in/app/townscript-event-manager/id1441088900?mt=8\"\n                            title=\"Download on App Store\" target=\"_blank\" class=\"store-icon app-store-icon\">Download on\n                            App Store</a>\n                    </li>\n                </ul>\n            </div>\n            <div class=\"w-full block md:hidden\">\n                <div class=\"flex flex-col justify-center items-center\">\n                    <div class=\"text-3xl text-gray-400 px-5 pr-32 mr-5\">&ldquo;Live an</div>\n                    <div class=\"text-4xl text-gray-400 font-semibold -mt-3 px-5 pl-12\"><span\n                            class=\"text-purple-300\">Event</span>ful life&rdquo;</div>\n                    <img class=\"dance-illustration\"\n                        [lazyLoad]=\"'https://townscript-common-resources.s3.ap-south-1.amazonaws.com/ts-illustrations/partying_2.png'\">\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"ts-container\">\n        <div class=\"brand-footer border-0 md:border-t pt-2 md:pt-4 lg:pt-8\">\n            <div class=\"flex md:mb-4\">\n                <div class=\"w-full flex flex-col items-center md:items-start md:w-1/5 px-4 ts-logo\">\n                    <img [lazyLoad]=\"'assets/images/ts-logoBMS.png'\" alt=\"Townscript Event Ticketing Logo\"\n                        title=\"Townscript Event Ticketing Logo\" />\n                    <span class=\"ts-footer__copyright text-right pr-2 text-xs text-gray-800\">Copyright@{{copyrightYear}}</span>\n                    <!--<a href=\"mailto:service@townscript.com\" target=\"_blank\" class=\"ts-footer__mail hidden-xs\">service@townscript.com</a>-->\n                </div>\n                <div class=\"w-3/5 linear-footer hidden-xs pl-4\">\n                    <h5>LEARN MORE</h5>\n                    <br>\n                    <ul class=\"list-linear\">\n                        <!-- <li><a href=\"#\">Features</a></li> -->\n                        <li appDataAnalytics eventLabel=\"learnMorePricing\" clickLocation=\"\"><a\n                                href=\"/pricing\">Pricing</a></li>\n                        <li><a href=\"/how-it-works\" ts-data-analytics prop-event=\"click\" eventLabel=\"How It Works\"\n                                prop-clicked-location=\"Footer\">How it works</a></li>\n                        <!-- <li><a href=\"#\">Mobile Apps</a></li> -->\n                        <li appDataAnalytics eventLabel=\"learnMoreApi\" clickLocation=\"\"><a\n                                href=\"//townscript-api.readme.io/\" target=\"_blank\">APIs for Developers</a></li>\n                        <li appDataAnalytics eventLabel=\"learnMorePolicies\" clickLocation=\"\"><a\n                                href=\"/terms-and-conditions\">Policies</a></li>\n                        <li appDataAnalytics eventLabel=\"learnMorePrivacy\" clickLocation=\"\"><a\n                                href=\"/privacy-policy\">Privacy</a></li>\n                        <li appDataAnalytics eventLabel=\"learnMoreSupport\" clickLocation=\"\"><a\n                                href=\"http://support.townscript.com/support/home\" target=\"_blank\">Support / FAQs</a>\n                        </li>\n                    </ul>\n                    <div class=\"linear-footer hidden-xs\" *ngIf=\"source=='marketplace'\">\n                        <h5>POPULAR CITIES</h5>\n                        <br>\n                        <ul class=\"list-linear\">\n                            <li appDataAnalytics eventLabel=\"popularCities\" clickLocation=\"\"\n                                *ngFor=\"let city of popularCities\">\n                                <div><a href=\"/{{city.countryCode + '/' + city.name | lowercase}}\">{{city.name}}</a>\n                                </div>\n                            </li>\n                        </ul>\n                    </div>\n                    <div class=\"linear-footer hidden-xs\">\n                        <h5>ABOUT</h5>\n                        <br>\n                        <ul class=\"list-linear\">\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\" href=\"/about-us\">About us</a>\n                            </li>\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\" href=\"/contact-us\">Contact\n                                    us</a></li>\n                            <!-- <li><a href=\"#\">Career</a></li> -->\n                            <!-- <li><a href=\"#\">Media</a></li> -->\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\"\n                                    href=\"http://blog.townscript.com\" target=\"_blank\">Blog</a></li>\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\"\n                                    href=\"http://eventmagazine.townscript.com/\" target=\"_blank\">Event Magazine</a></li>\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\"\n                                    href=\"https://productblog.townscript.com/\" target=\"_blank\">Product Diary</a></li>\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\" href=\"/sitemap\"\n                                    target=\"_blank\">Sitemap</a></li>\n                        </ul>\n                    </div>\n                </div>\n                <div appDataAnalytics eventLabel=\"g2Crowd\" clickLocation=\"\"\n                    class=\"mixpanel-button align-text hidden-xs px-10 pt-8 mx-2\">\n                    <a href=\"https://www.g2crowd.com/products/townscript/reviews\" target=\"_blank\">\n                        <img [lazyLoad]=\"'https://s3-ap-southeast-1.amazonaws.com/common-resources/assets/g2badge.png'\"\n                            alt=\"G2Crowd Townscript Reviews\" width=\"100\">\n                        <span>72 Reviews</span>\n                    </a>\n                </div>\n            </div>\n        </div>\n    </div>\n    <br>\n</footer>",
+            template: "<footer class=\"ts-footer text-center pt-8 pb-4 md:pt-24 md:pb-12 lg:pt-32 lg:pb-16\"\n    [class.new-footer]=\"source=='marketplace'\">\n    <div class=\"ts-container content-footer\">\n        <div class=\"flex md:mb-4\">\n            <div class=\"w-1/5 hidden-xs px-4\">\n                <h5>ORGANISE EVENTS</h5>\n                <ul class=\"list-unstyled\">\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/conference-registration\">Conferences</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/workshops-and-trainings\">Workshops and Trainings</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/college-fest-payment-portal\">College Festivals</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/marathon-cycling-trips-treks-registration\">Sports and Fitness Events</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/entertainment-events-ticketing\">Entertainment Events</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/meetup-registration\">Meetups and Reunions</a></li>\n                    <li appDataAnalytics eventLabel=\"organizeEvents\" clickLocation=\"\"><a\n                            href=\"/i/treks-trips-registration\">Treks and Trips</a></li>\n                    <!-- <li><a href=\"/i/fundraising-crowdfunding\">Fundraisings</a></li> -->\n                </ul>\n            </div>\n            <div class=\"w-1/5 px-4 hidden-xs\">\n                <h5>POPULAR SEARCHES</h5>\n                <ul class=\"list-unstyled\">\n                    <!--<li><a href=\"/pune/new-year-party\">New Year Parties In Pune</a></li>\n\t\t\t\t<li><a href=\"/mumbai/new-year-party\">New Year Parties In Mumbai</a></li>\n\t\t\t\t<li><a href=\"/delhi/new-year-party\">New Year Parties In Delhi</a></li>\n\t\t\t\t<li><a href=\"/bangalore/new-year-party\">New Year Parties In Bangalore</a></li>-->\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"http://support.townscript.com/support/solutions/articles/1000265220-list-of-countries-supported-by-townscript-\">\n                            List of Countries supported by Townscript</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/sell-event-tickets-online\">Sell Event Tickets Online</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/event-management-software\">Event Management Software</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/event-registration-software\">Event Registration Software</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/conference-management-system\">Conference management System</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/event-planning-software\">Event Planning Software</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/online-event-ticketing\">Online Event Ticketing</a></li>\n                    <li appDataAnalytics eventLabel=\"popularSearches\" clickLocation=\"\"><a\n                            href=\"/i/corporate-event-management\">Corporate Event Management</a></li>\n                </ul>\n            </div>\n            <div class=\"w-1/5 px-4 hidden-xs\" *ngIf=\"source=='landingPages'\">\n                <h5>RECENT BLOGS</h5>\n                <ul class=\"list-unstyled blog-links\">\n                    <li appDataAnalytics eventLabel=\"recentBlogs\" clickLocation=\"\" *ngFor=\"let blog of recentBlogs\"><a\n                            [href]=\"blog.url\">{{blog.title}}</a></li>\n                </ul>\n            </div>\n            <div class=\"w-1/5 px-4 hidden-xs\" *ngIf=\"source=='marketplace'\">\n                <h5>POPULAR EVENTS</h5>\n                <ul class=\"list-unstyled blog-links\">\n                    <li appDataAnalytics eventLabel=\"popular-events\" clickLocation=\"\"\n                        *ngFor=\"let event of popularEvents\"><a [href]=\"'e/'+event.shortName\">{{event.name}}</a></li>\n                </ul>\n                <!-- <h5>Trending on Townscript</h5>\n                <ul class=\"list-unstyled blog-links\">\n                    <li appDataAnalytics eventLabel=\"trendingTownscript\" clickLocation=\"\"\n                        *ngFor=\" let trend of trending\"><a [href]=\"trend.url\">{{trend.name}}</a></li>\n                </ul> -->\n            </div>\n            <div class=\"w-1/5 px-4 hidden-xs\">\n                <h5>POPULAR READS</h5>\n                <ul class=\"list-unstyled blog-links\">\n                    <li appDataAnalytics eventLabel=\"popularReads\" clickLocation=\"\" *ngFor=\"let read of popularReads\">\n                        <a [href]=\"read.url\" target=\"_blank\">{{read.title}}</a></li>\n                </ul>\n            </div>\n            <div class=\"w-1/5 hidden-xs pl-12\">\n                <h5>BOOKINGS</h5>\n                <ul class=\"list-unstyled\">\n                    <li appDataAnalytics eventLabel=\"bookings\" clickLocation=\"\">\n                        <div class=\"mybookings cursor-pointer\" (click)=\"openMyBooking()\">My Bookings</div>\n                    </li>\n                </ul>\n                <h5 (click)=\"openContactUs()\">GET IN TOUCH</h5>\n                <!--<h5><a href=\"mailto:service@townscript.com\" target=\"_blank\" class=\"mail-to visible-xs\">service@townscript.com</a></h5>-->\n                <ul class=\"list-unstyled\">\n                    <!-- \t\t\t\t<li class=\"hidden-xs\">\n\t\t\t\t\t<a href=\"#\">Contact us</a>\n\t\t\t\t</li> -->\n                    <li class=\"social-list-item\">\n                        <ul class=\"social-list clearfix\">\n                            <li appDataAnalytics eventLabel=\"socialFb\" clickLocation=\"\">\n                                <a href=\"https://www.facebook.com/townscript\" target=\"_blank\"><i\n                                        class=\"mdi mdi-facebook\"></i></a>\n                            </li>\n                            <li appDataAnalytics eventLabel=\"socialTwitter\" clickLocation=\"\">\n                                <a href=\"https://twitter.com/townscript\" target=\"_blank\"><i\n                                        class=\"mdi mdi-twitter\"></i></a>\n                            </li>\n                            <li appDataAnalytics eventLabel=\"socialGoogle\" clickLocation=\"\">\n                                <a href=\"https://plus.google.com/+Townscript\" target=\"_blank\"><i\n                                        class=\"mdi mdi-google-plus\"></i></a>\n                            </li>\n                            <li appDataAnalytics eventLabel=\"socialLinkedin\" clickLocation=\"\">\n                                <a href=\"https://www.linkedin.com/company/townscript\" target=\"_blank\"><i\n                                        class=\"mdi mdi-linkedin\"></i></a>\n                            </li>\n                            <!--<li>\n\t\t\t\t\t\t\t<a href=\"mailto:service@townscript.com\" target=\"_blank\"><i class=\"ion-email\"></i></a>\n\t\t\t\t\t\t</li>-->\n                        </ul>\n                    </li>\n                </ul>\n                <h5 class=\"hidden-xs\">ORGANIZER APP</h5>\n                <ul class=\"list-apps hidden-xs\">\n                    <li appDataAnalytics eventLabel=\"appAndroid\" clickLocation=\"\">\n                        <a href=\"//play.google.com/store/apps/details?id=com.dyulok.android.organizerapp&hl=en_IN\"\n                            title=\"Download on Google play\" class=\"store-icon google-play-icon\" target=\"_blank\">Download\n                            on Google\n                            play</a>\n                    </li>\n                    <li appDataAnalytics eventLabel=\"appIos\" clickLocation=\"\">\n                        <a href=\"//itunes.apple.com/in/app/townscript-event-manager/id1441088900?mt=8\"\n                            title=\"Download on App Store\" target=\"_blank\" class=\"store-icon app-store-icon\">Download on\n                            App Store</a>\n                    </li>\n                </ul>\n            </div>\n            <div class=\"w-full block md:hidden\">\n                <div class=\"flex flex-col justify-center items-center\">\n                    <div class=\"text-3xl text-gray-400 px-5 pr-32 mr-5\">&ldquo;Live an</div>\n                    <div class=\"text-4xl text-gray-400 font-semibold -mt-3 px-5 pl-12\"><span\n                            class=\"text-purple-300\">Event</span>ful life&rdquo;</div>\n                    <img class=\"dance-illustration\"\n                        [lazyLoad]=\"'https://townscript-common-resources.s3.ap-south-1.amazonaws.com/ts-illustrations/partying_2.png'\">\n                </div>\n            </div>\n        </div>\n    </div>\n    <div class=\"ts-container\">\n        <div class=\"brand-footer border-0 md:border-t pt-2 md:pt-4 lg:pt-8\">\n            <div class=\"flex md:mb-4\">\n                <div class=\"w-full flex flex-col items-center md:items-start md:w-1/5 px-4 ts-logo\">\n                    <img [lazyLoad]=\"'assets/images/ts-logoBMS.png'\" alt=\"Townscript Event Ticketing Logo\"\n                        title=\"Townscript Event Ticketing Logo\" />\n                    <span class=\"ts-footer__copyright text-right pr-2 text-xs text-gray-800\">Copyright@{{copyrightYear}}</span>\n                    <!--<a href=\"mailto:service@townscript.com\" target=\"_blank\" class=\"ts-footer__mail hidden-xs\">service@townscript.com</a>-->\n                </div>\n                <div class=\"w-3/5 linear-footer hidden-xs pl-4\">\n                    <h5>LEARN MORE</h5>\n                    <br>\n                    <ul class=\"list-linear\">\n                        <!-- <li><a href=\"#\">Features</a></li> -->\n                        <li appDataAnalytics eventLabel=\"learnMorePricing\" clickLocation=\"\"><a\n                                href=\"/pricing\">Pricing</a></li>\n                        <li><a href=\"/how-it-works\" ts-data-analytics prop-event=\"click\" eventLabel=\"How It Works\"\n                                prop-clicked-location=\"Footer\">How it works</a></li>\n                        <!-- <li><a href=\"#\">Mobile Apps</a></li> -->\n                        <li appDataAnalytics eventLabel=\"learnMoreApi\" clickLocation=\"\"><a\n                                href=\"//townscript-api.readme.io/\" target=\"_blank\">APIs for Developers</a></li>\n                        <li appDataAnalytics eventLabel=\"learnMorePolicies\" clickLocation=\"\"><a\n                                href=\"/terms-and-conditions\">Policies</a></li>\n                        <li appDataAnalytics eventLabel=\"learnMorePrivacy\" clickLocation=\"\"><a\n                                href=\"/privacy-policy\">Privacy</a></li>\n                        <li appDataAnalytics eventLabel=\"learnMoreSupport\" clickLocation=\"\"><a\n                                href=\"http://support.townscript.com/support/home\" target=\"_blank\">Support / FAQs</a>\n                        </li>\n                    </ul>\n                    <div class=\"linear-footer hidden-xs\" *ngIf=\"source=='marketplace'\">\n                        <h5>POPULAR CITIES</h5>\n                        <br>\n                        <ul class=\"list-linear\">\n                            <li appDataAnalytics eventLabel=\"popularCities\" clickLocation=\"\"\n                                *ngFor=\"let city of popularCities\">\n                                <div><a href=\"/{{city.countryCode + '/' + city.name | lowercase}}\">{{city.name}}</a>\n                                </div>\n                            </li>\n                        </ul>\n                    </div>\n                    <div class=\"linear-footer hidden-xs\">\n                        <h5>ABOUT</h5>\n                        <br>\n                        <ul class=\"list-linear\">\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\" href=\"/about-us\">About us</a>\n                            </li>\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\" href=\"/contact-us\">Contact\n                                    us</a></li>\n                            <!-- <li><a href=\"#\">Career</a></li> -->\n                            <!-- <li><a href=\"#\">Media</a></li> -->\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\"\n                                    href=\"http://blog.townscript.com\" target=\"_blank\">Blog</a></li>\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\"\n                                    href=\"http://eventmagazine.townscript.com/\" target=\"_blank\">Event Magazine</a></li>\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\"\n                                    href=\"https://productblog.townscript.com/\" target=\"_blank\">Product Diary</a></li>\n                            <li><a appDataAnalytics eventLabel=\"aboutUs\" clickLocation=\"\" href=\"/sitemap\"\n                                    target=\"_blank\">Sitemap</a></li>\n                        </ul>\n                    </div>\n                </div>\n                <div appDataAnalytics eventLabel=\"g2Crowd\" clickLocation=\"\"\n                    class=\"mixpanel-button align-text hidden-xs px-10 pt-8 mx-2\">\n                    <a href=\"https://www.g2crowd.com/products/townscript/reviews\" target=\"_blank\">\n                        <img [lazyLoad]=\"'https://s3-ap-southeast-1.amazonaws.com/common-resources/assets/g2badge.png'\"\n                            alt=\"G2Crowd Townscript Reviews\" width=\"100\">\n                        <span>72 Reviews</span>\n                    </a>\n                </div>\n            </div>\n        </div>\n    </div>\n    <br>\n</footer>",
             styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}footer{background-color:#ebebeb}footer .mybookings{font-size:13px;color:#683594}footer.new-footer{background-color:#f7f7f7}footer.new-footer .mybookings,footer.new-footer a,footer.new-footer h5{color:#3e3e3e;letter-spacing:.01em;text-decoration:none;margin-bottom:0}footer li:hover{text-decoration:underline}footer h5{font-size:14px!important;font-weight:600}footer li,footer ul{margin-bottom:0}footer .content-footer{padding-bottom:20px}footer .m-l-8per{margin-left:8%}footer .brand-footer{border-color:#e5d7f1}footer .ts-footer__copyright,footer img{width:165px}footer .dance-illustration{width:200px}footer .ts-logo{-webkit-filter:grayscale(100%);filter:grayscale(100%);opacity:.4}@media (max-width:992px){footer .ts-logo img{width:120px}}footer .ts-logo .text-xs{width:120px;font-size:.5em}footer .bookmyshow-logo{width:140px}footer .mixpanel-button{position:relative;display:-webkit-box;display:flex;-webkit-box-orient:vertical;-webkit-box-direction:normal;flex-direction:column;-webkit-box-pack:center;justify-content:center;-webkit-box-align:center;align-items:center;text-align:center}footer .mixpanel-button a,footer .mixpanel-button span{white-space:nowrap;display:block}footer .mixpanel-button img{width:115px!important}footer .mail-to{font-weight:600}footer a,footer h5{color:#683594;text-decoration:none;margin-bottom:0}footer a{letter-spacing:.4px;font-size:13px;font-weight:400}footer ul.social-list{list-style-type:none;padding:0;margin:0}footer ul.social-list li{display:inline-block;margin-right:10px}footer ul.social-list li i{-webkit-transition:.2s;transition:.2s;font-size:17px}footer ul.social-list li i:hover{color:#111}.ts-footer__copyright{display:block}@media (min-width:768px){.ts-footer__mail{display:block;text-align:left;font-weight:700;line-height:36px}.ts-footer .container-fluid .row>div:first-child{padding-left:0}.ts-footer .container-fluid .row>div:nth-child(2){padding:0}.ts-footer .container-fluid .row>div:last-child{padding-right:0}footer{margin-top:100px;text-align:left;background-image:url(//s3.ap-south-1.amazonaws.com/townscript-common-resources/assets/footer-skyline.png);background-repeat:repeat-x;background-position:left top}footer .brand-footer .linear-footer h5,footer .brand-footer .linear-footer ul{display:inline-block;margin:2px 25px 2px 0;vertical-align:middle}footer .brand-footer .linear-footer .list-linear{list-style-type:none;padding:0}footer .brand-footer .linear-footer .list-linear li{float:left;margin-right:35px}footer .ts-logo{-webkit-filter:none;filter:none;opacity:1}footer ul.social-list{list-style-type:none;padding:0}footer ul.social-list li{display:block;float:left;margin-right:10px}footer ul.list-apps{list-style-type:none;padding:0}footer ul.list-apps li{line-height:50px;margin:10px 0}footer ul.list-apps li .store-icon{background-size:auto 45px;background-image:url(//s3.ap-south-1.amazonaws.com/townscript-common-resources/assets/store.png);background-repeat:no-repeat;display:block;width:150px;text-indent:-9999px}footer ul.list-apps li .store-icon.google-play-icon{background-position:0 0}footer ul.list-apps li .store-icon.app-store-icon{background-position:-172px 0}footer ul li{line-height:31px}footer ul li>a{text-overflow:ellipsis;white-space:nowrap;overflow:hidden;display:block}}.blog-links li{line-height:1.5}.blog-links li a{white-space:normal}"]
         }),
         __metadata("design:paramtypes", [MatDialog,
@@ -755,7 +886,7 @@ var TsHeaderComponent = /** @class */ (function () {
             }
         };
         this.clickout = function (event) {
-            if (!_this.citySuggestions.nativeElement.contains(event.target)) {
+            if (_this.citySuggestions && !_this.citySuggestions.nativeElement.contains(event.target)) {
                 _this.cityPopupActive = false;
             }
             if (!_this.userMenuEle.nativeElement.contains(event.target)) {
@@ -894,10 +1025,11 @@ var TsHeaderComponent = /** @class */ (function () {
     TsHeaderComponent = __decorate([
         Component({
             selector: 'ts-header',
-            template: "<nav class=\"ts-header flex align-items-center\" *ngIf=\"source!='marketplace'\">\n    <div class=\"container flex align-items-center\">\n        <div class=\"navbar-header\">\n            <a appDataAnalytics eventLabel=\"logo\" clickLocation=\"\" class=\"navbar-brand flex align-items-center\"\n                href=\"/\">\n                <img src=\"assets/images/ts-logo.svg\" alt=\"Townscript Event Ticketing Logo\"\n                    title=\"Townscript Event Ticketing Logo\" />\n            </a>\n        </div>\n        <div id=\"navbar\" class=\"nav-right hidden-xs\">\n            <ul>\n                <li>\n                    <a href=\"/signup\" ts-data-analytics prop-event=\"click\" eventLabel=\"Get Started\"\n                        prop-clicked-location=\"Animated Header\">\n                        <!-- <ts-button text=\"Create Event\"></ts-button> -->\n                    </a>\n                </li>\n            </ul>\n        </div>\n    </div>\n</nav>\n\n<nav class=\"ts-header-new max-w-full w-screen fixed flex items-center\" [class.shadow]=\"shadow\"\n    *ngIf=\"source=='marketplace'\">\n    <div class=\"ts-container flex items-center w-full\">\n        <div class=\"hidden md:block lg:w-1/6\">\n            <a [href]=\"homePageUrl\">\n                <img appDataAnalytics eventLabel=\"logo\" clickLocation=\"\" (click)=\"goToHomePage()\"\n                    *ngIf=\"Components.indexOf('icon')>-1\" class=\"ts-logo cursor-pointer\" src=\"assets/images/ts-logo.svg\"\n                    alt=\"Townscript Event Ticketing Logo\" title=\"Townscript Event Ticketing Logo\" />\n            </a>\n        </div>\n        <div class=\"sm:w-1/4 max-50 flex md:hidden lg:hidden items-center\">\n            <!-- <i class=\"mdi mdi-menu mr-3 text-3xl color-blue\"></i> -->\n            <!-- <app-hamburger-menu class=\"mr-3\"></app-hamburger-menu> -->\n            <!-- <img class=\"ts-logo mr-3\" src=\"assets/images/ts-icon.svg\" alt=\"Townscript Event Ticketing Logo\"\n                title=\"Townscript Event Ticketing Logo\" /> -->\n            <div *ngIf=\"backState\" (click)=\"goBack()\"\n                class=\"rounded-full flex py-1 px-3 mr-1 justify-center items-center\" matRipple>\n                <i class=\"mdi mdi-arrow-left text-2xl color-blue\"></i>\n            </div>\n            <i *ngIf=\"Components.indexOf('mobileCitySearch')>-1 && !backState\"\n                class=\"mdi mdi-map-marker color-blue text-2xl mr-2\"></i>\n            <div *ngIf=\"Components.indexOf('mobileCitySearch')>-1\" #citySuggestions\n                class=\"city-selection text-lg cursor-pointer w-full\" (click)=\"cityPopupActive=true\">\n                <div class=\"flex items-center w-full\" matRipple>\n                    <span class=\"mr-1 text-gray-700 truncate capitalize\">{{activePlace}}</span>\n                    <i class=\"mdi mdi-menu-down color-blue\"></i>\n                </div>\n                <app-city-search-popup appDataAnalytics eventLabel=\"locationDropdownSearch\" clickLocation=\"\"\n                    [(cityPopupActive)]=\"cityPopupActive\" [(activePlace)]=\"activePlace\" [showArrow]=\"false\"\n                    class=\"popup\" *ngIf=\"cityPopupActive\" [popularPlaces]=\"popularPlaces\">\n                </app-city-search-popup>\n\n            </div>\n        </div>\n        <div class=\"lg:w-5/12 ml-3 hidden sm:hidden md:hidden lg:flex\">\n            <app-search *ngIf=\"Components.indexOf('eventSearch')>-1\" class=\"w-full\"></app-search>\n        </div>\n        <div class=\"invisible sm:w-1/4 lg:w-1/12 flex items-center ml-6 view-type text-xl color-blue\">\n            <!-- <i class=\"active text-xl mdi mdi-book-open mr-4\"></i>\n            <i class=\"mdi mdi-map-legend mr-4\"></i>\n            <i class=\"mdi mdi-calendar-today mr-4\"></i> -->\n        </div>\n        <div class=\"lg:w-1/6 hidden sm:hidden md:hidden h-full lg:flex items-center pr-8\">\n            <a [href]=\"host + 'dashboard/create-event'\" appDataAnalytics eventLabel=\"createEvent\" clickLocation=\"\"\n                *ngIf=\"Components.indexOf('createEventBtn')>-1\"\n                class=\"create-btn cursor-pointer flex h-full justify-center items-center\">\n                <span class=\"text-base mr-2\">CREATE EVENT</span>\n                <i class=\"mdi mdi-ticket text-2xl\"></i>\n            </a>\n        </div>\n        <div #userMenuEle *ngIf=\"Components.indexOf('userMenu')>-1\"\n            class=\"position-relative sm:w-1/1 lg:w-1/6 justify-end hidden sm:hidden md:hidden lg:flex items-center\">\n            <div appDataAnalytics eventLabel=\"loginSignup\" clickLocation=\"\"\n                class=\"flex items-center cursor-pointer px-2\" (click)=\"openLogin()\" *ngIf=\"!user\" matRipple>\n                <i class=\"mdi mdi-account-circle text-4xl mr-2 color-blue\"></i>\n                <span>Login | Signup</span>\n            </div>\n            <div class=\"flex items-center cursor-pointer\" (click)=\"userMenu=!userMenu\" *ngIf=\"user\" matRipple>\n                <img class=\"rounded-full mr-2\" width=\"36\" [src]=\"s3BucketUrl+'/images/'+user?.s3imagename\" />\n                <i class=\"mdi mdi-chevron-down text-xl text-gray-700\" [class.rotate-180]=\"userMenu\"></i>\n                <!-- <span>{{user.user}}</span> -->\n            </div>\n            <div class=\"user-menu position-absolute shadow-md px-2 enter-slide-bottom\" *ngIf=\"userMenu\">\n                <app-user-menu [user]=\"user\" (close)=\"closeMyProfile($event)\"></app-user-menu>\n            </div>\n            <!-- <ts-button text=\"Login | Signup\" class=\"text-base\"></ts-button> -->\n        </div>\n\n        <!-- Mobile Menu -->\n        <div class=\"sm:w-1/1 ml-auto mr-2 flex  sm:flex md:flex lg:hidden items-center\">\n            <div *ngIf=\"Components.indexOf('mobileSearch')>-1\" class=\"rounded-full flex items-center\" matRipple\n                (click)=\"navigateToMobileSearch()\">\n                <i class=\"mdi mdi-magnify text-2xl ml-2 mr-2 color-blue\"></i>\n            </div>\n            <div *ngIf=\"Components.indexOf('mobileProfile')>-1\" class=\"rounded-full flex items-center\" matRipple>\n                <i class=\"mdi mdi-account text-2xl  ml-2 color-blue\" matRipple (click)=\"openMyProfileComponent()\"></i>\n            </div>\n        </div>\n    </div>\n</nav>\n<nav class=\"ts-header-new max-w-full w-screen flex items-center\" [class.shadow]=\"shadow\" *ngIf=\"source=='marketplace'\">\n\n</nav>",
+            template: "<nav class=\"ts-header flex align-items-center\" *ngIf=\"source!='marketplace'\">\n    <div class=\"container flex align-items-center\">\n        <div class=\"navbar-header\">\n            <a appDataAnalytics eventLabel=\"logo\" clickLocation=\"\" class=\"navbar-brand flex align-items-center\"\n                href=\"/\">\n                <img src=\"assets/images/ts-logo.svg\" alt=\"Townscript Event Ticketing Logo\"\n                    title=\"Townscript Event Ticketing Logo\" />\n            </a>\n        </div>\n        <div id=\"navbar\" class=\"nav-right hidden-xs\">\n            <ul>\n                <li>\n                    <a href=\"/signup\" ts-data-analytics prop-event=\"click\" eventLabel=\"Get Started\"\n                        prop-clicked-location=\"Animated Header\">\n                        <!-- <ts-button text=\"Create Event\"></ts-button> -->\n                    </a>\n                </li>\n            </ul>\n        </div>\n    </div>\n</nav>\n\n<nav class=\"ts-header-new max-w-full w-screen fixed flex items-center\" [class.shadow]=\"shadow\"\n    *ngIf=\"source=='marketplace'\">\n    <div class=\"ts-container flex items-center w-full\">\n        <div class=\"hidden md:block lg:w-1/6\">\n            <a [href]=\"homePageUrl\">\n                <img appDataAnalytics eventLabel=\"logo\" clickLocation=\"\" (click)=\"goToHomePage()\"\n                    *ngIf=\"Components.indexOf('icon')>-1\" class=\"ts-logo cursor-pointer\" src=\"assets/images/ts-logo.svg\"\n                    alt=\"Townscript Event Ticketing Logo\" title=\"Townscript Event Ticketing Logo\" />\n            </a>\n        </div>\n        <div class=\"sm:w-1/4 max-50 flex md:hidden lg:hidden items-center\">\n            <!-- <i class=\"mdi mdi-menu mr-3 text-3xl color-blue\"></i> -->\n            <app-hamburger-menu [user]=\"user\" [activePlace]=\"activePlace\" class=\"mr-3\"></app-hamburger-menu>\n            <img *ngIf=\"Components.indexOf('icon')>-1\" appDataAnalytics eventLabel=\"logo\" clickLocation=\"\"\n                (click)=\"goToHomePage()\" class=\"ts-logo mr-3 fixed ml-8\" src=\"assets/images/ts-logo.svg\"\n                alt=\"Townscript Event Ticketing Logo\" title=\"Townscript Event Ticketing Logo\" />\n            <!-- <div *ngIf=\"backState\" (click)=\"goBack()\"\n                class=\"rounded-full flex py-1 px-3 mr-1 justify-center items-center\" matRipple>\n                <i class=\"mdi mdi-arrow-left text-2xl color-blue\"></i>\n            </div>\n            <i *ngIf=\"Components.indexOf('mobileCitySearch')>-1 && !backState\"\n                class=\"mdi mdi-map-marker color-blue text-2xl mr-2\"></i>\n            <div *ngIf=\"Components.indexOf('mobileCitySearch')>-1\" #citySuggestions\n                class=\"city-selection text-lg cursor-pointer w-full\" (click)=\"cityPopupActive=true\">\n                <div class=\"flex items-center w-full\" matRipple>\n                    <span class=\"mr-1 text-gray-700 truncate capitalize\">{{activePlace}}</span>\n                    <i class=\"mdi mdi-menu-down color-blue\"></i>\n                </div>\n                <app-city-search-popup appDataAnalytics eventLabel=\"locationDropdownSearch\" clickLocation=\"\"\n                    [(cityPopupActive)]=\"cityPopupActive\" [(activePlace)]=\"activePlace\" [showArrow]=\"false\"\n                    class=\"popup\" *ngIf=\"cityPopupActive\" [popularPlaces]=\"popularPlaces\">\n                </app-city-search-popup>\n\n            </div> -->\n        </div>\n        <div class=\"lg:w-5/12 ml-3 hidden sm:hidden md:hidden lg:flex\">\n            <app-search *ngIf=\"Components.indexOf('eventSearch')>-1\" class=\"w-full\"></app-search>\n        </div>\n        <div class=\"invisible sm:w-1/4 lg:w-1/12 flex items-center ml-6 view-type text-xl color-blue\">\n            <!-- <i class=\"active text-xl mdi mdi-book-open mr-4\"></i>\n            <i class=\"mdi mdi-map-legend mr-4\"></i>\n            <i class=\"mdi mdi-calendar-today mr-4\"></i> -->\n        </div>\n        <div class=\"lg:w-1/6 hidden sm:hidden md:hidden h-full lg:flex items-center pr-8\">\n            <a [href]=\"host + 'dashboard/create-event'\" appDataAnalytics eventLabel=\"createEvent\" clickLocation=\"\"\n                *ngIf=\"Components.indexOf('createEventBtn')>-1\"\n                class=\"create-btn cursor-pointer flex h-full justify-center items-center\">\n                <span class=\"text-base mr-2\">CREATE EVENT</span>\n                <i class=\"mdi mdi-ticket text-2xl\"></i>\n            </a>\n        </div>\n        <div #userMenuEle *ngIf=\"Components.indexOf('userMenu')>-1\"\n            class=\"position-relative sm:w-1/1 lg:w-1/6 justify-end hidden sm:hidden md:hidden lg:flex items-center\">\n            <div appDataAnalytics eventLabel=\"loginSignup\" clickLocation=\"\"\n                class=\"flex items-center cursor-pointer px-2\" (click)=\"openLogin()\" *ngIf=\"!user\" matRipple>\n                <i class=\"mdi mdi-account-circle text-4xl mr-2 color-blue\"></i>\n                <span>Login | Signup</span>\n            </div>\n            <div class=\"flex items-center cursor-pointer\" (click)=\"userMenu=!userMenu\" *ngIf=\"user\" matRipple>\n                <img class=\"rounded-full mr-2\" width=\"36\" [src]=\"s3BucketUrl+'/images/'+user?.s3imagename\" />\n                <i class=\"mdi mdi-chevron-down text-xl text-gray-700\" [class.rotate-180]=\"userMenu\"></i>\n                <!-- <span>{{user.user}}</span> -->\n            </div>\n            <div class=\"user-menu position-absolute shadow-md px-2 enter-slide-bottom\" *ngIf=\"userMenu\">\n                <app-user-menu [user]=\"user\" (close)=\"closeMyProfile($event)\"></app-user-menu>\n            </div>\n            <!-- <ts-button text=\"Login | Signup\" class=\"text-base\"></ts-button> -->\n        </div>\n\n        <!-- Mobile Menu -->\n        <div class=\"sm:w-1/1 ml-auto mr-2 flex  sm:flex md:flex lg:hidden items-center\">\n            <div *ngIf=\"Components.indexOf('mobileSearch')>-1\" class=\"rounded-full flex items-center\" matRipple\n                (click)=\"navigateToMobileSearch()\">\n                <i class=\"mdi mdi-magnify text-2xl ml-2 mr-2 color-blue\"></i>\n            </div>\n            <!-- <div *ngIf=\"Components.indexOf('mobileProfile')>-1\" class=\"rounded-full flex items-center\" matRipple>\n                <i class=\"mdi mdi-account text-2xl  ml-2 color-blue\" matRipple (click)=\"openMyProfileComponent()\"></i>\n            </div> -->\n        </div>\n    </div>\n</nav>\n<nav class=\"ts-header-new max-w-full w-screen flex items-center\" [class.shadow]=\"shadow\" *ngIf=\"source=='marketplace'\">\n\n</nav>",
             styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.ts-header{min-height:85px;background-color:#fff;width:100%;position:fixed;top:0;z-index:1000;box-shadow:0 15px 40px -20px rgba(40,44,63,.2)}.ts-header .container{display:-webkit-box;display:flex;width:100%;padding:0 10%}.ts-header .container .navbar-header .navbar-brand img{width:165px}.ts-header .container .nav-right{margin-left:auto}.ts-header .container .nav-right li,.ts-header .container .nav-right ul{margin-bottom:0}.ts-header-new{min-height:56px;background-color:#f7f7f7;top:0;z-index:1000}.ts-header-new .shadow{box-shadow:0 2px 4px 0 rgba(0,0,0,.11)}.ts-header-new .ts-logo{height:28px}.ts-header-new .popup{position:absolute;top:90%;width:100%;left:0}.ts-header-new .max-50{max-width:50%}@media (min-width:991px){.ts-container{padding:0 80px!important}.ts-header-new{min-height:68px}.ts-header-new .ts-logo{height:35px}.ts-header-new .view-type i{opacity:.8;padding:3px 9px}.ts-header-new .view-type i.active{opacity:1;background:#3782c4;border-radius:50%;color:#fff;box-shadow:0 0 5px 0 #8ec0ec}.ts-header-new .create-btn{width:100%;min-width:200px;border-radius:20.5px;color:#fff;white-space:nowrap;background:linear-gradient(138.55deg,#a165c4 0,#4d2370 100%);box-shadow:0 2px 4px 0 #d4b1f0;-webkit-transition:.1s;transition:.1s}.ts-header-new .create-btn:hover{box-shadow:0 4px 6px 0 #d4b1f0;-webkit-transform:translateY(-2px);transform:translateY(-2px)}.ts-header-new .user-menu{position:absolute;top:145%;width:142%;left:-33%;background:#fff}.ts-header-new .user-menu:before{content:\" \";width:0;height:0;position:absolute;top:-11px;left:84%;border-left:15px solid transparent;border-right:15px solid transparent;border-bottom:15px solid #fff;-webkit-filter:drop-shadow(0 -2px 1px rgba(0, 0, 0, .09));filter:drop-shadow(0 -2px 1px rgba(0, 0, 0, .09))}}:host ::ng-deep .mat-button-wrapper{font-size:16px!important}"]
         }),
-        __metadata("design:paramtypes", [UtilityService, HeaderService, PlaceService, MatDialog, UserService])
+        __metadata("design:paramtypes", [UtilityService, HeaderService,
+            PlaceService, MatDialog, UserService])
     ], TsHeaderComponent);
     return TsHeaderComponent;
 }());
@@ -1128,134 +1260,164 @@ var SearchComponent = /** @class */ (function () {
     return SearchComponent;
 }());
 
-var CitySearchPopupComponent = /** @class */ (function () {
-    function CitySearchPopupComponent(placeService, headerService, datepipe) {
+var SharedService = /** @class */ (function () {
+    function SharedService(http) {
         var _this = this;
-        this.placeService = placeService;
-        this.headerService = headerService;
-        this.datepipe = datepipe;
-        this.showArrow = true;
-        this.activePlaceChange = new EventEmitter();
-        this.cityPopupActiveChange = new EventEmitter();
-        this.closeSuggestions = false;
-        this.closeSuggestionsChange = new EventEmitter();
-        this.citySearchActive = true;
-        this.router = config.router;
-        this.cityQueryChanged = new Subject();
-        this.cityLoading = false;
-        this.buildUrlArray = function () {
-            if (_this.router.url) {
-                _this.urlArray = _this.router.url.split("?")[0].replace('/', '').split('/');
-            }
-            else {
-                _this.urlArray = ['in'];
-            }
+        this.http = http;
+        this.baseUrl = config.baseUrl;
+        this.apiServerUrl = this.baseUrl + 'api/';
+        this.listingsUrl = this.baseUrl + 'listings/';
+        this.getPopularCitiesByCountryCode = function (code) {
+            return _this.http.get(_this.listingsUrl + 'city/popular/' + code).toPromise();
         };
-        this.callSearchCity = function (query) {
-            _this.cityLoading = true;
-            _this.headerService.getplaceSearchResults(query).subscribe(function (res) {
-                _this.placeSearchResults = res['data'];
-                _this.cityLoading = false;
+        this.getNearbyCity = function (lat, long) {
+            return _this.http.get(_this.listingsUrl + 'place/nearbycity?lat=' + lat + '&long=' + long).toPromise();
+        };
+    }
+    SharedService = __decorate([
+        Injectable(),
+        __metadata("design:paramtypes", [HttpClient])
+    ], SharedService);
+    return SharedService;
+}());
+
+var CitySelectionModalComponent = /** @class */ (function () {
+    function CitySelectionModalComponent(data, dialogRef, dialog, sharedService, cookieService) {
+        var _this = this;
+        this.data = data;
+        this.dialogRef = dialogRef;
+        this.dialog = dialog;
+        this.sharedService = sharedService;
+        this.cookieService = cookieService;
+        this.countryCode = 'in';
+        this.cityPopupActive = true;
+        this.router = config.router;
+        this.popularCityImageLink = config.imageCommonResourcesBaseUrl + '/Marketplace/popular-cities/';
+        this.showLoader = true;
+        this.closeSuggestions = false;
+        this.close = function () {
+            _this.dialogRef.close();
+        };
+        this.getCities = function (code) { return __awaiter(_this, void 0, void 0, function () {
+            var data;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.sharedService.getPopularCitiesByCountryCode(code)];
+                    case 1:
+                        data = _a.sent();
+                        this.popularCities = data['data'];
+                        setTimeout(function () {
+                            _this.showLoader = false;
+                        }, 500);
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        this.getCityFromLatAndLong = function (lat, long) { return __awaiter(_this, void 0, void 0, function () {
+            var result, city;
+            var _this = this;
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.sharedService.getNearbyCity(lat, long)];
+                    case 1:
+                        result = _a.sent();
+                        city = result['data'];
+                        if (city) {
+                            this.showLoader = true;
+                            this.loaderText = "Redirecting to " + city.name;
+                            setTimeout(function () {
+                                _this.close();
+                                _this.router.navigate([_this.countryCode + '/' + city.code], {});
+                            }, 500);
+                        }
+                        return [2 /*return*/];
+                }
+            });
+        }); };
+        this.detectLocation = function () {
+            navigator.geolocation.getCurrentPosition(function (location) {
+                var latitude = location.coords.latitude;
+                var longitude = location.coords.longitude;
+                _this.getCityFromLatAndLong(latitude, longitude);
             });
         };
-        this.placeChanged = function (place) {
-            var tsType = _this.urlArray[2];
-            var tsTypeUrl = tsType && tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
-            if (place.type === 'country') {
-                _this.router.navigate(['/' + place.twoDigitCode.toLowerCase() +
-                        '/' + place.country.split(' ').join('-').toLowerCase() + tsTypeUrl], { state: { place: place } });
+        this.setCloseSuggestions = function (val) {
+            _this.closeSuggestions = val;
+        };
+    }
+    CitySelectionModalComponent.prototype.ngOnInit = function () {
+        if (this.data && this.data.cities) {
+            this.popularCities = this.data.cities;
+            this.showLoader = false;
+        }
+        else {
+            this.getCities(this.countryCode);
+        }
+        this.cookieService.setCookie('cityPopupDisplayed', 'true', 1200, '/');
+    };
+    CitySelectionModalComponent = __decorate([
+        Component({
+            selector: 'app-city-selection',
+            template: "<div class=\"city-selection-popup md:px-5\" (click)=\"setCloseSuggestions(true)\">\n  <div class=\"view-header flex flex-col md:items-center justify-center fadeIn\">\n    <div class=\"back-button text-gray-700 text-2xl -ml-1 md:hidden\">\n      <i appDataAnalytics eventLabel=\"city-selection-back\" clickLocation=\"\" class=\"mdi mdi-arrow-left cursor-pointer\"\n        (click)=\"close()\"></i>\n    </div>\n    <div class=\"text-lg md:text-xl lg:text-2xl font-semibold text-gray-800\">Select Your City</div>\n    <div class=\"text-xs md:text-sm text-gray-600 md:text-center\">\n      Knowing your city helps us define your experience on Townscript\n    </div>\n  </div>\n\n  <div class=\"ts-loader flex flex-col items-center justify-center p-10 my-20 md:m-5 fadeIn\" *ngIf=\"showLoader\">\n    <mat-spinner strokeWidth=5></mat-spinner>\n    <div class=\"py-5 text-gray-700 text-sm\" *ngIf=\"loaderText\">{{loaderText}}</div>\n  </div>\n\n  <div class=\"view-body my-5 md:m-5\" *ngIf=\"!showLoader\">\n    <div class=\"flex justify-center search-container relative z-50 fadeIn\">\n      <div class=\"relative flex flex-auto md:block md:flex-none w-full md:w-2/5 md:ml-32 z-50\">\n        <app-city-search-popup (activePlaceChange)=\"close()\" [(closeSuggestions)]=\"closeSuggestions\"\n          [(cityPopupActive)]=\"cityPopupActive\" [(activePlace)]=\"activePlace\" [showArrow]=\"false\">\n        </app-city-search-popup>\n      </div>\n\n      <div matRipple\n        class=\"fadeIn animation-delay transition detect-location rounded-sm flex ml-1 px-2 items-center cursor-pointer py-2 flex-none\"\n        (click)=\"detectLocation()\">\n        <i class=\"mdi mdi-crosshairs-gps px-1 color-blue\"></i>\n        <div class=\"text-gray-800 text-xs md:text-sm\">Detect Location</div>\n      </div>\n    </div>\n\n    <div class=\"popular-cities my-5 fadeIn animation-delay relative z-10\" *ngIf=\"popularCities\">\n      <div class=\"text-base md:text-lg lf:text-xl font-semibold text-center py-5 text-gray-800\">Popular Cities in\n        {{popularCities[0].country}}</div>\n      <div class=\"city-list flex flex-wrap justify-between\">\n        <div *ngFor=\"let city of popularCities | slice:0:7\">\n          <div class=\"flex-auto p-2 px-5 md:mx-2 cursor-pointer w-24\" matRipple (click)=\"close()\">\n            <a [href]=\"countryCode + '/'+ city.code\">\n              <div class=\"flex flex-col items-center justify-center\">\n                <div class=\"image-container h-16 w-16 md:h-20 md:w-20 overflow-hidden\">\n                  <div class=\"city-image\" [style.backgroundImage]=\"'url('+popularCityImageLink + city.cityImage+')'\">\n                  </div>\n                </div>\n                <div class=\"cityName my-1 md:m-2 text-sm md:text-base\">{{city.name}}</div>\n              </div>\n            </a>\n          </div>\n        </div>\n      </div>\n    </div>\n\n  </div>\n</div>",
+            styles: [".city-selection-popup .transition{-webkit-transition:.2s;transition:.2s}.city-selection-popup .detect-location{background:#ededed;box-shadow:0 5px 10px 0 rgba(0,0,0,.15)}.city-selection-popup .detect-location:hover{background:#e1e1e1}.city-selection-popup .popular-cities .image-container{border-radius:50%}.city-selection-popup .popular-cities .image-container .city-image{height:100px;background-color:#3782c4;background-size:contain;background-blend-mode:multiply;-webkit-transition:.15s;transition:.15s}.city-selection-popup .popular-cities .image-container .city-image:hover{background-color:#6c3b8f}"]
+        }),
+        __param(0, Inject(MAT_DIALOG_DATA$1)),
+        __metadata("design:paramtypes", [Object, MatDialogRef$1,
+            MatDialog,
+            SharedService,
+            CookieService])
+    ], CitySelectionModalComponent);
+    return CitySelectionModalComponent;
+}());
+
+var HamburgerMenuComponent = /** @class */ (function () {
+    function HamburgerMenuComponent(dialog, datepipe) {
+        var _this = this;
+        this.dialog = dialog;
+        this.datepipe = datepipe;
+        this.openLogin = function (callback) {
+            var dialogConfig = new MatDialogConfig$1();
+            dialogConfig.disableClose = false;
+            dialogConfig.autoFocus = true;
+            dialogConfig.backdropClass = 'mat-dialog-bkg-container';
+            var loginDialog = _this.dialog.open(LoginModalComponent, dialogConfig);
+            if (callback) {
+                loginDialog.afterClosed().subscribe(function (result) {
+                    callback();
+                });
             }
-            if (place.type === 'city') {
-                _this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.cityCode + tsTypeUrl], { state: { place: place } });
-            }
-            if (place.type === 'locality') {
-                _this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.localityCode + '--' + place.cityCode + tsTypeUrl], { state: { place: place } });
-            }
-            if (place.type === 'unstructured') {
-                var name_1 = place.name.replace(/,/g, '').replace(/ /g, '-');
-                var secondaryText = '';
-                if (place.secondaryText) {
-                    secondaryText = '--' + place.secondaryText.replace(/,/g, '').replace(/ /g, '-');
-                }
-                _this.router.navigate(['/s/' + name_1 + secondaryText + tsTypeUrl], { state: { place: place } });
-            }
-            // this.placeService.updatePlace(place.name);
-            _this.activePlace = place.name;
-            _this.activePlaceChange.emit(place.name);
-            _this.cityPopupActive = false;
-            _this.cityPopupActiveChange.emit(false);
         };
         this.openCityPopup = function () {
-            _this.cityPopupActive = true;
-            _this.cityInput.nativeElement.focus();
+            var dialogConfig = new MatDialogConfig$1();
+            dialogConfig.disableClose = false;
+            dialogConfig.autoFocus = true;
+            dialogConfig.backdropClass = 'mat-dialog-bkg-container';
+            _this.dialog.open(CitySelectionModalComponent, dialogConfig);
         };
-        this.searchCity = function (text) {
-            if (!text || text.length === 0) {
-                _this.placeSearchResults = [];
-            }
-            if (text != undefined && text.length > 0) {
-                _this.cityQueryChanged.next(text);
-            }
-            _this.updateAndEmitCloseCitySuggestion(false);
-        };
-        this.updateAndEmitCloseCitySuggestion = function (val) {
-            _this.closeSuggestions = val;
-            _this.closeSuggestionsChange.emit(_this.closeSuggestions);
-        };
-        this.cityQueryChanged.pipe(debounceTime(300)).subscribe(function (text) { return _this.callSearchCity(text); });
-        this.buildUrlArray();
     }
-    CitySearchPopupComponent.prototype.ngAfterViewInit = function () {
-        this.citySearchActive = true;
-        this.cityInput.nativeElement.focus();
+    HamburgerMenuComponent.prototype.ngAfterViewInit = function () {
     };
-    CitySearchPopupComponent.prototype.ngOnInit = function () {
+    HamburgerMenuComponent.prototype.ngOnInit = function () {
     };
-    __decorate([
-        ViewChild('cityInput', { static: true }),
-        __metadata("design:type", ElementRef)
-    ], CitySearchPopupComponent.prototype, "cityInput", void 0);
     __decorate([
         Input(),
         __metadata("design:type", Object)
-    ], CitySearchPopupComponent.prototype, "showArrow", void 0);
+    ], HamburgerMenuComponent.prototype, "user", void 0);
     __decorate([
         Input(),
         __metadata("design:type", String)
-    ], CitySearchPopupComponent.prototype, "activePlace", void 0);
-    __decorate([
-        Output(),
-        __metadata("design:type", EventEmitter)
-    ], CitySearchPopupComponent.prototype, "activePlaceChange", void 0);
-    __decorate([
-        Input(),
-        __metadata("design:type", Boolean)
-    ], CitySearchPopupComponent.prototype, "cityPopupActive", void 0);
-    __decorate([
-        Output(),
-        __metadata("design:type", EventEmitter)
-    ], CitySearchPopupComponent.prototype, "cityPopupActiveChange", void 0);
-    __decorate([
-        Input(),
-        __metadata("design:type", Object)
-    ], CitySearchPopupComponent.prototype, "popularPlaces", void 0);
-    __decorate([
-        Input(),
-        __metadata("design:type", Boolean)
-    ], CitySearchPopupComponent.prototype, "closeSuggestions", void 0);
-    __decorate([
-        Output(),
-        __metadata("design:type", EventEmitter)
-    ], CitySearchPopupComponent.prototype, "closeSuggestionsChange", void 0);
-    CitySearchPopupComponent = __decorate([
+    ], HamburgerMenuComponent.prototype, "activePlace", void 0);
+    HamburgerMenuComponent = __decorate([
         Component({
-            selector: 'app-city-search-popup',
-            template: "<div class=\"city-suggestions enter-slide-bottom\" [class.arrow]=\"showArrow\">\n    <div class=\"suggestions-container\">\n        <ul>\n            <li [class.active]=\"citySearchActive\" class=\"p-2 capitalize cursor-pointer flex items-center truncate\">\n                <i class=\"mdi mdi-magnify mr-2\"></i>\n                <input appDataAnalytics eventLabel=\"locationDropdownSearch\" clickLocation=\"\" #cityInput\n                    autocomplete=\"off\" id=\"cityInput\" type=\"text\" placeholder=\"Type here to search...\"\n                    [(ngModel)]=\"cityQuery\" (ngModelChange)=\"searchCity($event)\" (focus)=\"citySearchActive=true\"\n                    class=\"w-full bg-transparent text-sm\" />\n                <i *ngIf=\"cityLoading\" class=\"mdi mdi-loading mdi-spin\"></i>\n            </li>\n            <div *ngIf=\"!closeSuggestions\">\n              <li matRipple (click)=\"placeChanged(place);\"\n                class=\"p-2 capitalize cursor-pointer flex items-center truncate\"\n                *ngFor=\"let place of placeSearchResults\">\n                <i class=\"mdi mdi-map-marker text-base mr-1 color-blue\"></i>\n                <span class=\"text-sm flex items-end truncate\">\n                  <span class=\"mr-1 whitespace-no-wrap\">{{place.name}} </span>\n                  <small class=\"text-2xs text-gray-600\"\n                    *ngIf=\"place.city && place?.city.length>0 && place?.type!='city'\">\n                    {{place.city}},\n                  </small>\n                  <small class=\"text-2xs text-gray-600\"\n                    *ngIf=\"place.country && place?.country.length>0 && place?.type!='country'\">{{place.country}}\n                  </small>\n                  <small class=\"text-2xs truncate text-gray-600\">{{place.secondaryText}}</small>\n                </span>\n              </li>\n            </div>\n            <ng-container matRipple *ngIf=\"!placeSearchResults || placeSearchResults.length==0\">\n                <li appDataAnalytics eventLabel=\"locationDropdownItem\" clickLocation=\"\" (click)=\"placeChanged(city);\"\n                    class=\"p-2 px-4 cursor-pointer capitalize\" *ngFor=\"let city of popularPlaces\">\n                    <i class=\"mdi mdi-map-marker text-base mr-1 color-blue\"></i>\n                    <span class=\"text-base capitalize\">{{city.name}}</span>\n                </li>\n            </ng-container>\n        </ul>\n    </div>\n</div>\n",
-            styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.city-suggestions{width:100%;background:#fafafa;position:absolute;box-shadow:0 5px 10px 0 rgba(0,0,0,.15)}.city-suggestions .mdi-spin::before{-webkit-animation-duration:.5s;animation-duration:.5s}.city-suggestions li.active,.city-suggestions li:hover{background:#ededed}.city-suggestions.arrow{border-top:3px solid #3782c4}.city-suggestions.arrow:before{content:\" \";width:10px;position:absolute;top:-7px;left:88%;height:10px;-webkit-filter:drop-shadow(0 -5px 10px rgba(0, 0, 0, .15));filter:drop-shadow(0 -5px 10px rgba(0, 0, 0, .15));background:#ededed;-webkit-transform:rotate(45deg);transform:rotate(45deg);border-top:3px solid #3782c4;border-left:3px solid #3782c4}@media (min-width:991px){.city-suggestions{width:140%;left:-40%}}"]
+            selector: 'app-hamburger-menu',
+            template: "<nav role=\"navigation\">\n    <div class=\"ham-container position-relative cursor-pointer\">\n        <div class=\"hamburger position-relative\">\n            <!-- <input type=\"checkbox\" /> -->\n            <div class=\"spans\" (click)=\"active=!active\">\n                <span class=\"block background-blue\" [class.active]=\"active\"></span>\n                <span class=\"block background-blue\" [class.active]=\"active\"></span>\n                <span class=\"block background-blue\" [class.active]=\"active\"></span>\n            </div>\n            <div (click)=\"active=!active\" class=\"overlay fixed bg-black w-full h-full\" *ngIf=\"active\"></div>\n            <ul class=\"menu fixed h-full px-4\" [class.active]=\"active\">\n                <div class=\"\">\n                    <img class=\"ts-logo mr-3\" src=\"assets/images/ts-logo.svg\" alt=\"Townscript Event Ticketing Logo\"\n                        title=\"Townscript Event Ticketing Logo\" />\n                    <div (click)=\"openCityPopup()\" matRipple\n                        class=\"location-section px-2 mt-6 pb-2 border-b border-gray-300 flex items-center\">\n                        <i class=\"mdi mdi-map-marker color-blue text-2xl mr-2\"></i>\n                        <div class=\"flex items-end\">\n                            <span\n                                class=\"mr-1 font-bold text-lg leading-tight text-gray-700 capitalize\">{{activePlace}}</span>\n                            <span class=\"ml-2 color-blue text-xs\">Change</span>\n                        </div>\n                    </div>\n                    <div class=\"user-menu mt-3\">\n                        <app-user-menu [user]=\"user\" *ngIf=\"user\"></app-user-menu>\n                        <div (click)=\"openLogin()\" matRipple class=\"flex px-2 items-center justify-between w-full\"\n                            *ngIf=\"!user\">\n                            <div>\n                                <span class=\"text-lg block text-gray-800\">Login/Signup</span>\n                                <span class=\"text-xs text-gray-700\">To personalize your experience!</span>\n                            </div>\n                            <i class=\"mdi mdi-chevron-right text-4xl color-blue\"></i>\n                        </div>\n                    </div>\n                </div>\n            </ul>\n        </div>\n    </div>\n</nav>",
+            styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.ham-container{z-index:1;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.ham-container .ts-logo{height:30px}.ham-container .hamburger .spans span{width:20px;height:3px;margin-bottom:3px;position:relative;border-radius:3px;z-index:1;-webkit-transform-origin:4px 0;transform-origin:4px 0;-webkit-transition:background .45s,margin .45s,opacity .5s,-webkit-transform .45s;transition:transform .45s,background .45s,margin .45s,opacity .5s,-webkit-transform .45s}.ham-container .hamburger .spans span:first-child{-webkit-transform-origin:0 0;transform-origin:0 0;width:16px}.ham-container .hamburger .spans span:last-child{margin-bottom:0;width:13px}.ham-container .hamburger .spans span:nth-last-child(2){-webkit-transform-origin:0 100%;transform-origin:0 100%;width:20px}.ham-container .hamburger .spans span.active{opacity:1;margin-left:240px;-webkit-transform:rotate(45deg) translate(-11px,0) scaleX(1.5);transform:rotate(45deg) translate(-11px,0) scaleX(1.5);background:#8c8c8c}.ham-container .hamburger .spans span.active:nth-last-child(3){opacity:0;-webkit-transform:rotate(0) scale(.2,.2);transform:rotate(0) scale(.2,.2)}.ham-container .hamburger .spans span.active:nth-last-child(2){-webkit-transform:rotate(-45deg) translate(-10px,-1px);transform:rotate(-45deg) translate(-10px,-1px)}.ham-container .hamburger .spans span.active~ul{-webkit-transform:none;transform:none}.ham-container .overlay{top:0;left:0;opacity:.5;-webkit-animation-name:overlay;animation-name:overlay;-webkit-animation-duration:.5s;animation-duration:.5s}.ham-container .menu{top:0;left:0;width:300px;padding-top:15px;background:#fafafa;box-shadow:0 2px 4px 0 rgba(0,0,0,.11);list-style-type:none;-webkit-font-smoothing:antialiased;-webkit-transform-origin:0 0;transform-origin:0 0;-webkit-transform:translate(-100%,0);transform:translate(-100%,0);-webkit-transition:-webkit-transform .3s;transition:transform .3s;transition:transform .3s,-webkit-transform .3s}.ham-container .menu .logo{height:40px}.ham-container .menu.active{-webkit-transform:none;transform:none}.ham-container .menu li{padding:10px 0}"]
         }),
-        __metadata("design:paramtypes", [PlaceService, HeaderService, DatePipe])
-    ], CitySearchPopupComponent);
-    return CitySearchPopupComponent;
+        __metadata("design:paramtypes", [MatDialog$1,
+            DatePipe])
+    ], HamburgerMenuComponent);
+    return HamburgerMenuComponent;
 }());
 
 var TsLoginSignupService = /** @class */ (function () {
@@ -2256,18 +2418,24 @@ var SharedModule = /** @class */ (function () {
                 RangeDatePipe,
                 FollowComponent,
                 TextOverflowClampDirective,
-                DataAnalyticsDirective
+                DataAnalyticsDirective,
+                CitySelectionModalComponent,
+                CitySearchPopupComponent
             ],
             imports: [
-                CommonModule
+                CommonModule,
+                MatProgressSpinnerModule,
+                FormsModule
             ],
             exports: [
                 FollowComponent,
                 RangeDatePipe,
                 TextOverflowClampDirective,
-                DataAnalyticsDirective
+                DataAnalyticsDirective,
+                CitySelectionModalComponent,
+                CitySearchPopupComponent
             ],
-            providers: [TimeService, UserService, FollowService, DataCollectorService, UtilityService]
+            providers: [SharedService, TimeService, UserService, FollowService, DataCollectorService, UtilityService]
         })
     ], SharedModule);
     return SharedModule;
@@ -2288,7 +2456,7 @@ var TsLoginSignupModule = /** @class */ (function () {
                 MatSnackBarModule,
                 MatInputModule,
                 MatTooltipModule,
-                MatProgressSpinnerModule,
+                MatProgressSpinnerModule$1,
                 SharedModule
             ],
             declarations: [
@@ -2334,15 +2502,15 @@ var LayoutModule = /** @class */ (function () {
                 TsHeaderComponent,
                 TsFooterComponent,
                 SearchComponent,
-                CitySearchPopupComponent,
-                UserMenuComponent
+                UserMenuComponent,
+                HamburgerMenuComponent
             ],
             exports: [
                 TsHeaderComponent,
                 TsFooterComponent,
                 SearchComponent,
-                CitySearchPopupComponent,
-                UserMenuComponent
+                UserMenuComponent,
+                HamburgerMenuComponent
             ],
             providers: [
                 TimeService,
@@ -2391,5 +2559,5 @@ var CardsModule = /** @class */ (function () {
     return CardsModule;
 }());
 
-export { BrowserService, CardsModule, CitySearchPopupComponent, CookieService, DataAnalyticsDirective, DataCollectorService, EmailSentSVGComponent, FollowComponent, FollowService, HeaderService, LayoutModule, LoginModalComponent, NotificationService, PlaceService, RangeDatePipe, SearchComponent, ShareEventModalComponent, SharedModule, TextOverflowClampDirective, TimeService, TsCardSkeletonComponent, TsFooterComponent, TsHeaderComponent, TsListingCardComponent, TsLoginSignupComponent, TsLoginSignupModule, TsLoginSignupService, UserMenuComponent, UserService, UtilityService, config, initializeDataCollector, FooterService as ɵa, ConfirmationSVGComponent as ɵb };
+export { BrowserService, CardsModule, CitySearchPopupComponent, CitySelectionModalComponent, CookieService, DataAnalyticsDirective, DataCollectorService, EmailSentSVGComponent, FollowComponent, FollowService, HamburgerMenuComponent, HeaderService, LayoutModule, LoginModalComponent, NotificationService, PlaceService, RangeDatePipe, SearchComponent, ShareEventModalComponent, SharedModule, TextOverflowClampDirective, TimeService, TsCardSkeletonComponent, TsFooterComponent, TsHeaderComponent, TsListingCardComponent, TsLoginSignupComponent, TsLoginSignupModule, TsLoginSignupService, UserMenuComponent, UserService, UtilityService, config, initializeDataCollector, FooterService as ɵa, SharedService as ɵb, ConfirmationSVGComponent as ɵc };
 //# sourceMappingURL=townscript-components.js.map
