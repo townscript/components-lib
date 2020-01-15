@@ -6,6 +6,7 @@ export declare class HamburgerMenuComponent implements OnInit {
     datepipe: DatePipe;
     user: any;
     activePlace: String;
+    countryCode: String;
     active: boolean;
     constructor(dialog: MatDialog, datepipe: DatePipe);
     openLogin: (callback?: any) => void;
