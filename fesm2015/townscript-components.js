@@ -589,12 +589,15 @@ let LoginModalComponent = class LoginModalComponent {
         if (this.data != undefined && this.data.showSocial != undefined) {
             this.showSocial = this.data.showSocial;
         }
+        if (this.data != undefined && this.data.source != undefined) {
+            this.source = this.data.source;
+        }
     }
 };
 LoginModalComponent = __decorate([
     Component({
         selector: 'app-login-modal',
-        template: "<app-ts-login-signup clickLocation=\"modal\" [mode]=\"'dialog'\" [defaultHeader]=\"header\" [defaultSubHeader]=\"subHeader\"\n  [showSocial]=\"showSocial\" [rdurl]=\"rdurl\" (closeDialog)='close($event)'></app-ts-login-signup>",
+        template: "<app-ts-login-signup clickLocation=\"modal\" [mode]=\"'dialog'\" [defaultHeader]=\"header\" [defaultSubHeader]=\"subHeader\"\n  [showSocial]=\"showSocial\" [rdurl]=\"rdurl\" [source]=\"source\" (closeDialog)='close($event)'></app-ts-login-signup>\n",
         styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.mat-dialog-bkg-container{background:#414243;opacity:.7!important}@media (max-width:700px){.cdk-overlay-pane{height:100vh!important;width:100vw!important;max-width:100vw!important}}@media (min-width:700px){.cdk-overlay-pane{min-width:500px!important}}"]
     }),
     __param(1, Inject(MAT_DIALOG_DATA)),
@@ -1482,6 +1485,7 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
             };
             const userData = Object.assign({}, retData.userDetails, tokenData);
             this.userName = userData.user;
+            const isOrganizer = userData.isOrganizer;
             console.log(this.userName);
             this.userService.updateUser(userData);
             // this.cookieService.setCookie('townscript-user', JSON.stringify(userData), 90);
@@ -1490,8 +1494,14 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
                     this.close(true);
                 }
             }, 1400);
-            if (this.rdurl != undefined) {
-                window.open(this.rdurl, '_self');
+            // no redirection needed ,in case of follow
+            if (this.source != 'follow') {
+                if (this.rdurl != undefined) {
+                    window.open(this.rdurl, '_self');
+                }
+                if (isOrganizer) {
+                    window.open('/dashboard', '_self');
+                }
             }
         });
         this.signUp = () => __awaiter(this, void 0, void 0, function* () {
@@ -1679,6 +1689,10 @@ __decorate([
     Input(),
     __metadata("design:type", Object)
 ], TsLoginSignupComponent.prototype, "showSocial", void 0);
+__decorate([
+    Input(),
+    __metadata("design:type", Object)
+], TsLoginSignupComponent.prototype, "source", void 0);
 __decorate([
     Output(),
     __metadata("design:type", Object)
@@ -1991,6 +2005,7 @@ let FollowComponent = class FollowComponent {
         this.type = 'button';
         this.color = '#683592';
         this.status = new EventEmitter();
+        this.subHeader = "Your one stop tool for exploring events";
         this.loggedIn = false;
         this.followed = false;
         this.emitFollowStatus = () => {
@@ -2020,6 +2035,7 @@ let FollowComponent = class FollowComponent {
             dialogConfig.disableClose = false;
             dialogConfig.autoFocus = true;
             dialogConfig.backdropClass = 'mat-dialog-bkg-container';
+            dialogConfig.data = { 'subHeader': this.subHeader, 'source': 'follow' };
             const dialogRef = this.dialog.open(LoginModalComponent, dialogConfig);
             dialogRef.afterClosed().subscribe(isSignedIn => {
                 if (isSignedIn) {
@@ -2099,6 +2115,10 @@ __decorate([
     Input(),
     __metadata("design:type", Object)
 ], FollowComponent.prototype, "followType", void 0);
+__decorate([
+    Input(),
+    __metadata("design:type", Object)
+], FollowComponent.prototype, "typeName", void 0);
 __decorate([
     Output(),
     __metadata("design:type", Object)

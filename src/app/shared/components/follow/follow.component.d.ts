@@ -12,7 +12,9 @@ export declare class FollowComponent implements OnInit, OnChanges, OnDestroy {
     color: string;
     followTypeId: any;
     followType: any;
+    typeName: any;
     status: any;
+    subHeader: string;
     textCopy: string;
     hovered: boolean;
     user: any;

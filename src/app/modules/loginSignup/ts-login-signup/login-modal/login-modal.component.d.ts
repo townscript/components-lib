@@ -8,6 +8,7 @@ export declare class LoginModalComponent implements OnInit {
     subHeader: string;
     rdurl: string;
     showSocial: boolean;
+    source: string;
     constructor(dialogRef: MatDialogRef<TsLoginSignupComponent>, data: any);
     ngOnInit(): void;
     close: (event: any) => void;

@@ -20,6 +20,7 @@ export declare class TsLoginSignupComponent implements OnInit, OnDestroy {
     defaultSubHeader: any;
     rdurl: any;
     showSocial: any;
+    source: any;
     closeDialog: EventEmitter<{}>;
     recaptchaRef: RecaptchaComponent;
     captchaToken: any;
