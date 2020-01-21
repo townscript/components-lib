@@ -395,7 +395,7 @@ let PlaceService = class PlaceService {
         console.log('updating place in components with ');
         console.log(data);
         data = JSON.stringify(data);
-        this.cookieService.setCookie('location', data, 100000000, '/');
+        this.cookieService.setCookie('location', data, 100, '/');
         this.currentPlace$.next(data);
     }
     getLocationFromIpInfo() {
