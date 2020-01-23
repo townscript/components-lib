@@ -1392,9 +1392,9 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
         this.resetPwdLinkSent = false;
         this.signUpErrMessage = '';
         this.fbLoginURL = config.baseUrl + 'api/'
-            + 'user/signinwithfacebook' + (this.rdurl === undefined ? '' : '?rdurl=' + this.rdurl);
+            + 'user/signinwithfacebook';
         this.googleLoginURL = config.baseUrl + 'api/'
-            + 'user/signinwithgoogle' + (this.rdurl === undefined ? '' : '?rdurl=' + this.rdurl);
+            + 'user/signinwithgoogle';
         this.showLoader = false;
         this.countryCode = 'IN';
         this.showConfirmation = false;
@@ -1665,6 +1665,16 @@ let TsLoginSignupComponent = class TsLoginSignupComponent {
                 this.rdurl = this.rdurl.replace("]", "%5D");
             }
         });
+    }
+    ngOnChanges(changes) {
+        if (changes['rdurl']) {
+            this.fbLoginURL = config.baseUrl + 'api/'
+                + 'user/signinwithfacebook' + (this.rdurl == undefined ? '' : '?rdurl=' + this.rdurl);
+            this.googleLoginURL = config.baseUrl + 'api/'
+                + 'user/signinwithgoogle' + (this.rdurl == undefined ? '' : '?rdurl=' + this.rdurl);
+        }
+    }
+    ngAfterContentInit() {
     }
     ngOnDestroy() {
         if (this.subObject !== undefined) {

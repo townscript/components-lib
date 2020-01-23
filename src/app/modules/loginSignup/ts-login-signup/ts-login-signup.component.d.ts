@@ -1,4 +1,4 @@
-import { OnInit, EventEmitter, OnDestroy } from '@angular/core';
+import { OnInit, EventEmitter, OnDestroy, SimpleChanges } from '@angular/core';
 import { RecaptchaComponent } from 'ng-recaptcha';
 import { CookieService } from '../../../core/cookie.service';
 import { UserService } from '../../../shared/services/user-service';
@@ -53,6 +53,8 @@ export declare class TsLoginSignupComponent implements OnInit, OnDestroy {
     userName: any;
     constructor(utilityService: UtilityService, cookieService: CookieService, userService: UserService, notificationService: NotificationService, tsLoginSignupService: TsLoginSignupService, placeService: PlaceService, activatedRoute: ActivatedRoute);
     ngOnInit(): void;
+    ngOnChanges(changes: SimpleChanges): void;
+    ngAfterContentInit(): void;
     ngOnDestroy(): void;
     initForm: () => void;
     close: (signedIn: any) => void;

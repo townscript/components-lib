@@ -1574,9 +1574,9 @@
             this.resetPwdLinkSent = false;
             this.signUpErrMessage = '';
             this.fbLoginURL = config.baseUrl + 'api/'
-                + 'user/signinwithfacebook' + (this.rdurl === undefined ? '' : '?rdurl=' + this.rdurl);
+                + 'user/signinwithfacebook';
             this.googleLoginURL = config.baseUrl + 'api/'
-                + 'user/signinwithgoogle' + (this.rdurl === undefined ? '' : '?rdurl=' + this.rdurl);
+                + 'user/signinwithgoogle';
             this.showLoader = false;
             this.countryCode = 'IN';
             this.showConfirmation = false;
@@ -1890,6 +1890,16 @@
                     _this_1.rdurl = _this_1.rdurl.replace("]", "%5D");
                 }
             });
+        };
+        TsLoginSignupComponent.prototype.ngOnChanges = function (changes) {
+            if (changes['rdurl']) {
+                this.fbLoginURL = config.baseUrl + 'api/'
+                    + 'user/signinwithfacebook' + (this.rdurl == undefined ? '' : '?rdurl=' + this.rdurl);
+                this.googleLoginURL = config.baseUrl + 'api/'
+                    + 'user/signinwithgoogle' + (this.rdurl == undefined ? '' : '?rdurl=' + this.rdurl);
+            }
+        };
+        TsLoginSignupComponent.prototype.ngAfterContentInit = function () {
         };
         TsLoginSignupComponent.prototype.ngOnDestroy = function () {
             if (this.subObject !== undefined) {
