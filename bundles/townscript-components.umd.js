@@ -1698,9 +1698,11 @@
                             if (this.source != 'follow') {
                                 if (this.rdurl != undefined) {
                                     window.open(this.rdurl, '_self');
+                                    return [2 /*return*/];
                                 }
                                 if (isOrganizer) {
                                     window.open('/dashboard', '_self');
+                                    return [2 /*return*/];
                                 }
                             }
                             return [2 /*return*/];
