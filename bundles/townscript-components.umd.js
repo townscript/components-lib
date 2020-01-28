@@ -463,11 +463,14 @@
                 }
                 else {
                     this.getLocationFromIpInfo().then(function (ipInfoData) {
-                        var data = { 'city': ipInfoData['city'],
+                        var data = {
+                            'city': ipInfoData['city'],
                             'country': ipInfoData['countryCode'] ? ipInfoData['countryCode'].toLowerCase() : 'in',
-                            'currentPlace': ipInfoData['city'] };
-                        if (!_this.cookieService.getCookie('location'))
+                            'currentPlace': ipInfoData['city']
+                        };
+                        if (!_this.cookieService.getCookie('location')) {
                             _this.updatePlace(data);
+                        }
                     });
                 }
             }
@@ -481,32 +484,33 @@
         };
         PlaceService.prototype.getLocationFromIpInfo = function () {
             return __awaiter(this, void 0, void 0, function () {
-                var localData, ipInfoData, ipInfoJson;
+                var localData, ipInfoData_1, ipInfoJson;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             if (!common.isPlatformBrowser(this.platformId)) return [3 /*break*/, 4];
                             localData = localStorage.getItem('ipinfo_data');
-                            ipInfoData = void 0;
                             if (!!localData) return [3 /*break*/, 2];
                             console.log('Calling ip info!');
-                            return [4 /*yield*/, this.getJsonFromIpInfo()];
+                            return [4 /*yield*/, this.getJsonFromIpInfo().catch(function (err) {
+                                    ipInfoData_1 = { 'countryCode': 'in', 'city': 'india' };
+                                })];
                         case 1:
                             ipInfoJson = _a.sent();
-                            ipInfoData = {
-                                'lat': ipInfoJson['loc'].split(',')[0],
-                                'lng': ipInfoJson['loc'].split(',')[1],
-                                'countryCode': ipInfoJson['country'].toLowerCase(),
-                                'city': ipInfoJson['city'].toLowerCase()
-                            };
-                            localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData));
+                            if (ipInfoJson) {
+                                ipInfoData_1 = {
+                                    'countryCode': ipInfoJson['country'].toLowerCase(),
+                                    'city': ipInfoJson['city'].toLowerCase()
+                                };
+                            }
+                            localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData_1));
                             return [3 /*break*/, 3];
                         case 2:
                             if (this.utilityService.IsJsonString(localData)) {
-                                ipInfoData = JSON.parse(localData);
+                                ipInfoData_1 = JSON.parse(localData);
                             }
                             _a.label = 3;
-                        case 3: return [2 /*return*/, ipInfoData];
+                        case 3: return [2 /*return*/, ipInfoData_1];
                         case 4: return [2 /*return*/];
                     }
                 });

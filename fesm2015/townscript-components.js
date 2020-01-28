@@ -383,11 +383,14 @@ let PlaceService = class PlaceService {
             }
             else {
                 this.getLocationFromIpInfo().then(ipInfoData => {
-                    const data = { 'city': ipInfoData['city'],
+                    const data = {
+                        'city': ipInfoData['city'],
                         'country': ipInfoData['countryCode'] ? ipInfoData['countryCode'].toLowerCase() : 'in',
-                        'currentPlace': ipInfoData['city'] };
-                    if (!this.cookieService.getCookie('location'))
+                        'currentPlace': ipInfoData['city']
+                    };
+                    if (!this.cookieService.getCookie('location')) {
                         this.updatePlace(data);
+                    }
                 });
             }
         }
@@ -406,13 +409,15 @@ let PlaceService = class PlaceService {
                 let ipInfoData;
                 if (!localData) {
                     console.log('Calling ip info!');
-                    const ipInfoJson = yield this.getJsonFromIpInfo();
-                    ipInfoData = {
-                        'lat': ipInfoJson['loc'].split(',')[0],
-                        'lng': ipInfoJson['loc'].split(',')[1],
-                        'countryCode': ipInfoJson['country'].toLowerCase(),
-                        'city': ipInfoJson['city'].toLowerCase()
-                    };
+                    const ipInfoJson = yield this.getJsonFromIpInfo().catch(err => {
+                        ipInfoData = { 'countryCode': 'in', 'city': 'india' };
+                    });
+                    if (ipInfoJson) {
+                        ipInfoData = {
+                            'countryCode': ipInfoJson['country'].toLowerCase(),
+                            'city': ipInfoJson['city'].toLowerCase()
+                        };
+                    }
                     localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData));
                 }
                 else {
