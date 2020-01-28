@@ -1,40 +1,11 @@
-import { OnInit, OnDestroy } from '@angular/core';
-import { MatDialog } from '@angular/material';
+import { OnInit } from '@angular/core';
 import { FooterService } from './ts-footer.service';
-import { PlaceService } from '../ts-header/place.service';
-import { UserService } from '../../../../shared/services/user-service';
-import { UtilityService } from '../../../../shared/services/utilities.service';
-export declare class TsFooterComponent implements OnInit, OnDestroy {
-    private dialog;
-    private userService;
+export declare class TsFooterComponent implements OnInit {
     private footerService;
-    private placeService;
-    private utilityService;
-    source: string;
-    popularEvents: any;
-    recentBlogs: any;
-    popularReads: {
-        title: string;
-        url: string;
-    }[];
     popularCities: any;
-    trending: any;
-    popularEventsData: any;
-    countryCityMap: any;
-    city: any;
-    placeId: string;
+    showBuilding: boolean;
     copyrightYear: number;
-    myBookingsURL: string;
-    subObject: any;
-    constructor(dialog: MatDialog, userService: UserService, footerService: FooterService, placeService: PlaceService, utilityService: UtilityService);
-    openContactUs: () => void;
-    openMyBooking: () => void;
-    redirectToMyBookings: () => void;
-    openLogin: () => void;
-    getCityFromCityCode: (code: string) => Promise<any>;
-    getPopularEvents: (country?: string) => Promise<any>;
+    constructor(footerService: FooterService);
     getPopularCities: () => Promise<any>;
     ngOnInit(): void;
-    setTrending: () => void;
-    ngOnDestroy(): void;
 }
