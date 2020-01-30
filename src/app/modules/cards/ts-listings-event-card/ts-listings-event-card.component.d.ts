@@ -22,5 +22,6 @@ export declare class TsListingEventCardComponent implements OnInit, OnDestroy {
     ngOnInit(): void;
     buildUrlArray: () => void;
     shareEvent: (event: any) => void;
+    getLocation: () => any;
     ngOnDestroy(): void;
 }
