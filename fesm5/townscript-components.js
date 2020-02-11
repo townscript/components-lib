@@ -486,7 +486,7 @@ var CitySearchPopupComponent = /** @class */ (function () {
         this.cityLoading = false;
         this.buildUrlArray = function () {
             if (_this.router.url) {
-                _this.urlArray = _this.router.url.split("?")[0].replace('/', '').split('/');
+                _this.urlArray = _this.router.url.split('?')[0].replace('/', '').split('/');
             }
             else {
                 _this.urlArray = ['in'];
@@ -501,16 +501,20 @@ var CitySearchPopupComponent = /** @class */ (function () {
         };
         this.placeChanged = function (place) {
             var tsType = _this.urlArray[2];
-            var tsTypeUrl = tsType && tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
+            var tsTypeUrl = '';
+            if (tsType !== 'upcoming-events') {
+                tsTypeUrl = tsType && tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
+            }
+            var finalUrl = '';
             if (place.type === 'country') {
-                _this.router.navigate(['/' + place.twoDigitCode.toLowerCase() +
-                        '/' + place.country.split(' ').join('-').toLowerCase() + tsTypeUrl], { state: { place: place } });
+                finalUrl = '/' + place.twoDigitCode.toLowerCase() +
+                    '/' + place.country.split(' ').join('-').toLowerCase() + tsTypeUrl;
             }
             if (place.type === 'city') {
-                _this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.cityCode + tsTypeUrl], { state: { place: place } });
+                finalUrl = '/' + place.countryCode.toLowerCase() + '/' + place.cityCode + tsTypeUrl;
             }
             if (place.type === 'locality') {
-                _this.router.navigate(['/' + place.countryCode.toLowerCase() + '/' + place.localityCode + '--' + place.cityCode + tsTypeUrl], { state: { place: place } });
+                finalUrl = '/' + place.countryCode.toLowerCase() + ' / ' + place.localityCode + '--' + place.cityCode + tsTypeUrl;
             }
             if (place.type === 'unstructured') {
                 var name_1 = place.name.replace(/,/g, '').replace(/ /g, '-');
@@ -518,8 +522,10 @@ var CitySearchPopupComponent = /** @class */ (function () {
                 if (place.secondaryText) {
                     secondaryText = '--' + place.secondaryText.replace(/,/g, '').replace(/ /g, '-');
                 }
-                _this.router.navigate(['/s/' + name_1 + secondaryText + tsTypeUrl], { state: { place: place } });
+                finalUrl = '/s/' + name_1 + secondaryText + tsTypeUrl;
             }
+            console.log(finalUrl);
+            _this.router.navigate([finalUrl], { state: { place: place } });
             // this.placeService.updatePlace(place.name);
             _this.activePlace = place.name;
             _this.activePlaceChange.emit(place.name);
@@ -582,7 +588,7 @@ var CitySearchPopupComponent = /** @class */ (function () {
     ], CitySearchPopupComponent.prototype, "popularPlaces", void 0);
     __decorate([
         Input(),
-        __metadata("design:type", Boolean)
+        __metadata("design:type", Object)
     ], CitySearchPopupComponent.prototype, "closeSuggestions", void 0);
     __decorate([
         Output(),
