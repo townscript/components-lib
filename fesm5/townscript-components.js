@@ -514,7 +514,7 @@ var CitySearchPopupComponent = /** @class */ (function () {
                 finalUrl = '/' + place.countryCode.toLowerCase() + '/' + place.cityCode + tsTypeUrl;
             }
             if (place.type === 'locality') {
-                finalUrl = '/' + place.countryCode.toLowerCase() + ' / ' + place.localityCode + '--' + place.cityCode + tsTypeUrl;
+                finalUrl = '/' + place.countryCode.toLowerCase() + '/' + place.localityCode + '--' + place.cityCode + tsTypeUrl;
             }
             if (place.type === 'unstructured') {
                 var name_1 = place.name.replace(/,/g, '').replace(/ /g, '-');
