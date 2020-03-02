@@ -20,7 +20,7 @@
     "core-js": "^2.5.4",
     "intl-tel-input": "^16.0.2",
     "luxon": "^1.17.2",
-    "ng-lazyload-image": "^7.0.1",
+    "ng-lazyload-image": "7.0.1",
     "ng-recaptcha": "^4.3.0",
     "rxjs": "~6.5.2",
     "tailwindcss": "^1.0.5",
