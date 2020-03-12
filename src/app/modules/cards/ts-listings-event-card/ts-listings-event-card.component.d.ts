@@ -14,11 +14,11 @@ export declare class TsListingEventCardComponent implements OnInit, OnDestroy {
     gridType: any;
     hideFollowShare: boolean;
     theme: string;
+    hideTime: boolean;
     router: Router;
     homeUrl: any;
     subObject: any;
     urlArray: string[];
-    hideTime: boolean;
     defaultCardImageUrl: string;
     constructor(utilityService: UtilityService, dialog: MatDialog, browser: BrowserService, placeService: PlaceService);
     ngOnInit(): void;

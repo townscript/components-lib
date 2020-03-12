@@ -1632,6 +1632,7 @@ let RangeDatePipe = class RangeDatePipe {
                 // for Recurring events
                 if (isRecurrent && args['startTime'] && args['recurrenceRule']) {
                     const startTime = args['startTime'];
+                    const endTime = args['endTime'];
                     const freq = args['recurrenceRule'].split(';')[0].split('=')[1];
                     let freqLabel = 'Daily';
                     //custom date selected
@@ -1656,7 +1657,7 @@ let RangeDatePipe = class RangeDatePipe {
                             }
                         }
                     }
-                    return freqLabel + (hideTime ? '' : (' | ' + startTime));
+                    return freqLabel + (hideTime ? '' : (' | ' + startTime + (endTime != undefined ? ' to ' + endTime : '')));
                 }
                 else {
                     let local = DateTime.local().setZone(eventTimeZone);
@@ -2264,8 +2265,8 @@ let TsListingEventCardComponent = class TsListingEventCardComponent {
         this.gridType = 'grid';
         this.hideFollowShare = false;
         this.theme = 'townscript';
-        this.router = config.router;
         this.hideTime = true;
+        this.router = config.router;
         this.defaultCardImageUrl = config.s3BaseUrl + 'townscript-common-resources/ListingsStatic/default-card.jpg';
         this.buildUrlArray = () => {
             if (this.router.url) {
@@ -2349,6 +2350,10 @@ __decorate([
     Input(),
     __metadata("design:type", Object)
 ], TsListingEventCardComponent.prototype, "theme", void 0);
+__decorate([
+    Input(),
+    __metadata("design:type", Boolean)
+], TsListingEventCardComponent.prototype, "hideTime", void 0);
 TsListingEventCardComponent = __decorate([
     Component({
         selector: 'ts-listings-event-card',

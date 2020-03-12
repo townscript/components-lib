@@ -1779,6 +1779,7 @@ var RangeDatePipe = /** @class */ (function () {
                 // for Recurring events
                 if (isRecurrent && args['startTime'] && args['recurrenceRule']) {
                     var startTime = args['startTime'];
+                    var endTime = args['endTime'];
                     var freq = args['recurrenceRule'].split(';')[0].split('=')[1];
                     var freqLabel = 'Daily';
                     //custom date selected
@@ -1803,7 +1804,7 @@ var RangeDatePipe = /** @class */ (function () {
                             }
                         }
                     }
-                    return freqLabel + (hideTime ? '' : (' | ' + startTime));
+                    return freqLabel + (hideTime ? '' : (' | ' + startTime + (endTime != undefined ? ' to ' + endTime : '')));
                 }
                 else {
                     var local = DateTime.local().setZone(eventTimeZone);
@@ -2438,8 +2439,8 @@ var TsListingEventCardComponent = /** @class */ (function () {
         this.gridType = 'grid';
         this.hideFollowShare = false;
         this.theme = 'townscript';
-        this.router = config.router;
         this.hideTime = true;
+        this.router = config.router;
         this.defaultCardImageUrl = config.s3BaseUrl + 'townscript-common-resources/ListingsStatic/default-card.jpg';
         this.buildUrlArray = function () {
             if (_this.router.url) {
@@ -2523,6 +2524,10 @@ var TsListingEventCardComponent = /** @class */ (function () {
         Input(),
         __metadata("design:type", Object)
     ], TsListingEventCardComponent.prototype, "theme", void 0);
+    __decorate([
+        Input(),
+        __metadata("design:type", Boolean)
+    ], TsListingEventCardComponent.prototype, "hideTime", void 0);
     TsListingEventCardComponent = __decorate([
         Component({
             selector: 'ts-listings-event-card',
