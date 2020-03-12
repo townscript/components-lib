@@ -1804,7 +1804,7 @@ var RangeDatePipe = /** @class */ (function () {
                             }
                         }
                     }
-                    return freqLabel + (hideTime ? '' : (' | ' + startTime + (endTime != undefined ? ' to ' + endTime : '')));
+                    return (endTime != undefined ? '' : freqLabel) + (hideTime ? '' : (' | ' + startTime + (endTime != undefined ? ' to ' + endTime : '')));
                 }
                 else {
                     var local = DateTime.local().setZone(eventTimeZone);
