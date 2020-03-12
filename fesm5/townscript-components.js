@@ -2197,15 +2197,16 @@ var DataCollectorService = /** @class */ (function () {
         };
         this.sendPageViewDataToKinesis = function () {
             try {
-                var loggedInUserId_1 = null;
+                var loggedInUserId_1;
                 _this.userService.user.subscribe(function (data) {
                     _this.user = data;
                     if (_this.user && _this.user.userId) {
-                        loggedInUserId_1 = _this.user.userId;
+                        loggedInUserId_1 = JSON.stringify(_this.user.userId);
                     }
-                    if (loggedInUserId_1) {
-                        DataProducer.callPageView(loggedInUserId_1);
+                    else {
+                        loggedInUserId_1 = null;
                     }
+                    DataProducer.callPageView(loggedInUserId_1);
                 });
             }
             catch (e) {
@@ -2214,15 +2215,16 @@ var DataCollectorService = /** @class */ (function () {
         };
         this.sendClickDataToKinesis = function (eventLabel, clickedLocation) {
             try {
-                var loggedInUserId_2 = null;
+                var loggedInUserId_2;
                 _this.userService.user.subscribe(function (data) {
                     _this.user = data;
                     if (_this.user && _this.user.userId) {
                         loggedInUserId_2 = _this.user.userId;
                     }
-                    if (loggedInUserId_2) {
-                        DataProducer.callClickEvent(eventLabel, clickedLocation, loggedInUserId_2);
+                    else {
+                        loggedInUserId_2 = null;
                     }
+                    DataProducer.callClickEvent(eventLabel, clickedLocation, loggedInUserId_2);
                 });
             }
             catch (e) {

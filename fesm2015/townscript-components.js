@@ -2037,15 +2037,16 @@ let DataCollectorService = class DataCollectorService {
         };
         this.sendPageViewDataToKinesis = () => {
             try {
-                let loggedInUserId = null;
+                let loggedInUserId;
                 this.userService.user.subscribe(data => {
                     this.user = data;
                     if (this.user && this.user.userId) {
-                        loggedInUserId = this.user.userId;
+                        loggedInUserId = JSON.stringify(this.user.userId);
                     }
-                    if (loggedInUserId) {
-                        DataProducer.callPageView(loggedInUserId);
+                    else {
+                        loggedInUserId = null;
                     }
+                    DataProducer.callPageView(loggedInUserId);
                 });
             }
             catch (e) {
@@ -2054,15 +2055,16 @@ let DataCollectorService = class DataCollectorService {
         };
         this.sendClickDataToKinesis = (eventLabel, clickedLocation) => {
             try {
-                let loggedInUserId = null;
+                let loggedInUserId;
                 this.userService.user.subscribe(data => {
                     this.user = data;
                     if (this.user && this.user.userId) {
                         loggedInUserId = this.user.userId;
                     }
-                    if (loggedInUserId) {
-                        DataProducer.callClickEvent(eventLabel, clickedLocation, loggedInUserId);
+                    else {
+                        loggedInUserId = null;
                     }
+                    DataProducer.callClickEvent(eventLabel, clickedLocation, loggedInUserId);
                 });
             }
             catch (e) {
