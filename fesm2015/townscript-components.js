@@ -1661,7 +1661,7 @@ let RangeDatePipe = class RangeDatePipe {
                             }
                         }
                     }
-                    return (endTime != undefined && !hideTime ? '' : freqLabel + ' | ') + (hideTime ? '' : (startTime + (endTime != undefined ? ' to ' + endTime : '')));
+                    return (endTime != undefined && !hideTime ? '' : freqLabel) + (hideTime ? '' : (startTime + (endTime != undefined ? ' to ' + endTime : '')));
                 }
                 else {
                     let local = DateTime.local().setZone(eventTimeZone);

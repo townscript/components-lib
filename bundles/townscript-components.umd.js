@@ -1871,7 +1871,7 @@
                                 }
                             }
                         }
-                        return (endTime != undefined && !hideTime ? '' : freqLabel + ' | ') + (hideTime ? '' : (startTime + (endTime != undefined ? ' to ' + endTime : '')));
+                        return (endTime != undefined && !hideTime ? '' : freqLabel) + (hideTime ? '' : (startTime + (endTime != undefined ? ' to ' + endTime : '')));
                     }
                     else {
                         var local = luxon.DateTime.local().setZone(eventTimeZone);
