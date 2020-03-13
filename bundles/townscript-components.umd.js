@@ -2240,9 +2240,10 @@
     }());
 
     var DataCollectorService = /** @class */ (function () {
-        function DataCollectorService(userService) {
+        function DataCollectorService(userService, platformId) {
             var _this = this;
             this.userService = userService;
+            this.platformId = platformId;
             this.initKinesisDataCollector = function (awsAccessKeyId, awsSecretAccessKey, awsRegion, awsKinesisStreamName, recordForKinesis) {
                 try {
                     var dataPipelineConfig = {
@@ -2270,7 +2271,9 @@
                         else {
                             loggedInUserId_1 = null;
                         }
-                        dataCollector.DataProducer.callPageView(loggedInUserId_1);
+                        if (common.isPlatformBrowser(_this.platformId)) {
+                            dataCollector.DataProducer.callPageView(loggedInUserId_1);
+                        }
                     });
                 }
                 catch (e) {
@@ -2288,7 +2291,9 @@
                         else {
                             loggedInUserId_2 = null;
                         }
-                        dataCollector.DataProducer.callClickEvent(eventLabel, clickedLocation, loggedInUserId_2);
+                        if (common.isPlatformBrowser(_this.platformId)) {
+                            dataCollector.DataProducer.callClickEvent(eventLabel, clickedLocation, loggedInUserId_2);
+                        }
                     });
                 }
                 catch (e) {
@@ -2298,7 +2303,8 @@
         }
         DataCollectorService = __decorate([
             core.Injectable(),
-            __metadata("design:paramtypes", [UserService])
+            __param(1, core.Inject(core.PLATFORM_ID)),
+            __metadata("design:paramtypes", [UserService, Object])
         ], DataCollectorService);
         return DataCollectorService;
     }());

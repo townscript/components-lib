@@ -2018,8 +2018,9 @@ FollowComponent = __decorate([
 ], FollowComponent);
 
 let DataCollectorService = class DataCollectorService {
-    constructor(userService) {
+    constructor(userService, platformId) {
         this.userService = userService;
+        this.platformId = platformId;
         this.initKinesisDataCollector = (awsAccessKeyId, awsSecretAccessKey, awsRegion, awsKinesisStreamName, recordForKinesis) => {
             try {
                 const dataPipelineConfig = {
@@ -2047,7 +2048,9 @@ let DataCollectorService = class DataCollectorService {
                     else {
                         loggedInUserId = null;
                     }
-                    DataProducer.callPageView(loggedInUserId);
+                    if (isPlatformBrowser(this.platformId)) {
+                        DataProducer.callPageView(loggedInUserId);
+                    }
                 });
             }
             catch (e) {
@@ -2065,7 +2068,9 @@ let DataCollectorService = class DataCollectorService {
                     else {
                         loggedInUserId = null;
                     }
-                    DataProducer.callClickEvent(eventLabel, clickedLocation, loggedInUserId);
+                    if (isPlatformBrowser(this.platformId)) {
+                        DataProducer.callClickEvent(eventLabel, clickedLocation, loggedInUserId);
+                    }
                 });
             }
             catch (e) {
@@ -2076,7 +2081,8 @@ let DataCollectorService = class DataCollectorService {
 };
 DataCollectorService = __decorate([
     Injectable(),
-    __metadata("design:paramtypes", [UserService])
+    __param(1, Inject(PLATFORM_ID)),
+    __metadata("design:paramtypes", [UserService, Object])
 ], DataCollectorService);
 function initializeDataCollector(awsAccessKeyId, awsSecretAccessKey, awsRegion, awsKinesisStreamName, recordForKinesis, dataCollectorService) {
     return () => dataCollectorService.initKinesisDataCollector(awsAccessKeyId, awsSecretAccessKey, awsRegion, awsKinesisStreamName, recordForKinesis);

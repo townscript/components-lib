@@ -2177,9 +2177,10 @@ var FollowComponent = /** @class */ (function () {
 }());
 
 var DataCollectorService = /** @class */ (function () {
-    function DataCollectorService(userService) {
+    function DataCollectorService(userService, platformId) {
         var _this = this;
         this.userService = userService;
+        this.platformId = platformId;
         this.initKinesisDataCollector = function (awsAccessKeyId, awsSecretAccessKey, awsRegion, awsKinesisStreamName, recordForKinesis) {
             try {
                 var dataPipelineConfig = {
@@ -2207,7 +2208,9 @@ var DataCollectorService = /** @class */ (function () {
                     else {
                         loggedInUserId_1 = null;
                     }
-                    DataProducer.callPageView(loggedInUserId_1);
+                    if (isPlatformBrowser(_this.platformId)) {
+                        DataProducer.callPageView(loggedInUserId_1);
+                    }
                 });
             }
             catch (e) {
@@ -2225,7 +2228,9 @@ var DataCollectorService = /** @class */ (function () {
                     else {
                         loggedInUserId_2 = null;
                     }
-                    DataProducer.callClickEvent(eventLabel, clickedLocation, loggedInUserId_2);
+                    if (isPlatformBrowser(_this.platformId)) {
+                        DataProducer.callClickEvent(eventLabel, clickedLocation, loggedInUserId_2);
+                    }
                 });
             }
             catch (e) {
@@ -2235,7 +2240,8 @@ var DataCollectorService = /** @class */ (function () {
     }
     DataCollectorService = __decorate([
         Injectable(),
-        __metadata("design:paramtypes", [UserService])
+        __param(1, Inject(PLATFORM_ID)),
+        __metadata("design:paramtypes", [UserService, Object])
     ], DataCollectorService);
     return DataCollectorService;
 }());
