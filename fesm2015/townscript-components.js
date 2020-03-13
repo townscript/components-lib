@@ -954,6 +954,7 @@ let SearchComponent = class SearchComponent {
         this.navigateToListing = (interest) => {
             if (interest['secondaryTextProperties'] && interest['secondaryTextProperties']['isOnline']) {
                 this.router.navigate(['/online']);
+                return;
             }
             this.buildUrlArray();
             const stopWords = ['e', 'o'];

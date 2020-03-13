@@ -1013,6 +1013,7 @@ var SearchComponent = /** @class */ (function () {
         this.navigateToListing = function (interest) {
             if (interest['secondaryTextProperties'] && interest['secondaryTextProperties']['isOnline']) {
                 _this.router.navigate(['/online']);
+                return;
             }
             _this.buildUrlArray();
             var stopWords = ['e', 'o'];
