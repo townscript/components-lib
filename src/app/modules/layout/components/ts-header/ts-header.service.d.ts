@@ -8,4 +8,5 @@ export declare class HeaderService {
     getplaceSearchResults: (query: any) => import("rxjs").Observable<Object>;
     getPopularCities(countryCode: any): Promise<Object>;
     getSuggestions(searchText: string): Promise<any>;
+    postSuggestions(searchText: string): Promise<any>;
 }

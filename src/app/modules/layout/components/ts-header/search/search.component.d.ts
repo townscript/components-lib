@@ -17,6 +17,7 @@ export declare class SearchComponent implements OnInit {
     cityInput: ElementRef;
     citySuggestions: ElementRef;
     searchResultsEle: ElementRef;
+    searchTextInputEle: ElementRef;
     listItems: QueryList<SearchSuggestionComponent>;
     searchText: string;
     algoliaIndexName: any;
@@ -46,8 +47,10 @@ export declare class SearchComponent implements OnInit {
     callAlgolia: (text: any) => void;
     fetchSuggestions: (text: any) => void;
     suggestionSelected: (event: any) => void;
-    initKeyManagerHandlers(): void;
+    initKeyManagerHandlers: () => void;
+    hoverOnSuggestion: (indexOfItemhoveredOn: any) => void;
     chooseSuggestion: (text: any) => void;
+    addOrUpdateTSSuggestions: () => void;
     goToSearchResultsPage: () => void;
     filterDataForSearchResult: (data: any) => void;
     clickout(event: any): void;

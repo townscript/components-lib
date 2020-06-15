@@ -30,7 +30,7 @@ SearchSuggestionComponent = tslib_1.__decorate([
     Component({
         selector: 'app-search-suggestion',
         template: "<div class=\"list-item flex flex-row cursor-pointer\" [ngClass]=\"isActive? 'activeItem':''\">\n    <i matRipple class=\"px-4 text-xl mdi mdi-magnify text-gray-400 md:text-xl align-middle\"></i>\n    <div class=\"flex-grow self-center\" *ngIf=\"item.suggestion.includes(searchText)\">\n        <span class=\"text-gray-800 font-light\">{{searchText}}</span>\n        <span>{{item.suggestion.replace(searchText,\"\")}}</span>\n    </div>\n    <div class=\"flex-grow self-center\" *ngIf=\"!item.suggestion.includes(searchText)\">\n        <span>{{item.suggestion}}</span>                                \n    </div>\n</div>\n",
-        styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.activeItem{background-color:#ededed}.list-item:hover{background:#ededed}"]
+        styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.activeItem{background-color:#ededed}"]
     }),
     tslib_1.__metadata("design:paramtypes", [])
 ], SearchSuggestionComponent);

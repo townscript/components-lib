@@ -386,6 +386,16 @@ var HeaderService = /** @class */ (function () {
             });
         });
     };
+    HeaderService.prototype.postSuggestions = function (searchText) {
+        return __awaiter(this, void 0, void 0, function () {
+            return __generator(this, function (_a) {
+                switch (_a.label) {
+                    case 0: return [4 /*yield*/, this.http.post(this.listingsServerUrl + '/tsElasticSearch/suggestions/add?search-intent=' + searchText, null, {}).toPromise()];
+                    case 1: return [2 /*return*/, _a.sent()];
+                }
+            });
+        });
+    };
     HeaderService = __decorate([
         Injectable(),
         __metadata("design:paramtypes", [HttpClient])
@@ -984,7 +994,7 @@ var SearchSuggestionComponent = /** @class */ (function () {
         Component({
             selector: 'app-search-suggestion',
             template: "<div class=\"list-item flex flex-row cursor-pointer\" [ngClass]=\"isActive? 'activeItem':''\">\n    <i matRipple class=\"px-4 text-xl mdi mdi-magnify text-gray-400 md:text-xl align-middle\"></i>\n    <div class=\"flex-grow self-center\" *ngIf=\"item.suggestion.includes(searchText)\">\n        <span class=\"text-gray-800 font-light\">{{searchText}}</span>\n        <span>{{item.suggestion.replace(searchText,\"\")}}</span>\n    </div>\n    <div class=\"flex-grow self-center\" *ngIf=\"!item.suggestion.includes(searchText)\">\n        <span>{{item.suggestion}}</span>                                \n    </div>\n</div>\n",
-            styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.activeItem{background-color:#ededed}.list-item:hover{background:#ededed}"]
+            styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.activeItem{background-color:#ededed}"]
         }),
         __metadata("design:paramtypes", [])
     ], SearchSuggestionComponent);
@@ -1000,7 +1010,7 @@ var SearchComponent = /** @class */ (function () {
         this.placeService = placeService;
         this.timeService = timeService;
         this.datepipe = datepipe;
-        this.searchText = "";
+        this.searchText = '';
         this.algoliaIndexName = config.algoliaIndexName;
         this.typedSearchText = "";
         this.searchTextChanged = new Subject();
@@ -1040,12 +1050,39 @@ var SearchComponent = /** @class */ (function () {
         this.suggestionSelected = function (event) {
             _this.chooseSuggestion(event.suggestion);
         };
+        this.initKeyManagerHandlers = function () {
+            _this.keyboardEventsManager
+                .change
+                .subscribe(function (activeIndex) {
+                _this.listItems.map(function (item, index) {
+                    item.setActive(activeIndex === index);
+                    // if(item.isActive == true && index !== activeIndex) {
+                    //     item.setActive(false);
+                    // }
+                    return item;
+                });
+            });
+        };
+        this.hoverOnSuggestion = function (indexOfItemhoveredOn) {
+            console.log(indexOfItemhoveredOn);
+            _this.searchActive = true;
+            var activeItem = _this.keyboardEventsManager.activeItem;
+            if (activeItem)
+                activeItem.setActive(false);
+            _this.keyboardEventsManager.setActiveItem(indexOfItemhoveredOn);
+            _this.keyboardEventsManager.activeItem.setActive(true);
+        };
         this.chooseSuggestion = function (text) {
             _this.typedSearchText = _this.searchText;
             _this.searchText = text;
+            _this.addOrUpdateTSSuggestions();
             _this.goToSearchResultsPage();
         };
+        this.addOrUpdateTSSuggestions = function () {
+            _this.headerService.postSuggestions(_this.searchText);
+        };
         this.goToSearchResultsPage = function () {
+            _this.searchActive = false;
             _this.intentSelected = true;
             var encodedSearchText = _this.searchText.replace(/ +/g, '-');
             var encodedCurrentPlace = _this.activePlace.replace(/ +/g, '-');
@@ -1159,17 +1196,6 @@ var SearchComponent = /** @class */ (function () {
         this.index = this.client.initIndex(this.algoliaIndexName);
         this.buildUrlArray();
     }
-    SearchComponent.prototype.initKeyManagerHandlers = function () {
-        var _this = this;
-        this.keyboardEventsManager
-            .change
-            .subscribe(function (activeIndex) {
-            _this.listItems.map(function (item, index) {
-                item.setActive(activeIndex === index);
-                return item;
-            });
-        });
-    };
     SearchComponent.prototype.clickout = function (event) {
         if (!this.citySuggestions.nativeElement.contains(event.target)) {
             this.cityPopupActive = false;
@@ -1179,7 +1205,7 @@ var SearchComponent = /** @class */ (function () {
         }
     };
     SearchComponent.prototype.handleKeydown = function (event) {
-        event.stopImmediatePropagation();
+        this.searchActive = true;
         if (this.keyboardEventsManager) {
             if (event.key === "ArrowDown" || event.key === "ArrowUp") {
                 this.keyboardEventsManager.onKeydown(event);
@@ -1226,6 +1252,10 @@ var SearchComponent = /** @class */ (function () {
         __metadata("design:type", ElementRef)
     ], SearchComponent.prototype, "searchResultsEle", void 0);
     __decorate([
+        ViewChild('searchTextInputEle', { static: false }),
+        __metadata("design:type", ElementRef)
+    ], SearchComponent.prototype, "searchTextInputEle", void 0);
+    __decorate([
         ViewChildren(SearchSuggestionComponent),
         __metadata("design:type", QueryList)
     ], SearchComponent.prototype, "listItems", void 0);
@@ -1242,7 +1272,7 @@ var SearchComponent = /** @class */ (function () {
     SearchComponent = __decorate([
         Component({
             selector: 'app-search',
-            template: "<div class=\"w-full lg:flex search-container relative\" [class.active]=\"searchActive\">\n    <div #searchResultsEle class=\"w-2/3 lg:w-full px-2 flex items-center relative left-section\">\n        <i class=\"mdi mdi-magnify text-2xl md:text-xl color-blue p-2\"></i>\n        <input appDataAnalytics eventLabel=\"search\" clickLocation=\"\" (keyup)=\"handleKeydown($event)\" [(ngModel)]=\"searchText\" (ngModelChange)=\"search($event)\" (focus)=\"searchActive = true;citySearchActive=false\" class=\"w-full h-full bg-transparent  p-2\" type=\"text\" placeholder=\"Search for an Event, Interest or Organizer\"\n            aria-label=\"Search for an Event, Interest or Organizer\" />\n        <i *ngIf=\"searchText && searchText.length > 0\" class=\"mdi cursor-pointer mdi-close text-2xl md:text-xl color-blue p-2\" (click)=\"this.searchText = '';\"></i>\n        <div class=\"suggestions enter-slide-bottom w-full absolute\" [ngClass]=\"intentSelected?'visibility: hidden':''\" *ngIf=\"searchResults && searchActive\">\n            <app-search-suggestion class=\"cursor-pointer\" *ngFor=\"let searchedItem of searchResults\" [item]=\"searchedItem\" [searchText]=\"searchText\"\n            (itemSelected)=\"suggestionSelected(searchedItem)\" (click)=\"suggestionSelected(searchedItem)\"></app-search-suggestion>\n            <div class=\"no-result flex flex-col text-center p-10 fadeIn\"\n                *ngIf=\"searchResults == undefined || searchResults.length == 0\">\n                <img alt=\"No Results Found\" class=\"mb-2\"\n                    [lazyLoad]=\"'https://townscript-common-resources.s3.ap-south-1.amazonaws.com/ListingsStatic/calendar-min.png'\" />\n                <label class=\"text-gray-600 text-sm\">No Results found</label>\n                <span class=\"text-gray-500 text-xs\">We couldn\u2019t find what you\u2019re looking for</span>\n            </div>\n        </div>\n    </div>\n    <div appDataAnalytics eventLabel=\"location\" clickLocation=\"\" #citySuggestions class=\"w-auto flex items-center py-2  px-4 cursor-pointer relative city-search-container\" [class.active]=\"cityPopupActive\" (click)=\"cityPopupActive = true\">\n        <div class=\"flex items-center w-10/12 mr-2 \" [title]=\" activePlace\">\n            <i class=\"mdi mdi-map-marker text-lg md:text-xl color-blue\"></i>\n            <span class=\"truncate capitalize text-gray-800\">{{activePlace}}</span>\n        </div>\n        <i class=\"mdi mdi-chevron-down text-lg md:text-xl\"></i>\n        <app-city-search-popup [popularPlaces]=\"popularPlaces\" class=\"popup\" [(cityPopupActive)]=\"cityPopupActive\" [(activePlace)]=\"activePlace\" *ngIf=\"cityPopupActive\">\n        </app-city-search-popup>\n    </div>\n</div>",
+            template: "<div class=\"w-full lg:flex search-container relative\" [class.active]=\"searchActive\">\n    <div #searchResultsEle class=\"w-2/3 lg:w-full px-2 flex items-center relative left-section\">\n        <i class=\"mdi mdi-magnify text-2xl md:text-xl color-blue p-2\"></i>\n        <input appDataAnalytics eventLabel=\"search\" clickLocation=\"\" (keyup)=\"handleKeydown($event)\" [(ngModel)]=\"searchText\" (ngModelChange)=\"search($event)\" (focus)=\"searchActive = true;\" class=\"w-full h-full bg-transparent  p-2\" type=\"text\" placeholder=\"Search for an Event, Interest or Organizer\"\n            aria-label=\"Search for an Event, Interest or Organizer\" />\n        <i *ngIf=\"searchText && searchText.length > 0\" class=\"mdi cursor-pointer mdi-close text-2xl md:text-xl color-blue p-2\" (click)=\"this.searchText = '';\"></i>\n        <div class=\"suggestions enter-slide-bottom w-full absolute\" [ngClass]=\"intentSelected?'visibility: hidden':''\" *ngIf=\"searchResults && searchActive && searchText !== ''\">\n            <app-search-suggestion class=\"cursor-pointer\" *ngFor=\"let searchedItem of searchResults; let i = index\" [item]=\"searchedItem\" [searchText]=\"searchText\"\n            (itemSelected)=\"suggestionSelected(searchedItem)\" (mouseenter)=\"hoverOnSuggestion(i)\" (click)=\"suggestionSelected(searchedItem)\"></app-search-suggestion>\n            <div class=\"no-result flex flex-col text-center p-4 fadeIn\"\n                *ngIf=\"searchResults == undefined || searchResults.length == 0\">\n                <div class=\"px-10\">\n                    <img alt=\"No Results Found\" class=\"w-full mb-2\"\n                    [lazyLoad]=\"'https://townscript-common-resources.s3.ap-south-1.amazonaws.com/ListingsStatic/calendar-min.png'\" />\n                </div>\n                <label class=\"text-gray-600 text-sm\">No Results found</label>\n                <span class=\"text-gray-500 text-xs\">We couldn\u2019t find what you\u2019re looking for</span>\n            </div>\n        </div>\n    </div>\n    <div appDataAnalytics eventLabel=\"location\" clickLocation=\"\" #citySuggestions class=\"w-auto flex items-center py-2  px-4 cursor-pointer relative city-search-container\" [class.active]=\"cityPopupActive\" (click)=\"cityPopupActive = true\">\n        <div class=\"flex items-center w-10/12 mr-2 \" [title]=\" activePlace\">\n            <i class=\"mdi mdi-map-marker text-lg md:text-xl color-blue\"></i>\n            <span class=\"truncate capitalize text-gray-800\">{{activePlace}}</span>\n        </div>\n        <i class=\"mdi mdi-chevron-down text-lg md:text-xl\"></i>\n        <app-city-search-popup [popularPlaces]=\"popularPlaces\" class=\"popup\" [(cityPopupActive)]=\"cityPopupActive\" [(activePlace)]=\"activePlace\" *ngIf=\"cityPopupActive\">\n        </app-city-search-popup>\n    </div>\n</div>",
             styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}@media (min-width:991px){.search-container{height:42px;border-radius:2px;-webkit-transition:.3s;transition:.3s}.search-container .left-section{background-color:#fff;border-radius:4px}.search-container .left-section input{-webkit-transition:.3s;transition:.3s}.search-container .left-section input:focus{background:#fff}.search-container .left-section:hover{box-shadow:0 5px 10px 0 rgba(0,0,0,.15)}.search-container .left-section .suggestions{top:100%;left:0;background:#fff;border-top:1px solid rgba(151,151,151,.4)}.search-container .left-section .suggestions ul li{-webkit-transition:.15s;transition:.15s}.search-container .left-section .suggestions ul li:hover{background:#ededed;cursor:pointer}.search-container .city-search-container{-webkit-transition:.3s;transition:.3s;max-width:33.33%}.search-container .city-search-container.active{background:#fff;box-shadow:0 5px 10px 0 rgba(0,0,0,.15)}.search-container .city-search-container .popup{position:absolute;top:135%;width:135%;left:-34%}.search-container.active .left-section{background:#fff;box-shadow:0 5px 10px 0 rgba(0,0,0,.15)}.search-container.active .suggestions{box-shadow:0 11px 15px 0 rgba(0,0,0,.15)}}::-webkit-input-placeholder{font-size:small}::-moz-placeholder{font-size:small}::-ms-input-placeholder{font-size:small}::placeholder{font-size:small}"]
         }),
         __metadata("design:paramtypes", [UtilityService, HeaderService, PlaceService, TimeService, DatePipe])
@@ -2308,7 +2338,7 @@ var FollowComponent = /** @class */ (function () {
     FollowComponent = __decorate([
         Component({
             selector: 'app-follow',
-            template: "<div appDataAnalytics [eventLabel]=\"followed ? 'unfollow':'follow'\" clickLocation=\"\" class=\"text-sm mr-1\" class=\"follow-container rounded-full cursor-pointer\" [class.flex]=\"type=='icon'\" (click)=\"followedFn($event)\"\n    (mouseover)=\"hovered=true\" (mouseleave)=\"hovered=false\" [class.followed]=\"followed\">\n    <div [style.background-color]=\"hovered && type=='button' ? color : 'transparent'\"\n        [style.border-color]=\"type=='button' ? color : 'transparent'\" [class.rounded-full]=\"type=='button'\"\n        class=\"text-sm flex items-center justify-around antialiased font-bold border-purple-800\"\n        [style.color]=\"hovered && type=='button'?'white':color\" [ngClass]=\"isSleak ? {'px-4 border-2':type=='button'}:{'py-2 px-4 border-2':type=='button'}\">\n        <span  *ngIf=\"type=='button'\" [ngClass]=\"isSleak ? 'uppercase': 'capitalize'\">{{text}}</span>\n        <i class=\"mdi mdi-heart-outline text-base antialiased\" [class.text-2xl]=\"type=='icon'\" *ngIf=\"!followed && !isSleak\"></i>\n        <i class=\"mdi mdi-heart text-base antialiased followed-heart\" [class.text-2xl]=\"type=='icon'\"\n            *ngIf=\"followed && !isSleak\"></i>\n    </div>\n</div>",
+            template: "<div appDataAnalytics [eventLabel]=\"followed ? 'unfollow':'follow'\" clickLocation=\"\" class=\"text-sm mr-1\" class=\"follow-container rounded-full cursor-pointer\" [class.flex]=\"type=='icon'\" (click)=\"followedFn($event)\"\n    (mouseover)=\"hovered=true\" (mouseleave)=\"hovered=false\" [class.followed]=\"followed\">\n    <div [style.background-color]=\"(hovered && type=='button') || (isSleak && followed) ? color : 'transparent'\"\n        [style.border-color]=\"type=='button' ? color : 'transparent'\" [class.rounded-full]=\"type=='button'\"\n        class=\"text-sm flex items-center justify-around antialiased font-bold border-purple-800\"\n        [style.color]=\"(hovered && type=='button') || (isSleak && followed) ?'white':color\" [ngClass]=\"isSleak ? {'px-4 border-2':type=='button'}:{'py-2 px-4 border-2':type=='button'}\">\n        <span  *ngIf=\"type=='button'\" [ngClass]=\"isSleak ? 'uppercase': 'capitalize'\">{{text}}</span>\n        <i class=\"mdi mdi-heart-outline text-base antialiased\" [class.text-2xl]=\"type=='icon'\" *ngIf=\"!followed && !isSleak\"></i>\n        <i class=\"mdi mdi-heart text-base antialiased followed-heart\" [class.text-2xl]=\"type=='icon'\"\n            *ngIf=\"followed && !isSleak\"></i>\n    </div>\n</div>",
             styles: [".follow-container{max-width:12rem;text-align:center;-webkit-transition:.1s;transition:.1s}.follow-container div{-webkit-transition:.1s;transition:.1s}.follow-container div:active{-webkit-transform:scale(.9);transform:scale(.9)}.follow-container:hover{-webkit-transform:scale(1.1);transform:scale(1.1)}@-webkit-keyframes dhadkan{0%{-webkit-transform:scale(.7);transform:scale(.7)}50%{-webkit-transform:scale(1.3);transform:scale(1.3)}100%{-webkit-transform:scale(1);transform:scale(1)}}@keyframes dhadkan{0%{-webkit-transform:scale(.7);transform:scale(.7)}50%{-webkit-transform:scale(1.3);transform:scale(1.3)}100%{-webkit-transform:scale(1);transform:scale(1)}}.follow-container.followed{-webkit-animation-name:dhadkan;animation-name:dhadkan;-webkit-animation-iteration-count:1;animation-iteration-count:1;-webkit-animation-duration:.2s;animation-duration:.2s}.follow-container .followed-heart{color:#eb4b4b}.follow-container div:hover{color:#c2b5b5}"]
         }),
         __metadata("design:paramtypes", [UserService, FollowService, MatDialog])
@@ -2635,7 +2665,7 @@ var TsListingEventCardComponent = /** @class */ (function () {
     TsListingEventCardComponent.prototype.ngOnInit = function () {
         var _this = this;
         this.buildUrlArray();
-        if (this.eventData.cardImageUrl.indexOf(config.s3Bucket) > -1) {
+        if (this.eventData.cardImageUrl && this.eventData.cardImageUrl.indexOf(config.s3Bucket) > -1) {
             this.eventData.cardImageUrl = config.imgixUrl +
                 this.eventData.cardImageUrl.split(config.s3Bucket)[1];
         }
