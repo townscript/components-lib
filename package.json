@@ -14,7 +14,7 @@
     "@angular/platform-browser-dynamic": "~8.1.0",
     "@angular/router": "~8.1.0",
     "@mdi/font": "3.4.93",
-    "@townscript/data-collector": "1.0.7",
+    "@townscript/data-collector": "1.0.8",
     "@townscript/elements": "^3.0.12",
     "algoliasearch": "^3.33.0",
     "core-js": "^2.5.4",
