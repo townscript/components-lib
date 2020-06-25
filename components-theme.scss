@@ -1,4 +1,5 @@
 $mat-form-field-width: 100%;
+// 
 // Import all the theming functionality.
 // We can use relative imports for imports from the cdk because we bundle everything
 // up into a single flat scss file for material.
@@ -5054,34 +5055,6 @@ $mat-form-field-dedupe: 0;
   @include mat-snack-bar-theme($theme);
 }
 
-// Re defining disable button color
-@mixin _mat-button-theme-property($theme, $property, $hue) {
-  $primary: map-get($theme, primary);
-  $accent: map-get($theme, accent);
-  $warn: map-get($theme, warn);
-  $background: map-get($theme, background);
-  $foreground: map-get($theme, foreground);
-
-  &.mat-primary {
-    #{$property}: mat-color($primary, $hue);
-  }
-  &.mat-accent {
-    #{$property}: mat-color($accent, $hue);
-  }
-  &.mat-warn {
-    #{$property}: mat-color($warn, $hue);
-  }
-
-  &.mat-primary, &.mat-accent, &.mat-warn, &[disabled] {
-    &[disabled] {
-      opacity: 0.8;
-    }
-  }
-}
-
-$font-family: '"Open Sans", sans-serif;' !default;
-$ts-typography: mat-typography-config($font-family);
-@include mat-core($ts-typography);
 
 $ts-purple: (
   50: #EDE7F2,
@@ -5149,6 +5122,36 @@ $ts-pink: (
   )
 );
 
+// Re defining disable button color
+@mixin _mat-button-theme-property($theme, $property, $hue) {
+  $primary: map-get($theme, primary);
+  $accent: map-get($theme, accent);
+  $warn: map-get($theme, warn);
+  $background: map-get($theme, background);
+  $foreground: map-get($theme, foreground);
+
+  &.mat-primary {
+    #{$property}: mat-color($primary, $hue);
+  }
+  &.mat-accent {
+    #{$property}: mat-color($accent, $hue);
+  }
+  &.mat-warn {
+    #{$property}: mat-color($warn, $hue);
+  }
+
+  &.mat-primary, &.mat-accent, &.mat-warn, &.mat-primary--inverted, &[disabled] {
+    &[disabled] {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+  }
+}
+
+$font-family: '"Open Sans", sans-serif;' !default;
+$ts-typography: mat-typography-config($font-family);
+@include mat-core($ts-typography);
+
 $ts-app-primary: mat-palette($ts-purple);
 $ts-app-accent:  mat-palette($ts-pink, 500, 900, A100);
 $ts-app-warn:    mat-palette($mat-deep-orange);
@@ -5160,6 +5163,10 @@ $ts-app-theme: mat-light-theme($ts-app-primary, $ts-app-accent, $ts-app-warn);
 @include mat-input-theme($ts-app-theme);
 @include mat-progress-spinner-theme($ts-app-theme);
 @include mat-select-theme($ts-app-theme);
+@include mat-tooltip-theme($ts-app-theme);
+@include mat-checkbox-theme($ts-app-theme);
+@include mat-radio-theme($ts-app-theme);
+@include mat-datepicker-theme($ts-app-theme);
 
 $mat-form-field-width: inherit !default;
 .mat-form-field{
