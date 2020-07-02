@@ -1090,10 +1090,10 @@ var SearchComponent = /** @class */ (function () {
             var encodedCurrentPlace = _this.activePlace.replace(/ +/g, '-');
             var queryParams = {};
             if (_this.activePlace) {
-                queryParams['place'] = encodedCurrentPlace;
+                queryParams['currentplace'] = encodedCurrentPlace;
             }
             if (encodedSearchText) {
-                queryParams['q'] = encodedSearchText;
+                queryParams['searchtext'] = encodedSearchText;
             }
             var navigationExtras = {
                 state: {
