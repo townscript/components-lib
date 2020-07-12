@@ -12,7 +12,6 @@ export declare class PlaceService {
     documentIsAccessible: boolean;
     place: import("rxjs").Observable<Object>;
     constructor(utilityService: UtilityService, cookieService: CookieService, document: any, platformId: InjectionToken<Object>, http: HttpClient);
-    setLocationCookie(data: any): void;
     updatePlace(data: any): void;
     getLocationFromIpInfo(): Promise<any>;
     getJsonFromIpInfo(): Promise<Object>;

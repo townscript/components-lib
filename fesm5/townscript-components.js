@@ -66,6 +66,7 @@ var CookieService = /** @class */ (function () {
         var _this = this;
         this.platformId = platformId;
         this.deleteCookie = function (name) {
+            console.log('delete cookie called for ' + name);
             _this.setCookie(name, '', -1, '/');
         };
         this.setCookie = function (name, value, expireDays, path) {
@@ -76,7 +77,8 @@ var CookieService = /** @class */ (function () {
                 var expires = 'expires=' + d.toUTCString();
                 var host = '.' + window.location.host.split('.').splice(1).join('.');
                 document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '') + ';domain=' + host;
-                console.log('updated cookie after location setting is ' + document.cookie);
+                console.log('updated cookie after location setting is ' + document.cookie + ' for input values name ' + name + ' value '
+                    + value + ' expiry ' + expireDays + ' path ' + path);
             }
         };
     }
@@ -435,21 +437,18 @@ var PlaceService = /** @class */ (function () {
                         'currentPlace': ipInfoData['city']
                     };
                     if (!_this.cookieService.getCookie('location')) {
-                        _this.setLocationCookie(data);
                         _this.updatePlace(data);
                     }
                 });
             }
         }
     }
-    PlaceService.prototype.setLocationCookie = function (data) {
+    PlaceService.prototype.updatePlace = function (data) {
         console.log('updating place in components with ');
         console.log(data);
         data = JSON.stringify(data);
         console.log(' strigified data setting in cookie for location is ' + data);
         this.cookieService.setCookie('location', data, 100, '/');
-    };
-    PlaceService.prototype.updatePlace = function (data) {
         this.currentPlace$.next(data);
     };
     PlaceService.prototype.getLocationFromIpInfo = function () {

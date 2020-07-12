@@ -63,6 +63,7 @@ let CookieService = class CookieService {
     constructor(platformId) {
         this.platformId = platformId;
         this.deleteCookie = (name) => {
+            console.log('delete cookie called for ' + name);
             this.setCookie(name, '', -1, '/');
         };
         this.setCookie = (name, value, expireDays, path = '') => {
@@ -72,7 +73,8 @@ let CookieService = class CookieService {
                 const expires = 'expires=' + d.toUTCString();
                 const host = '.' + window.location.host.split('.').splice(1).join('.');
                 document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '') + ';domain=' + host;
-                console.log('updated cookie after location setting is ' + document.cookie);
+                console.log('updated cookie after location setting is ' + document.cookie + ' for input values name ' + name + ' value '
+                    + value + ' expiry ' + expireDays + ' path ' + path);
             }
         };
     }
@@ -408,21 +410,18 @@ let PlaceService = class PlaceService {
                         'currentPlace': ipInfoData['city']
                     };
                     if (!this.cookieService.getCookie('location')) {
-                        this.setLocationCookie(data);
                         this.updatePlace(data);
                     }
                 });
             }
         }
     }
-    setLocationCookie(data) {
+    updatePlace(data) {
         console.log('updating place in components with ');
         console.log(data);
         data = JSON.stringify(data);
         console.log(' strigified data setting in cookie for location is ' + data);
         this.cookieService.setCookie('location', data, 100, '/');
-    }
-    updatePlace(data) {
         this.currentPlace$.next(data);
     }
     getLocationFromIpInfo() {
