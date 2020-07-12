@@ -470,7 +470,7 @@ var PlaceService = /** @class */ (function () {
                             localDataJson.city = jsonIpInfoCookie.city;
                             localData = JSON.stringify(localDataJson);
                             console.log('localdata after complete parsing is ' + localData);
-                            localStorage.setItem('ipinfo_data', ipInfoCookieData);
+                            localStorage.setItem('ipinfo_data', localData);
                         }
                         if (!!localData) return [3 /*break*/, 2];
                         console.log('Calling ip info!');

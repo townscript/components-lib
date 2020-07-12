@@ -439,7 +439,7 @@ let PlaceService = class PlaceService {
                     localDataJson.city = jsonIpInfoCookie.city;
                     localData = JSON.stringify(localDataJson);
                     console.log('localdata after complete parsing is ' + localData);
-                    localStorage.setItem('ipinfo_data', ipInfoCookieData);
+                    localStorage.setItem('ipinfo_data', localData);
                 }
                 let ipInfoData;
                 if (!localData) {
