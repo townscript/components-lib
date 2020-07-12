@@ -72,6 +72,7 @@ let CookieService = class CookieService {
                 const expires = 'expires=' + d.toUTCString();
                 const host = '.' + window.location.host.split('.').splice(1).join('.');
                 document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '') + ';domain=' + host;
+                console.log('updated cookie after location setting is ' + document.cookie);
             }
         };
     }
@@ -400,6 +401,7 @@ let PlaceService = class PlaceService {
             }
             else {
                 this.getLocationFromIpInfo().then(ipInfoData => {
+                    console.log('returned value from get location for ipinfo is ' + ipInfoData);
                     const data = {
                         'city': ipInfoData['city'],
                         'country': ipInfoData['countryCode'] ? ipInfoData['countryCode'].toLowerCase() : 'in',
@@ -417,6 +419,7 @@ let PlaceService = class PlaceService {
         console.log('updating place in components with ');
         console.log(data);
         data = JSON.stringify(data);
+        console.log(' strigified data setting in cookie for location is ' + data);
         this.cookieService.setCookie('location', data, 100, '/');
     }
     updatePlace(data) {
@@ -428,8 +431,9 @@ let PlaceService = class PlaceService {
                 let ipInfoCookieData = this.cookieService.getCookie('ipInfoData');
                 let localData = localStorage.getItem('ipinfo_data');
                 if (ipInfoCookieData && !localData) {
-                    console.log('ipinfo1 cookie set before localstorage data setting ' + ipInfoCookieData);
+                    console.log('ipinfo2 cookie set before localstorage data setting ' + ipInfoCookieData);
                     ipInfoCookieData = decodeURIComponent(ipInfoCookieData);
+                    console.log('decoded value is ' + ipInfoCookieData);
                     localData = ipInfoCookieData;
                     localStorage.setItem('ipinfo_data', ipInfoCookieData);
                 }
@@ -461,7 +465,7 @@ let PlaceService = class PlaceService {
         return this.http.get('//ipinfo.io/json?token=' + config.IPINFO_ACCESS_TOKEN + '').toPromise();
     }
     callMaxMindTest() {
-        return this.http.get('https://nqjmyz4jvh.execute-api.ap-south-1.amazonaws.com/countryISOCode').toPromise();
+        this.http.get('https://nqjmyz4jvh.execute-api.ap-south-1.amazonaws.com/countryISOCode').subscribe(data => console.log('successful maxmind invocation from place service'), error => console.log('failed invocation for maxmind from place service'));
     }
 };
 PlaceService.ngInjectableDef = ɵɵdefineInjectable({ factory: function PlaceService_Factory() { return new PlaceService(ɵɵinject(UtilityService), ɵɵinject(CookieService), ɵɵinject(DOCUMENT), ɵɵinject(PLATFORM_ID), ɵɵinject(HttpClient)); }, token: PlaceService, providedIn: "root" });

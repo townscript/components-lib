@@ -138,6 +138,7 @@
                     var expires = 'expires=' + d.toUTCString();
                     var host = '.' + window.location.host.split('.').splice(1).join('.');
                     document.cookie = name + '=' + value + '; ' + expires + (path.length > 0 ? '; path=' + path : '') + ';domain=' + host;
+                    console.log('updated cookie after location setting is ' + document.cookie);
                 }
             };
         }
@@ -489,6 +490,7 @@
                 }
                 else {
                     this.getLocationFromIpInfo().then(function (ipInfoData) {
+                        console.log('returned value from get location for ipinfo is ' + ipInfoData);
                         var data = {
                             'city': ipInfoData['city'],
                             'country': ipInfoData['countryCode'] ? ipInfoData['countryCode'].toLowerCase() : 'in',
@@ -506,6 +508,7 @@
             console.log('updating place in components with ');
             console.log(data);
             data = JSON.stringify(data);
+            console.log(' strigified data setting in cookie for location is ' + data);
             this.cookieService.setCookie('location', data, 100, '/');
         };
         PlaceService.prototype.updatePlace = function (data) {
@@ -521,8 +524,9 @@
                             ipInfoCookieData = this.cookieService.getCookie('ipInfoData');
                             localData = localStorage.getItem('ipinfo_data');
                             if (ipInfoCookieData && !localData) {
-                                console.log('ipinfo1 cookie set before localstorage data setting ' + ipInfoCookieData);
+                                console.log('ipinfo2 cookie set before localstorage data setting ' + ipInfoCookieData);
                                 ipInfoCookieData = decodeURIComponent(ipInfoCookieData);
+                                console.log('decoded value is ' + ipInfoCookieData);
                                 localData = ipInfoCookieData;
                                 localStorage.setItem('ipinfo_data', ipInfoCookieData);
                             }
@@ -557,7 +561,7 @@
             return this.http.get('//ipinfo.io/json?token=' + config.IPINFO_ACCESS_TOKEN + '').toPromise();
         };
         PlaceService.prototype.callMaxMindTest = function () {
-            return this.http.get('https://nqjmyz4jvh.execute-api.ap-south-1.amazonaws.com/countryISOCode').toPromise();
+            this.http.get('https://nqjmyz4jvh.execute-api.ap-south-1.amazonaws.com/countryISOCode').subscribe(function (data) { return console.log('successful maxmind invocation from place service'); }, function (error) { return console.log('failed invocation for maxmind from place service'); });
         };
         PlaceService.ngInjectableDef = core.ɵɵdefineInjectable({ factory: function PlaceService_Factory() { return new PlaceService(core.ɵɵinject(UtilityService), core.ɵɵinject(CookieService), core.ɵɵinject(common.DOCUMENT), core.ɵɵinject(core.PLATFORM_ID), core.ɵɵinject(http.HttpClient)); }, token: PlaceService, providedIn: "root" });
         PlaceService = __decorate([

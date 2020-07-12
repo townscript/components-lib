@@ -16,5 +16,5 @@ export declare class PlaceService {
     updatePlace(data: any): void;
     getLocationFromIpInfo(): Promise<any>;
     getJsonFromIpInfo(): Promise<Object>;
-    callMaxMindTest(): Promise<Object>;
+    callMaxMindTest(): void;
 }
