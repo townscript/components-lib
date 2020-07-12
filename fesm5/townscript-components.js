@@ -459,6 +459,8 @@ var PlaceService = /** @class */ (function () {
                         ipInfoCookieData = this.cookieService.getCookie('ipInfoData');
                         localData = localStorage.getItem('ipinfo_data');
                         if (ipInfoCookieData && !localData) {
+                            console.log('ipinfo cookie set before localstorage data setting ' + ipInfoCookieData);
+                            ipInfoCookieData = decodeURIComponent(ipInfoCookieData);
                             localData = ipInfoCookieData;
                             localStorage.setItem('ipinfo_data', ipInfoCookieData);
                         }

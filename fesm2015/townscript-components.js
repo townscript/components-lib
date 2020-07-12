@@ -425,9 +425,11 @@ let PlaceService = class PlaceService {
     getLocationFromIpInfo() {
         return __awaiter(this, void 0, void 0, function* () {
             if (isPlatformBrowser(this.platformId)) {
-                const ipInfoCookieData = this.cookieService.getCookie('ipInfoData');
+                let ipInfoCookieData = this.cookieService.getCookie('ipInfoData');
                 let localData = localStorage.getItem('ipinfo_data');
                 if (ipInfoCookieData && !localData) {
+                    console.log('ipinfo cookie set before localstorage data setting ' + ipInfoCookieData);
+                    ipInfoCookieData = decodeURIComponent(ipInfoCookieData);
                     localData = ipInfoCookieData;
                     localStorage.setItem('ipinfo_data', ipInfoCookieData);
                 }
