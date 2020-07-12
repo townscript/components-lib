@@ -516,7 +516,7 @@
         };
         PlaceService.prototype.getLocationFromIpInfo = function () {
             return __awaiter(this, void 0, void 0, function () {
-                var ipInfoCookieData, localData, ipInfoData_1, ipInfoJson;
+                var ipInfoCookieData, localData, jsonIpInfoCookie, localDataJson, ipInfoData_1, ipInfoJson;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -527,7 +527,12 @@
                                 console.log('ipinfo2 cookie set before localstorage data setting ' + ipInfoCookieData);
                                 ipInfoCookieData = decodeURIComponent(ipInfoCookieData);
                                 console.log('decoded value is ' + ipInfoCookieData);
-                                localData = ipInfoCookieData;
+                                jsonIpInfoCookie = JSON.parse(ipInfoCookieData);
+                                localDataJson = { 'countryCode': '', 'city': '' };
+                                localDataJson.countryCode = jsonIpInfoCookie.country;
+                                localDataJson.city = jsonIpInfoCookie.city;
+                                localData = JSON.stringify(localDataJson);
+                                console.log('localdata after complete parsing is ' + localData);
                                 localStorage.setItem('ipinfo_data', ipInfoCookieData);
                             }
                             if (!!localData) return [3 /*break*/, 2];

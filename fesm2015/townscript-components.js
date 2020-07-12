@@ -434,7 +434,12 @@ let PlaceService = class PlaceService {
                     console.log('ipinfo2 cookie set before localstorage data setting ' + ipInfoCookieData);
                     ipInfoCookieData = decodeURIComponent(ipInfoCookieData);
                     console.log('decoded value is ' + ipInfoCookieData);
-                    localData = ipInfoCookieData;
+                    const jsonIpInfoCookie = JSON.parse(ipInfoCookieData);
+                    const localDataJson = { 'countryCode': '', 'city': '' };
+                    localDataJson.countryCode = jsonIpInfoCookie.country;
+                    localDataJson.city = jsonIpInfoCookie.city;
+                    localData = JSON.stringify(localDataJson);
+                    console.log('localdata after complete parsing is ' + localData);
                     localStorage.setItem('ipinfo_data', ipInfoCookieData);
                 }
                 let ipInfoData;
