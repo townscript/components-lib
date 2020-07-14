@@ -22,6 +22,7 @@
     "luxon": "^1.17.2",
     "ng-lazyload-image": "7.0.1",
     "ng-recaptcha": "^4.3.0",
+    "rrule": "^2.6.4",
     "rxjs": "~6.5.2",
     "tailwindcss": "^1.0.5",
     "text-overflow-clamp": "^1.0.0",
