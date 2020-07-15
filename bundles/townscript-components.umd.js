@@ -217,7 +217,7 @@
                 var ddMMyyyyDate = luxon.DateTime.fromJSDate(startDate).toFormat('dd-MM-yyyy');
                 var dtstart = luxon.DateTime.fromFormat(ddMMyyyyDate + " " + recTime, 'dd-MM-yyyy hh:mm a').toJSDate();
                 var rrule$1 = rrule.rrulestr(rruleString, { 'dtstart': dtstart });
-                var recDates = rrule$1.between(dtstart, endDate).filter(function (date) { return date > new Date(); });
+                var recDates = rrule$1.between(dtstart, endDate, true).filter(function (date) { return date > new Date(); });
                 return recDates.length > 0 ? recDates[0] : startDate;
             };
         }

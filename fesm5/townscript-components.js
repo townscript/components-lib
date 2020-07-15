@@ -156,7 +156,7 @@ var TimeService = /** @class */ (function () {
             var ddMMyyyyDate = DateTime.fromJSDate(startDate).toFormat('dd-MM-yyyy');
             var dtstart = DateTime.fromFormat(ddMMyyyyDate + " " + recTime, 'dd-MM-yyyy hh:mm a').toJSDate();
             var rrule = rrulestr(rruleString, { 'dtstart': dtstart });
-            var recDates = rrule.between(dtstart, endDate).filter(function (date) { return date > new Date(); });
+            var recDates = rrule.between(dtstart, endDate, true).filter(function (date) { return date > new Date(); });
             return recDates.length > 0 ? recDates[0] : startDate;
         };
     }
