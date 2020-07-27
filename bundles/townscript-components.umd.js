@@ -543,7 +543,6 @@
                                 };
                             }
                             localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData_1));
-                            this.callMaxMindTest();
                             return [3 /*break*/, 3];
                         case 2:
                             if (this.utilityService.IsJsonString(localData)) {
@@ -558,9 +557,6 @@
         };
         PlaceService.prototype.getJsonFromIpInfo = function () {
             return this.http.get('//ipinfo.io/json?token=' + config.IPINFO_ACCESS_TOKEN + '').toPromise();
-        };
-        PlaceService.prototype.callMaxMindTest = function () {
-            this.http.get('https://nqjmyz4jvh.execute-api.ap-south-1.amazonaws.com/countryISOCode').subscribe(function (data) { }, function (error) { });
         };
         PlaceService.ngInjectableDef = core.ɵɵdefineInjectable({ factory: function PlaceService_Factory() { return new PlaceService(core.ɵɵinject(UtilityService), core.ɵɵinject(CookieService), core.ɵɵinject(common.DOCUMENT), core.ɵɵinject(core.PLATFORM_ID), core.ɵɵinject(http.HttpClient)); }, token: PlaceService, providedIn: "root" });
         PlaceService = __decorate([
