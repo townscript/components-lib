@@ -463,9 +463,10 @@ var PlaceService = /** @class */ (function () {
                         if (ipInfoCookieData && !localData) {
                             ipInfoCookieData = decodeURIComponent(ipInfoCookieData);
                             jsonIpInfoCookie = JSON.parse(ipInfoCookieData);
-                            localDataJson = { 'countryCode': '', 'city': '' };
+                            localDataJson = { 'countryCode': '', 'city': '', ip: '' };
                             localDataJson.countryCode = jsonIpInfoCookie.country;
                             localDataJson.city = jsonIpInfoCookie.city;
+                            localDataJson.ip = jsonIpInfoCookie.ip;
                             localData = JSON.stringify(localDataJson);
                             localStorage.setItem('ipinfo_data', localData);
                         }
@@ -477,8 +478,8 @@ var PlaceService = /** @class */ (function () {
                         ipInfoJson = _a.sent();
                         if (ipInfoJson) {
                             ipInfoData_1 = {
-                                'countryCode': ipInfoJson['country'].toLowerCase(),
-                                'city': ipInfoJson['city'].toLowerCase()
+                                'countryCode': ipInfoJson['countryCode'].toLowerCase(),
+                                'ip': ipInfoJson['ip']
                             };
                         }
                         localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData_1));
@@ -495,7 +496,8 @@ var PlaceService = /** @class */ (function () {
         });
     };
     PlaceService.prototype.getJsonFromIpInfo = function () {
-        return this.http.get('//ipinfo.io/json?token=' + config.IPINFO_ACCESS_TOKEN + '').toPromise();
+        return this.http.get('https://96ooltknqg.execute-api.ap-south-1.amazonaws.com/countryfromip')
+            .toPromise();
     };
     PlaceService.ngInjectableDef = ɵɵdefineInjectable({ factory: function PlaceService_Factory() { return new PlaceService(ɵɵinject(UtilityService), ɵɵinject(CookieService), ɵɵinject(DOCUMENT), ɵɵinject(PLATFORM_ID), ɵɵinject(HttpClient)); }, token: PlaceService, providedIn: "root" });
     PlaceService = __decorate([
