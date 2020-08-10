@@ -524,8 +524,9 @@
                             if (ipInfoCookieData && !localData) {
                                 ipInfoCookieData = decodeURIComponent(ipInfoCookieData);
                                 jsonIpInfoCookie = JSON.parse(ipInfoCookieData);
-                                localDataJson = { 'countryCode': '', 'city': '', ip: '' };
+                                localDataJson = { 'countryCode': '', 'city': '', ip: '', 'country': '' };
                                 localDataJson.countryCode = jsonIpInfoCookie.country;
+                                localDataJson.country = jsonIpInfoCookie.country;
                                 localDataJson.city = jsonIpInfoCookie.city;
                                 localDataJson.ip = jsonIpInfoCookie.ip;
                                 localData = JSON.stringify(localDataJson);
@@ -533,14 +534,15 @@
                             }
                             if (!!localData) return [3 /*break*/, 2];
                             return [4 /*yield*/, this.getJsonFromIpInfo().catch(function (err) {
-                                    ipInfoData_1 = { 'countryCode': 'in', 'city': 'india' };
+                                    ipInfoData_1 = { 'countryCode': 'in', 'city': 'india', 'country': 'in' };
                                 })];
                         case 1:
                             ipInfoJson = _a.sent();
                             if (ipInfoJson) {
                                 ipInfoData_1 = {
                                     'countryCode': ipInfoJson['countryCode'].toLowerCase(),
-                                    'ip': ipInfoJson['ip']
+                                    'ip': ipInfoJson['ip'],
+                                    'country': ipInfoJson['countryCode'].toLowerCase()
                                 };
                             }
                             localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData_1));

@@ -432,8 +432,9 @@ let PlaceService = class PlaceService {
                 if (ipInfoCookieData && !localData) {
                     ipInfoCookieData = decodeURIComponent(ipInfoCookieData);
                     const jsonIpInfoCookie = JSON.parse(ipInfoCookieData);
-                    const localDataJson = { 'countryCode': '', 'city': '', ip: '' };
+                    const localDataJson = { 'countryCode': '', 'city': '', ip: '', 'country': '' };
                     localDataJson.countryCode = jsonIpInfoCookie.country;
+                    localDataJson.country = jsonIpInfoCookie.country;
                     localDataJson.city = jsonIpInfoCookie.city;
                     localDataJson.ip = jsonIpInfoCookie.ip;
                     localData = JSON.stringify(localDataJson);
@@ -442,12 +443,13 @@ let PlaceService = class PlaceService {
                 let ipInfoData;
                 if (!localData) {
                     const ipInfoJson = yield this.getJsonFromIpInfo().catch(err => {
-                        ipInfoData = { 'countryCode': 'in', 'city': 'india' };
+                        ipInfoData = { 'countryCode': 'in', 'city': 'india', 'country': 'in' };
                     });
                     if (ipInfoJson) {
                         ipInfoData = {
                             'countryCode': ipInfoJson['countryCode'].toLowerCase(),
-                            'ip': ipInfoJson['ip']
+                            'ip': ipInfoJson['ip'],
+                            'country': ipInfoJson['countryCode'].toLowerCase()
                         };
                     }
                     localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData));
