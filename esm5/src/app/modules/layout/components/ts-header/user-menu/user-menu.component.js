@@ -1,0 +1,54 @@
+import * as tslib_1 from "tslib";
+import { Component, Input, Output, EventEmitter } from '@angular/core';
+import { CookieService } from '../../../../../core/cookie.service';
+import { UserService } from '../../../../../shared/services/user-service';
+import { NotificationService } from '../../../../../shared/services/notification.service';
+import { config } from '../../../../../core/app-config';
+var UserMenuComponent = /** @class */ (function () {
+    function UserMenuComponent(notificationService, userService, cookieService) {
+        var _this = this;
+        this.notificationService = notificationService;
+        this.userService = userService;
+        this.cookieService = cookieService;
+        this.panelOpen1 = true;
+        this.panelOpen2 = true;
+        this.close = new EventEmitter();
+        this.host = config.baseUrl;
+        this.s3BucketUrl = config.s3BaseUrl + config.s3Bucket;
+        this.logout = function () {
+            _this.close.emit({ logout: true });
+            _this.cookieService.deleteCookie('townscript-user');
+            _this.userService.updateUser(undefined);
+        };
+    }
+    UserMenuComponent.prototype.ngOnInit = function () { };
+    tslib_1.__decorate([
+        Input(),
+        tslib_1.__metadata("design:type", Object)
+    ], UserMenuComponent.prototype, "panelOpen1", void 0);
+    tslib_1.__decorate([
+        Input(),
+        tslib_1.__metadata("design:type", Object)
+    ], UserMenuComponent.prototype, "panelOpen2", void 0);
+    tslib_1.__decorate([
+        Input(),
+        tslib_1.__metadata("design:type", Object)
+    ], UserMenuComponent.prototype, "user", void 0);
+    tslib_1.__decorate([
+        Output(),
+        tslib_1.__metadata("design:type", Object)
+    ], UserMenuComponent.prototype, "close", void 0);
+    UserMenuComponent = tslib_1.__decorate([
+        Component({
+            selector: 'app-user-menu',
+            template: "<div class=\"user-menu  px-2 cursor-pointer\">\n    <a [href]=\"host+'dashboard/settings/my-profile'\">\n        <div class=\"flex items-center border-b py-2 border-gray-300\">\n            <div class=\"mr-1 leading-none\">\n                <img class=\"rounded-full mr-2\" width=\"45\" [src]=\"s3BucketUrl+'/images/'+user?.s3imagename\" />\n            </div>\n            <div appDataAnalytics eventLabel=\"profile\" clickLocation=\"\" class=\"leading-tight\">\n                <span class=\"block text-lg text-gray-800\">{{user?.user}}</span>\n                <span class=\"text-xs text-gray-600 whitespace-nowrap\">View and edit profile</span>\n            </div>\n        </div>\n    </a>\n    <div class=\"menu mt-2 px-1\">\n        <ts-panel [disable]=\"false\">\n            <ts-panel-header>\n                <div (click)=\"panelOpen1=!panelOpen1\" appDataAnalytics eventLabel=\"organizing\" clickLocation=\"\"\n                    class=\"px-1 py-2 flex items-center border-b  border-gray-300 justify-between\"\n                    [class.border-dashed]=\"panelOpen1\" matRipple>\n                    <span class=\"text-gray-700\">\n                        Organizing Events\n                    </span>\n                    <i class=\"mdi mdi-chevron-down text-2xl color-blue\" [class.rotate-180]=\"panelOpen1\"></i>\n                </div>\n            </ts-panel-header>\n            <ts-panel-body [open]=\"panelOpen1\">\n                <div class=\"text-sm text-gray-800\">\n                    <a [href]=\"host+'dashboard/v2/events'\">\n                        <div appDataAnalytics eventLabel=\"manage\" clickLocation=\"\" matRipple\n                            class=\"px-1 py-1 flex items-center\">\n                            <i class=\"mdi mdi-calendar-today mr-2 color-blue text-xl\"></i>\n                            Manage Events\n                        </div>\n                    </a>\n                    <a [href]=\"host+'dashboard/v2/billing'\">\n                        <div appDataAnalytics eventLabel=\"billings\" clickLocation=\"\" matRipple\n                            class=\"px-1 py-1 flex items-center\">\n                            <i class=\"mdi mdi-cash mr-2 color-blue text-xl\"></i>\n                            Billing\n                        </div>\n                    </a>\n                    <a [href]=\"host+'dashboard/reports'\">\n                        <div appDataAnalytics eventLabel=\"reports\" clickLocation=\"\" matRipple\n                            class=\"px-1 py-1 flex items-center\">\n                            <i class=\"mdi mdi-chart-line mr-2 color-blue text-xl\"></i>\n                            Reports\n                        </div>\n                    </a>\n                    <a [href]=\"host+'dashboard/promo'\">\n                        <div appDataAnalytics eventLabel=\"promo\" clickLocation=\"\" matRipple\n                            class=\"px-1 py-1 pb-2 flex items-center border-b border-gray-300\">\n                            <i class=\"mdi mdi-bullhorn mr-2 color-blue text-xl\"></i>\n                            Promotions\n                        </div>\n                    </a>\n                </div>\n            </ts-panel-body>\n        </ts-panel>\n        <ts-panel [disable]=\"false\">\n            <ts-panel-header>\n                <div (click)=\"panelOpen2=!panelOpen2\" appDataAnalytics eventLabel=\"attending\" clickLocation=\"\"\n                    class=\"px-1 py-2 flex items-center border-b  border-gray-300 justify-between\"\n                    [class.border-dashed]=\"panelOpen2\" matRipple>\n                    <span class=\"text-gray-700\">\n                        Attending Events\n                    </span>\n                    <i class=\"mdi mdi-chevron-down text-2xl color-blue\" [class.rotate-180]=\"panelOpen2\"></i>\n                </div>\n            </ts-panel-header>\n            <ts-panel-body [open]=\"panelOpen2\">\n                <div class=\"text-sm text-gray-800\">\n                    <a [href]=\"host+'dashboard/mybookings'\">\n                        <div appDataAnalytics eventLabel=\"bookings\" clickLocation=\"\" matRipple\n                            class=\"px-1 py-1 flex items-center\">\n                            <i class=\"mdi mdi-ticket-account mr-2 color-blue text-xl\"></i>\n                            My Bookings\n                        </div>\n                    </a>\n                    <a [href]=\"host+'dashboard/following'\">\n                        <div appDataAnalytics eventLabel=\"following\" clickLocation=\"\" matRipple\n                            class=\"px-1 py-1 pb-2 flex items-center border-b border-gray-300\">\n                            <i class=\"mdi mdi-heart mr-2 color-blue text-xl \"></i>\n                            Following\n                        </div>\n                    </a>\n                </div>\n            </ts-panel-body>\n        </ts-panel>\n        <div appDataAnalytics eventLabel=\"logout\" clickLocation=\"\" class=\"px-1 py-2 flex items-center justify-between\"\n            (click)=\"logout()\" matRipple>\n            <span class=\"text-gray-700\">\n                Logout\n            </span>\n            <i class=\"mdi mdi-logout-variant text-2xl color-blue\"></i>\n        </div>\n    </div>\n</div>\n",
+            styles: [""]
+        }),
+        tslib_1.__metadata("design:paramtypes", [NotificationService,
+            UserService,
+            CookieService])
+    ], UserMenuComponent);
+    return UserMenuComponent;
+}());
+export { UserMenuComponent };
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoidXNlci1tZW51LmNvbXBvbmVudC5qcyIsInNvdXJjZVJvb3QiOiJuZzovL0B0b3duc2NyaXB0L2NvbXBvbmVudHMvIiwic291cmNlcyI6WyJzcmMvYXBwL21vZHVsZXMvbGF5b3V0L2NvbXBvbmVudHMvdHMtaGVhZGVyL3VzZXItbWVudS91c2VyLW1lbnUuY29tcG9uZW50LnRzIl0sIm5hbWVzIjpbXSwibWFwcGluZ3MiOiI7QUFBQSxPQUFPLEVBQUUsU0FBUyxFQUFVLEtBQUssRUFBRSxNQUFNLEVBQUUsWUFBWSxFQUFFLE1BQU0sZUFBZSxDQUFDO0FBQy9FLE9BQU8sRUFBRSxhQUFhLEVBQUUsTUFBTSxvQ0FBb0MsQ0FBQztBQUNuRSxPQUFPLEVBQUUsV0FBVyxFQUFFLE1BQU0sNkNBQTZDLENBQUM7QUFDMUUsT0FBTyxFQUFFLG1CQUFtQixFQUFFLE1BQU0scURBQXFELENBQUM7QUFDMUYsT0FBTyxFQUFFLE1BQU0sRUFBRSxNQUFNLGdDQUFnQyxDQUFDO0FBT3hEO0lBVUksMkJBQW9CLG1CQUF3QyxFQUNqRCxXQUF3QixFQUN4QixhQUE0QjtRQUZ2QyxpQkFJQztRQUptQix3QkFBbUIsR0FBbkIsbUJBQW1CLENBQXFCO1FBQ2pELGdCQUFXLEdBQVgsV0FBVyxDQUFhO1FBQ3hCLGtCQUFhLEdBQWIsYUFBYSxDQUFlO1FBVjlCLGVBQVUsR0FBRyxJQUFJLENBQUM7UUFDbEIsZUFBVSxHQUFHLElBQUksQ0FBQztRQUVqQixVQUFLLEdBQUcsSUFBSSxZQUFZLEVBQUUsQ0FBQztRQUVyQyxTQUFJLEdBQUcsTUFBTSxDQUFDLE9BQU8sQ0FBQztRQUN0QixnQkFBVyxHQUFHLE1BQU0sQ0FBQyxTQUFTLEdBQUcsTUFBTSxDQUFDLFFBQVEsQ0FBQztRQU9qRCxXQUFNLEdBQUc7WUFDTCxLQUFJLENBQUMsS0FBSyxDQUFDLElBQUksQ0FBQyxFQUFDLE1BQU0sRUFBRSxJQUFJLEVBQUMsQ0FBQyxDQUFDO1lBQ2hDLEtBQUksQ0FBQyxhQUFhLENBQUMsWUFBWSxDQUFDLGlCQUFpQixDQUFDLENBQUM7WUFDbkQsS0FBSSxDQUFDLFdBQVcsQ0FBQyxVQUFVLENBQUMsU0FBUyxDQUFDLENBQUM7UUFDM0MsQ0FBQyxDQUFBO0lBTEQsQ0FBQztJQU1ELG9DQUFRLEdBQVIsY0FBYSxDQUFDO0lBbEJMO1FBQVIsS0FBSyxFQUFFOzt5REFBbUI7SUFDbEI7UUFBUixLQUFLLEVBQUU7O3lEQUFtQjtJQUNsQjtRQUFSLEtBQUssRUFBRTs7bURBQVc7SUFDVDtRQUFULE1BQU0sRUFBRTs7b0RBQTRCO0lBTDVCLGlCQUFpQjtRQUw3QixTQUFTLENBQUM7WUFDUCxRQUFRLEVBQUUsZUFBZTtZQUN6QiwydEtBQXlDOztTQUU1QyxDQUFDO2lEQVcyQyxtQkFBbUI7WUFDcEMsV0FBVztZQUNULGFBQWE7T0FaOUIsaUJBQWlCLENBc0I3QjtJQUFELHdCQUFDO0NBQUEsQUF0QkQsSUFzQkM7U0F0QlksaUJBQWlCIiwic291cmNlc0NvbnRlbnQiOlsiaW1wb3J0IHsgQ29tcG9uZW50LCBPbkluaXQsIElucHV0LCBPdXRwdXQsIEV2ZW50RW1pdHRlciB9IGZyb20gJ0Bhbmd1bGFyL2NvcmUnO1xuaW1wb3J0IHsgQ29va2llU2VydmljZSB9IGZyb20gJy4uLy4uLy4uLy4uLy4uL2NvcmUvY29va2llLnNlcnZpY2UnO1xuaW1wb3J0IHsgVXNlclNlcnZpY2UgfSBmcm9tICcuLi8uLi8uLi8uLi8uLi9zaGFyZWQvc2VydmljZXMvdXNlci1zZXJ2aWNlJztcbmltcG9ydCB7IE5vdGlmaWNhdGlvblNlcnZpY2UgfSBmcm9tICcuLi8uLi8uLi8uLi8uLi9zaGFyZWQvc2VydmljZXMvbm90aWZpY2F0aW9uLnNlcnZpY2UnO1xuaW1wb3J0IHsgY29uZmlnIH0gZnJvbSAnLi4vLi4vLi4vLi4vLi4vY29yZS9hcHAtY29uZmlnJztcblxuQENvbXBvbmVudCh7XG4gICAgc2VsZWN0b3I6ICdhcHAtdXNlci1tZW51JyxcbiAgICB0ZW1wbGF0ZVVybDogJy4vdXNlci1tZW51LmNvbXBvbmVudC5odG1sJyxcbiAgICBzdHlsZVVybHM6IFsnLi91c2VyLW1lbnUuY29tcG9uZW50LnNjc3MnXVxufSlcbmV4cG9ydCBjbGFzcyBVc2VyTWVudUNvbXBvbmVudCBpbXBsZW1lbnRzIE9uSW5pdCB7XG5cbiAgICBASW5wdXQoKSBwYW5lbE9wZW4xID0gdHJ1ZTtcbiAgICBASW5wdXQoKSBwYW5lbE9wZW4yID0gdHJ1ZTtcbiAgICBASW5wdXQoKSB1c2VyOiBhbnk7XG4gICAgQE91dHB1dCgpIGNsb3NlID0gbmV3IEV2ZW50RW1pdHRlcigpO1xuXG4gICAgaG9zdCA9IGNvbmZpZy5iYXNlVXJsO1xuICAgIHMzQnVja2V0VXJsID0gY29uZmlnLnMzQmFzZVVybCArIGNvbmZpZy5zM0J1Y2tldDtcblxuICAgIGNvbnN0cnVjdG9yKHByaXZhdGUgbm90aWZpY2F0aW9uU2VydmljZTogTm90aWZpY2F0aW9uU2VydmljZSxcbiAgICAgICBwcml2YXRlIHVzZXJTZXJ2aWNlOiBVc2VyU2VydmljZSxcbiAgICAgICBwcml2YXRlIGNvb2tpZVNlcnZpY2U6IENvb2tpZVNlcnZpY2UpIHtcblxuICAgIH1cbiAgICBsb2dvdXQgPSAoKSA9PiB7XG4gICAgICAgIHRoaXMuY2xvc2UuZW1pdCh7bG9nb3V0OiB0cnVlfSk7XG4gICAgICAgIHRoaXMuY29va2llU2VydmljZS5kZWxldGVDb29raWUoJ3Rvd25zY3JpcHQtdXNlcicpO1xuICAgICAgICB0aGlzLnVzZXJTZXJ2aWNlLnVwZGF0ZVVzZXIodW5kZWZpbmVkKTtcbiAgICB9XG4gICAgbmdPbkluaXQoKSB7IH1cblxufVxuIl19

@@ -1,0 +1,34 @@
+import { OnInit, OnDestroy } from '@angular/core';
+import { MatDialog } from '@angular/material';
+import { BrowserService } from '../../../core/browser.service';
+import { PlaceService } from '../../layout/components/ts-header/place.service';
+import { UtilityService } from '../../../shared/services/utilities.service';
+import { Router } from '@angular/router';
+import { TimeService } from '../../../shared/services/time.service';
+export declare class TsListingEventCardComponent implements OnInit, OnDestroy {
+    utilityService: UtilityService;
+    dialog: MatDialog;
+    private browser;
+    private placeService;
+    private readonly timeService;
+    eventData: any;
+    type: any;
+    gridType: any;
+    hideFollowShare: boolean;
+    theme: string;
+    hideTime: boolean;
+    router: Router;
+    eventStartDate: Date;
+    startingSoon: boolean;
+    nowLive: number;
+    homeUrl: any;
+    subObject: any;
+    urlArray: string[];
+    defaultCardImageUrl: string;
+    constructor(utilityService: UtilityService, dialog: MatDialog, browser: BrowserService, placeService: PlaceService, timeService: TimeService);
+    ngOnInit(): void;
+    buildUrlArray: () => void;
+    shareEvent: (event: any) => void;
+    getLocation: () => any;
+    ngOnDestroy(): void;
+}
