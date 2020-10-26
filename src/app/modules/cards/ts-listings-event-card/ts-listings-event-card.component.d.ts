@@ -17,6 +17,7 @@ export declare class TsListingEventCardComponent implements OnInit, OnDestroy {
     hideFollowShare: boolean;
     theme: string;
     hideTime: boolean;
+    cfData?: any;
     router: Router;
     eventStartDate: Date;
     startingSoon: boolean;
