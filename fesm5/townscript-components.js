@@ -437,7 +437,8 @@ var PlaceService = /** @class */ (function () {
                     var data = {
                         'city': ipInfoData['city'],
                         'country': ipInfoData['countryCode'] ? ipInfoData['countryCode'].toLowerCase() : 'in',
-                        'currentPlace': ipInfoData['city']
+                        'currentPlace': ipInfoData['city'],
+                        'countryName': ipInfoData['countryName']
                     };
                     if (!_this.cookieService.getCookie('location')) {
                         _this.updatePlace(data);
@@ -463,9 +464,10 @@ var PlaceService = /** @class */ (function () {
                         if (ipInfoCookieData && !localData) {
                             ipInfoCookieData = decodeURIComponent(ipInfoCookieData);
                             jsonIpInfoCookie = JSON.parse(ipInfoCookieData);
-                            localDataJson = { 'countryCode': '', 'city': '', ip: '', 'country': '' };
+                            localDataJson = { 'countryCode': '', 'city': '', ip: '', 'country': '', 'countryName': '' };
                             localDataJson.countryCode = jsonIpInfoCookie.country;
                             localDataJson.country = jsonIpInfoCookie.country;
+                            localDataJson.countryName = jsonIpInfoCookie.countryName;
                             localDataJson.city = jsonIpInfoCookie.city;
                             localDataJson.ip = jsonIpInfoCookie.ip;
                             localData = JSON.stringify(localDataJson);
@@ -473,7 +475,7 @@ var PlaceService = /** @class */ (function () {
                         }
                         if (!!localData) return [3 /*break*/, 2];
                         return [4 /*yield*/, this.getJsonFromIpInfo().catch(function (err) {
-                                ipInfoData_1 = { 'countryCode': 'in', 'city': 'india', 'country': 'in' };
+                                ipInfoData_1 = { 'countryCode': 'in', 'city': 'india', 'country': 'in', 'countryName': 'India' };
                             })];
                     case 1:
                         ipInfoJson = _a.sent();
@@ -481,7 +483,8 @@ var PlaceService = /** @class */ (function () {
                             ipInfoData_1 = {
                                 'countryCode': ipInfoJson['countryCode'].toLowerCase(),
                                 'ip': ipInfoJson['ip'],
-                                'country': ipInfoJson['countryCode'].toLowerCase()
+                                'country': ipInfoJson['countryCode'].toLowerCase(),
+                                'countryName': ipInfoJson['countryName'].toLowerCase()
                             };
                         }
                         localStorage.setItem('ipinfo_data', JSON.stringify(ipInfoData_1));
@@ -888,10 +891,13 @@ var TsHeaderComponent = /** @class */ (function () {
                 var data = JSON.parse(res);
                 if (data && Object.keys(data).length > 0) {
                     _this.activePlace = data['currentPlace'];
-                    _this.activeCity = data['city'].replace(' ', '-');
+                    // this.activeCity = data['city'].replace(' ', '-');
+                    // if (this.activeCountryCode != undefined && this.activeCity != undefined) {
+                    //   this.homePageUrl = '/' + this.activeCountryCode.toLowerCase() + '/' + this.activeCity.toLowerCase();
+                    // }
                     _this.activeCountryCode = data['country'];
-                    if (_this.activeCountryCode != undefined && _this.activeCity != undefined) {
-                        _this.homePageUrl = '/' + _this.activeCountryCode.toLowerCase() + '/' + _this.activeCity.toLowerCase();
+                    if (_this.activeCountryCode !== undefined) {
+                        _this.homePageUrl = "/" + _this.activeCountryCode.toLowerCase() + "/online";
                     }
                 }
             }
@@ -1256,6 +1262,9 @@ var SearchComponent = /** @class */ (function () {
                     var data = JSON.parse(res);
                     if (data['currentPlace'] != undefined) {
                         _this.activePlace = data['currentPlace'];
+                    }
+                    else if (data['countryName'] !== undefined) {
+                        _this.activePlace = data['countryName'];
                     }
                     if (data && data['country'] && data['city']) {
                         _this.homeUrl = ('/' + data['country'] + '/' + data['city']).toLowerCase();
