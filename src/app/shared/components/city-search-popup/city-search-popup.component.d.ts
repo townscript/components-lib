@@ -1,0 +1,38 @@
+import { OnInit, ElementRef, EventEmitter, AfterViewInit } from '@angular/core';
+import { Router } from '@angular/router';
+import { DatePipe } from '@angular/common';
+import { Subject } from 'rxjs';
+import { HeaderService } from '../../../modules/layout/components/ts-header/ts-header.service';
+import { PlaceService } from '../../../modules/layout/components/ts-header/place.service';
+export declare class CitySearchPopupComponent implements OnInit, AfterViewInit {
+    private placeService;
+    private headerService;
+    datepipe: DatePipe;
+    cityInput: ElementRef;
+    showArrow: boolean;
+    activePlace: string;
+    activePlaceChange: EventEmitter<String>;
+    cityPopupActive: boolean;
+    cityPopupActiveChange: EventEmitter<boolean>;
+    popularPlaces: any;
+    closeSuggestions: boolean;
+    closeSuggestionsChange: EventEmitter<boolean>;
+    citySearchActive: boolean;
+    placeSearchResults: any;
+    router: Router;
+    urlArray: any;
+    cityQuery: string;
+    cityQueryChanged: Subject<string>;
+    client: any;
+    cityLoading: boolean;
+    index: any;
+    constructor(placeService: PlaceService, headerService: HeaderService, datepipe: DatePipe);
+    buildUrlArray: () => void;
+    callSearchCity: (query: any) => void;
+    placeChanged: (place: any) => void;
+    openCityPopup: () => void;
+    searchCity: (text: any) => void;
+    updateAndEmitCloseCitySuggestion: (val: boolean) => void;
+    ngAfterViewInit(): void;
+    ngOnInit(): void;
+}
