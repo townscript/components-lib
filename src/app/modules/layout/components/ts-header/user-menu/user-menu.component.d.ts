@@ -9,6 +9,7 @@ export declare class UserMenuComponent implements OnInit {
     panelOpen1: boolean;
     panelOpen2: boolean;
     user: any;
+    showMobilePopup: boolean;
     close: EventEmitter<any>;
     host: any;
     s3BucketUrl: any;
