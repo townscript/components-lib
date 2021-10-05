@@ -5314,64 +5314,26 @@ $mat-form-field-width: inherit !default;
 
 
 
-/* latin-ext */
 @font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: local('Lato Light'), local('Lato-Light'), url(https://fonts.gstatic.com/s/lato/v16/S6u9w4BMUTPHh7USSwaPGQ3q5d0N7w.woff2) format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+    font-family: 'Soleil';
+    src: url('assets/fonts/Soleil.otf');
 }
-/* latin */
+
 @font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 300;
-  font-display: swap;
-  src: local('Lato Light'), local('Lato-Light'), url(https://fonts.gstatic.com/s/lato/v16/S6u9w4BMUTPHh7USSwiPGQ3q5d0.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+    font-family: 'Soleil';
+    src: url('assets/fonts/SoleilSb.otf');
+    font-weight: bold;
 }
-/* latin-ext */
-@font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: local('Lato Regular'), local('Lato-Regular'), url(https://fonts.gstatic.com/s/lato/v16/S6uyw4BMUTPHjxAwXiWtFCfQ7A.woff2) format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: local('Lato Regular'), local('Lato-Regular'), url(https://fonts.gstatic.com/s/lato/v16/S6uyw4BMUTPHjx4wXiWtFCc.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-/* latin-ext */
-@font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: local('Lato Bold'), local('Lato-Bold'), url(https://fonts.gstatic.com/s/lato/v16/S6u9w4BMUTPHh6UVSwaPGQ3q5d0N7w.woff2) format('woff2');
-  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
-}
-/* latin */
-@font-face {
-  font-family: 'Lato';
-  font-style: normal;
-  font-weight: 700;
-  font-display: swap;
-  src: local('Lato Bold'), local('Lato-Bold'), url(https://fonts.gstatic.com/s/lato/v16/S6u9w4BMUTPHh6UVSwiPGQ3q5d0.woff2) format('woff2');
-  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
-}
-$ts-primary-color              : #683594;
-$ts-primary-color--light       : #884fb8;
-$ts-primary-color--lighter     : #cbabe6;
-$ts-primary-color--lightest    : #f6f1fb;
+
+$ts-primary-color              : #563DE1;
+
+$ts-primary-color--light       : #7E67FC;
+$ts-primary-color--lighter     : #AC9FF3;
+$ts-primary-color--lightest    : #F2F1FA;
+
+$ts-primary-color--dark        : #3B2A97;
+$ts-primary-color--darker      : #271B64;
+$ts-primary-color--darkest     : #1B143D;
 
 $ts-primary-blue    : #3782C4;
 
@@ -5380,6 +5342,9 @@ $ts-primary-blue    : #3782C4;
 }
 .background-blue{
     background:$ts-primary-blue;
+}
+.bg-primary {
+    background-color: $ts-primary-color;
 }
 
 $ts-secondary-color        : #d01c68;
@@ -5673,7 +5638,7 @@ p{
   font-size: 0.75em;
 }
 html, body { height: 100%; }
-body { margin: 0; font-family: 'Lato', sans-serif; }
+body { margin: 0; font-family: 'Soleil', sans-serif; }
 *{
     box-sizing: border-box;
    -webkit-tap-highlight-color:  rgba(255, 255, 255, 0);
@@ -5698,6 +5663,17 @@ input:focus{
 .bg-primary-lightest{
   background-color: $ts-primary-color--lightest;
 }
+
+.bg-primary-gradient {
+  background: linear-gradient(120deg, #DFD9FF -12.73%, rgba(255, 255, 255, 0.1) 79.62%);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  z-index: -999;
+  height: 100%;
+}
+
 .cursor-pointer{
   cursor: pointer;
 }
@@ -5718,6 +5694,14 @@ input:focus{
   &-right {
     left: 100%;
   }
+  &-hcenter {
+      left: 50%;
+      transform: translateX(-50%);
+  }
+  &-vcenter {
+      top: 50%;
+      transform: translateY(-50%);
+  }
 }
 .ts-notification-success{
   background: white;
@@ -5731,6 +5715,18 @@ input:focus{
   background: #fff;
 }
 
+.btn-cta {
+  color: white;
+  background: $ts-primary-color;
+  border-radius: 999px;
+  white-space: nowrap;
+  transition: all ease 0.1s;
+  &:hover, &:focus, &:active{
+    box-shadow: 0 2px 4px 0 $ts-primary-color;
+    background-color: $ts-primary-color--dark;
+    transform:translateY(-2px);
+  }
+}
 
 .mat-dialog-bkg-container {
   background: #414243;

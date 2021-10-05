@@ -27,7 +27,7 @@ SearchSuggestionComponent = __decorate([
     Component({
         selector: 'app-search-suggestion',
         template: "<div class=\"list-item flex flex-row cursor-pointer\" [ngClass]=\"isActive? 'activeItem':''\">\n    <div>\n        <i matRipple class=\"px-4 text-xl mdi mdi-magnify text-gray-600 md:text-xl align-middle\"></i>\n    </div>\n    <div class=\"flex-grow self-center truncate\" *ngIf=\"item.suggestion.includes(searchText)\">\n        <span class=\"font-normal text-gray-800\">{{searchText}}</span>\n        <span class=\"font-semibold\">{{item.suggestion.replace(searchText,\"\")}}</span>\n    </div>\n    <div class=\"flex-grow self-center truncate\" *ngIf=\"!item.suggestion.includes(searchText)\">\n        <span class=\"font-normal text-gray-800\">{{item.suggestion}}</span>                                \n    </div>\n</div>\n",
-        styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.activeItem{background-color:#ededed}"]
+        styles: [".color-blue{color:#3782c4}.background-blue{background:#3782c4}.bg-primary{background-color:#563de1}.activeItem{background-color:#ededed}"]
     })
 ], SearchSuggestionComponent);
 export { SearchSuggestionComponent };

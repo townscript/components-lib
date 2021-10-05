@@ -13,7 +13,6 @@ export declare class TsHeaderComponent implements OnInit {
     Components: Array<String>;
     backState: boolean;
     source: string;
-    shadow: boolean;
     searchText: string;
     citySuggestions: ElementRef;
     userMenuEle: ElementRef;
