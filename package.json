@@ -1,6 +1,6 @@
 {
   "name": "@townscript/components",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "private": true,
   "dependencies": {
     "@angular/animations": "~9.1.13",
