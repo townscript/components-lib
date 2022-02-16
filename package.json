@@ -1,0 +1,60 @@
+{
+  "name": "@townscript/components",
+  "version": "3.0.6",
+  "private": true,
+  "dependencies": {
+    "@angular/animations": "~9.1.13",
+    "@angular/cdk": "^9.2.4",
+    "@angular/common": "~9.1.13",
+    "@angular/compiler": "~9.1.13",
+    "@angular/core": "~9.1.13",
+    "@angular/forms": "~9.1.13",
+    "@angular/material": "^9.2.4",
+    "@angular/platform-browser": "~9.1.13",
+    "@angular/platform-browser-dynamic": "~9.1.13",
+    "@angular/router": "~9.1.13",
+    "@mdi/font": "3.4.93",
+    "@townscript/data-collector": "1.0.8",
+    "@townscript/elements": "^4.0.0",
+    "algoliasearch": "^3.33.0",
+    "core-js": "^2.5.4",
+    "intl-tel-input": "^16.0.2",
+    "luxon": "^1.17.2",
+    "ng-lazyload-image": "7.0.1",
+    "ng-recaptcha": "^5.0.0",
+    "rrule": "2.6.4",
+    "rxjs": "~6.6.3",
+    "tailwindcss": "^1.0.5",
+    "text-overflow-clamp": "^1.0.0",
+    "tslib": "^1.10.0",
+    "zone.js": "~0.10.2"
+  },
+  "description": "Townscript angular components",
+  "main": "bundles/townscript-components.umd.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/townscript/components.git"
+  },
+  "keywords": [
+    "form",
+    "componets",
+    "inputs",
+    "material",
+    "townscript"
+  ],
+  "author": "“Sidharth <“sidharth.kumar@townscript.com”>",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/townscript/components/issues"
+  },
+  "homepage": "https://github.com/townscript/components#readme",
+  "module": "fesm5/townscript-components.js",
+  "es2015": "fesm2015/townscript-components.js",
+  "esm5": "esm5/townscript-components.js",
+  "esm2015": "esm2015/townscript-components.js",
+  "fesm5": "fesm5/townscript-components.js",
+  "fesm2015": "fesm2015/townscript-components.js",
+  "typings": "townscript-components.d.ts",
+  "metadata": "townscript-components.metadata.json",
+  "sideEffects": false
+}
