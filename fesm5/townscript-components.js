@@ -910,14 +910,14 @@ var TsHeaderComponent = /** @class */ (function () {
                 var data = JSON.parse(res);
                 if (data && Object.keys(data).length > 0) {
                     _this.activePlace = data['currentPlace'];
-                    // this.activeCity = data['city'].replace(' ', '-');
-                    // if (this.activeCountryCode != undefined && this.activeCity != undefined) {
-                    //   this.homePageUrl = '/' + this.activeCountryCode.toLowerCase() + '/' + this.activeCity.toLowerCase();
-                    // }
                     _this.activeCountryCode = data['country'];
-                    if (_this.activeCountryCode !== undefined) {
-                        _this.homePageUrl = "/" + _this.activeCountryCode.toLowerCase() + "/online";
+                    _this.activeCity = data['city'].replace(' ', '-');
+                    if (_this.activeCountryCode != undefined && _this.activeCity != undefined) {
+                        _this.homePageUrl = '/' + _this.activeCountryCode.toLowerCase() + '/' + _this.activeCity.toLowerCase();
                     }
+                    // if (this.activeCountryCode !== undefined) {
+                    //   this.homePageUrl = `/${this.activeCountryCode.toLowerCase()}/online`;
+                    // }
                 }
             }
         });
