@@ -38,7 +38,7 @@ export declare class SearchComponent implements OnInit {
     index: any;
     homeUrl: string;
     router: Router;
-    urlArray: any;
+    urlArray: string[];
     host: any;
     popularPlaces: any;
     intentSelected: boolean;
@@ -54,7 +54,6 @@ export declare class SearchComponent implements OnInit {
     goToSearchResultsPage: () => void;
     filterDataForSearchResult: (data: any) => void;
     clickout(event: any): void;
-    navigateToListing: (interest: string) => void;
     navigateToEventPage: (eventCode: string) => void;
     search: (text: any) => void;
     handleKeydown(event: KeyboardEvent): boolean;
