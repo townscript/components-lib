@@ -769,9 +769,18 @@
                 });
             };
             this.placeChangedToOnline = function () {
-                var finalUrl = "/" + _this.urlArray[0] + "/online";
+                var tsType = _this.urlArray[2];
+                var tsTypeUrl = '';
+                if (tsType !== 'upcoming-events') {
+                    tsTypeUrl = tsType && tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
+                }
+                var finalUrl = "/" + _this.urlArray[0] + "/online" + tsTypeUrl;
                 console.log(finalUrl);
-                window.location.href = finalUrl;
+                _this.router.navigate([finalUrl], { state: { place: { twoDigitCode: _this.urlArray[0] } } });
+                _this.activePlace = 'Online';
+                _this.activePlaceChange.emit('Online');
+                _this.cityPopupActive = false;
+                _this.cityPopupActiveChange.emit(false);
             };
             this.placeChanged = function (place) {
                 var tsType = _this.urlArray[2];
@@ -1460,6 +1469,7 @@
             var _this = this;
             this.getPopularPlaces();
             this.placeService.place.subscribe(function (res) {
+                _this.buildUrlArray();
                 if (res) {
                     if (_this.utilityService.IsJsonString(res)) {
                         var data = JSON.parse(res);

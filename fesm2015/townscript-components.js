@@ -532,9 +532,18 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
             });
         };
         this.placeChangedToOnline = () => {
-            const finalUrl = `/${this.urlArray[0]}/online`;
+            const tsType = this.urlArray[2];
+            let tsTypeUrl = '';
+            if (tsType !== 'upcoming-events') {
+                tsTypeUrl = tsType && tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
+            }
+            const finalUrl = `/${this.urlArray[0]}/online${tsTypeUrl}`;
             console.log(finalUrl);
-            window.location.href = finalUrl;
+            this.router.navigate([finalUrl], { state: { place: { twoDigitCode: this.urlArray[0] } } });
+            this.activePlace = 'Online';
+            this.activePlaceChange.emit('Online');
+            this.cityPopupActive = false;
+            this.cityPopupActiveChange.emit(false);
         };
         this.placeChanged = (place) => {
             const tsType = this.urlArray[2];
@@ -1176,6 +1185,7 @@ let SearchComponent = class SearchComponent {
     ngOnInit() {
         this.getPopularPlaces();
         this.placeService.place.subscribe(res => {
+            this.buildUrlArray();
             if (res) {
                 if (this.utilityService.IsJsonString(res)) {
                     const data = JSON.parse(res);
