@@ -519,6 +519,9 @@ var PlaceService = /** @class */ (function () {
         return this.http.get('https://96ooltknqg.execute-api.ap-south-1.amazonaws.com/countryfromip')
             .toPromise();
     };
+    PlaceService.prototype.getCurrentValue = function () {
+        return JSON.parse(this.currentPlace$.value);
+    };
     PlaceService.ctorParameters = function () { return [
         { type: UtilityService },
         { type: CookieService },
@@ -568,14 +571,17 @@ var CitySearchPopupComponent = /** @class */ (function () {
             });
         };
         this.placeChangedToOnline = function () {
+            var _a;
+            var currentPlace = _this.placeService.getCurrentValue();
+            var twoDigitCode = ((_a = currentPlace['country']) === null || _a === void 0 ? void 0 : _a.toLowerCase()) || _this.urlArray[0];
             var tsType = _this.urlArray[2];
             var tsTypeUrl = '';
             if (tsType !== 'upcoming-events') {
                 tsTypeUrl = tsType && tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
             }
-            var finalUrl = "/" + _this.urlArray[0] + "/online" + tsTypeUrl;
+            var finalUrl = "/" + twoDigitCode + "/online" + tsTypeUrl;
             console.log(finalUrl);
-            _this.router.navigate([finalUrl], { state: { place: { twoDigitCode: _this.urlArray[0] } } });
+            _this.router.navigate([finalUrl], { state: { place: currentPlace } });
             _this.activePlace = 'Online';
             _this.activePlaceChange.emit('Online');
             _this.cityPopupActive = false;

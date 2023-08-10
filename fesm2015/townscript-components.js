@@ -485,6 +485,9 @@ let PlaceService = class PlaceService {
         return this.http.get('https://96ooltknqg.execute-api.ap-south-1.amazonaws.com/countryfromip')
             .toPromise();
     }
+    getCurrentValue() {
+        return JSON.parse(this.currentPlace$.value);
+    }
 };
 PlaceService.ctorParameters = () => [
     { type: UtilityService },
@@ -532,14 +535,17 @@ let CitySearchPopupComponent = class CitySearchPopupComponent {
             });
         };
         this.placeChangedToOnline = () => {
+            var _a;
+            const currentPlace = this.placeService.getCurrentValue();
+            const twoDigitCode = ((_a = currentPlace['country']) === null || _a === void 0 ? void 0 : _a.toLowerCase()) || this.urlArray[0];
             const tsType = this.urlArray[2];
             let tsTypeUrl = '';
             if (tsType !== 'upcoming-events') {
                 tsTypeUrl = tsType && tsType.length > 0 ? '/' + tsType.toLowerCase() : '';
             }
-            const finalUrl = `/${this.urlArray[0]}/online${tsTypeUrl}`;
+            const finalUrl = `/${twoDigitCode}/online${tsTypeUrl}`;
             console.log(finalUrl);
-            this.router.navigate([finalUrl], { state: { place: { twoDigitCode: this.urlArray[0] } } });
+            this.router.navigate([finalUrl], { state: { place: currentPlace } });
             this.activePlace = 'Online';
             this.activePlaceChange.emit('Online');
             this.cityPopupActive = false;
