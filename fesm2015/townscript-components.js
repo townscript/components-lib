@@ -1860,28 +1860,43 @@ let RangeDatePipe = class RangeDatePipe {
                     const endTime = args['endTime'];
                     const freq = args['recurrenceRule'].split(';')[0].split('=')[1];
                     let freqLabel = 'Daily';
-                    //custom date selected
-                    if (args['recurrenceRule'].indexOf("RDATE") > -1) {
-                        freqLabel = 'Multiple Dates';
-                    }
-                    else {
-                        // predefined R Rule
-                        if (freq.toLowerCase() == 'Weekly'.toLowerCase()) {
-                            let byDays = args['recurrenceRule'].split(';')[2].split('=')[1].split(',');
-                            if (byDays.length > 2) {
-                                freqLabel = 'Multiple Dates';
-                            }
-                            else {
-                                freqLabel = 'Every ';
-                                for (let index = 0; index < byDays.length; index++) {
-                                    freqLabel += this.days[byDays[index]];
-                                    if (index < (byDays.length - 1)) {
-                                        freqLabel += ', ';
-                                    }
-                                }
-                            }
+                    // Helper function to get ordinal suffix
+                    const getOrdinalSuffix = (day) => {
+                        if (day > 3 && day < 21) return 'th';
+                        switch (day % 10) {
+                            case 1: return 'st';
+                            case 2: return 'nd';
+                            case 3: return 'rd';
+                            default: return 'th';
+                        }
+                    };
+                    
+                    // Helper function to get timezone abbreviation
+                    const getTimezoneAbbr = (timezone) => {
+                        try {
+                            const dt = DateTime.local().setZone(timezone);
+                            return dt.offsetNameShort || dt.zoneName.split('/')[1] || 'UTC';
+                        } catch {
+                            return 'UTC';
+                        }
+                    };
+                    
+                    // For all recurring events except Daily, use new format
+                    if (freq.toLowerCase() !== 'daily') {
+                        if (rangeDates && rangeDates.length > 0) {
+                            const firstDate = DateTime.fromISO(rangeDates[0], { zone: eventTimeZone });
+                            const dayName = firstDate.toFormat('ccc'); // 3-letter day
+                            const date = firstDate.toFormat('d');
+                            const ordinalSuffix = getOrdinalSuffix(parseInt(date));
+                            const time = firstDate.toFormat('hh:mm a');
+                            const tzAbbr = getTimezoneAbbr(eventTimeZone);
+                            freqLabel = `${dayName} ${date}${ordinalSuffix}, ${time} (${tzAbbr}) onwards | Multiple Dates`;
+                        } else {
+                            freqLabel = 'Multiple Dates';
                         }
                     }
+                    // For Daily recurring events, keep existing behavior
+                    // freqLabel remains 'Daily'
                     return (hideTime || (endTime == undefined) ? freqLabel : '')
                         + (!hideTime && endTime == undefined ? ' | ' : '')
                         + (hideTime ? '' : (startTime + (endTime != undefined ? ' to ' + endTime : '')));
