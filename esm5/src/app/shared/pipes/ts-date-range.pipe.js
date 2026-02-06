@@ -21,7 +21,19 @@ var RangeDatePipe = /** @class */ (function () {
                 if (isRecurrent && args['startTime'] && args['recurrenceRule']) {
                     var startTime = args['startTime'];
                     var endTime = args['endTime'];
-                    var freq = args['recurrenceRule'].split(';')[0].split('=')[1];
+                    
+                    // Check for RDATE first
+                    var isRdate = args['recurrenceRule'].indexOf("RDATE") > -1;
+                    
+                    // Extract frequency only for RRULE cases
+                    var freq = null;
+                    var isWeekly = false;
+                    
+                    if (!isRdate) {
+                        freq = args['recurrenceRule'].split(';')[0].split('=')[1];
+                        isWeekly = freq && freq.toLowerCase() === 'weekly';
+                    }
+                    
                     var freqLabel = 'Daily';
                     
                     // Helper function to get ordinal suffix
@@ -64,10 +76,6 @@ var RangeDatePipe = /** @class */ (function () {
                             return 'UTC';
                         }
                     };
-                    
-                    // Check for RDATE or WEEKLY recurrence
-                    var isRdate = args['recurrenceRule'].indexOf("RDATE") > -1;
-                    var isWeekly = freq.toLowerCase() === 'weekly';
                     
                     // For WEEKLY and RDATE: use new format like "Sat 10th, 05:00 PM (IST) onwards | Multiple Dates"
                     if (isWeekly || isRdate) {

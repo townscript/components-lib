@@ -1858,7 +1858,19 @@ let RangeDatePipe = class RangeDatePipe {
                 if (isRecurrent && args['startTime'] && args['recurrenceRule']) {
                     const startTime = args['startTime'];
                     const endTime = args['endTime'];
-                    const freq = args['recurrenceRule'].split(';')[0].split('=')[1];
+                    
+                    // Check for RDATE first
+                    const isRdate = args['recurrenceRule'].indexOf("RDATE") > -1;
+                    
+                    // Extract frequency only for RRULE cases
+                    let freq = null;
+                    let isWeekly = false;
+                    
+                    if (!isRdate) {
+                        freq = args['recurrenceRule'].split(';')[0].split('=')[1];
+                        isWeekly = freq && freq.toLowerCase() === 'weekly';
+                    }
+                    
                     let freqLabel = 'Daily';
                     // Helper function to get ordinal suffix
                     const getOrdinalSuffix = (day) => {
@@ -1900,10 +1912,6 @@ let RangeDatePipe = class RangeDatePipe {
                             return 'UTC';
                         }
                     };
-                    
-                    // Check for RDATE or WEEKLY recurrence
-                    const isRdate = args['recurrenceRule'].indexOf("RDATE") > -1;
-                    const isWeekly = freq.toLowerCase() === 'weekly';
                     
                     // For WEEKLY and RDATE: use new format like "Sat 10th, 05:00 PM (IST) onwards | Multiple Dates"
                     if (isWeekly || isRdate) {
