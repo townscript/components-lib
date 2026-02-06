@@ -37,26 +37,71 @@ var RangeDatePipe = /** @class */ (function () {
                     
                     // Helper function to get timezone abbreviation
                     var getTimezoneAbbr = function (timezone) {
+                        var options = {
+                            timeZone: _this.deprecatedVsNewTimeZones[timezone] != undefined ?
+                                _this.deprecatedVsNewTimeZones[timezone] : timezone,
+                            timeZoneName: 'long'
+                        };
                         try {
-                            var dt = DateTime.local().setZone(timezone);
-                            return dt.offsetNameShort || dt.zoneName.split('/')[1] || 'UTC';
-                        } catch {
+                            var intl = new Intl.DateTimeFormat('en-gb', options);
+                            var sampleDate = intl.format(new Date());
+                            if (sampleDate.split(",")[1]) {
+                                var timeZone = sampleDate.split(",")[1].trim();
+                                var shortTz = "";
+                                timeZone.split(" ").filter(function (ele) {
+                                    shortTz += ele[0];
+                                });
+                                var result = shortTz;
+                                if (timeZone && timeZone.toLowerCase().indexOf("singapore") > -1) {
+                                    result = "SGT";
+                                } else if (timeZone && options.timeZone.indexOf("Jakarta") > -1) {
+                                    result = "WIB";
+                                }
+                                return result;
+                            }
+                            return 'UTC';
+                        } catch (e) {
                             return 'UTC';
                         }
                     };
                     
-                    // For all recurring events except Daily, use new format
-                    if (freq.toLowerCase() !== 'daily') {
+                    // Check for RDATE or WEEKLY recurrence
+                    var isRdate = args['recurrenceRule'].indexOf("RDATE") > -1;
+                    var isWeekly = freq.toLowerCase() === 'weekly';
+                    
+                    // For WEEKLY and RDATE: use new format like "Sat 10th, 05:00 PM (IST) onwards | Multiple Dates"
+                    if (isWeekly || isRdate) {
                         if (rangeDates && rangeDates.length > 0) {
                             var firstDate = DateTime.fromISO(rangeDates[0], { zone: eventTimeZone });
                             var dayName = firstDate.toFormat('ccc'); // 3-letter day
                             var date = firstDate.toFormat('d');
                             var ordinalSuffix = getOrdinalSuffix(parseInt(date));
-                            var time = firstDate.toFormat('hh:mm a');
+                            var time = startTime;
                             var tzAbbr = getTimezoneAbbr(eventTimeZone);
                             freqLabel = dayName + ' ' + date + ordinalSuffix + ', ' + time + ' (' + tzAbbr + ') onwards | Multiple Dates';
                         } else {
                             freqLabel = 'Multiple Dates';
+                        }
+                    } else if (freq.toLowerCase() !== 'daily') {
+                        // For other non-daily recurring events, keep existing logic
+                        if (args['recurrenceRule'].indexOf("RDATE") > -1) {
+                            freqLabel = 'Multiple Dates';
+                        } else {
+                            // predefined R Rule
+                            if (freq.toLowerCase() == 'Weekly'.toLowerCase()) {
+                                var byDays = args['recurrenceRule'].split(';')[2].split('=')[1].split(',');
+                                if (byDays.length > 2) {
+                                    freqLabel = 'Multiple Dates';
+                                } else {
+                                    freqLabel = 'Every ';
+                                    for (var index = 0; index < byDays.length; index++) {
+                                        freqLabel += _this.days[byDays[index]];
+                                        if (index < (byDays.length - 1)) {
+                                            freqLabel += ', ';
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                     // For Daily recurring events, keep existing behavior
