@@ -20,7 +20,19 @@ let RangeDatePipe = class RangeDatePipe {
                 if (isRecurrent && args['startTime'] && args['recurrenceRule']) {
                     const startTime = args['startTime'];
                     const endTime = args['endTime'];
-                    const freq = args['recurrenceRule'].split(';')[0].split('=')[1];
+                    
+                    // Check for RDATE first
+                    const isRdate = args['recurrenceRule'].indexOf("RDATE") > -1;
+                    
+                    // Extract frequency only for RRULE cases
+                    let freq = null;
+                    let isWeekly = false;
+                    
+                    if (!isRdate) {
+                        freq = args['recurrenceRule'].split(';')[0].split('=')[1];
+                        isWeekly = freq && freq.toLowerCase() === 'weekly';
+                    }
+                    
                     let freqLabel = 'Daily';
                     
                     // Helper function to get ordinal suffix
@@ -64,10 +76,6 @@ let RangeDatePipe = class RangeDatePipe {
                         }
                     };
                     
-                    // Check for RDATE or WEEKLY recurrence
-                    const isRdate = args['recurrenceRule'].indexOf("RDATE") > -1;
-                    const isWeekly = freq.toLowerCase() === 'weekly';
-                    
                     // For WEEKLY and RDATE: use new format like "Sat 10th, 05:00 PM (IST) onwards | Multiple Dates"
                     if (isWeekly || isRdate) {
                         if (rangeDates && rangeDates.length > 0) {
@@ -105,6 +113,11 @@ let RangeDatePipe = class RangeDatePipe {
                     }
                     // For Daily recurring events, keep existing behavior
                     // freqLabel remains 'Daily'
+                    
+                    // For WEEKLY and RDATE, we already have complete formatted string, so return it directly
+                    if (isWeekly || isRdate) {
+                        return freqLabel;
+                    }
                     
                     return (hideTime || (endTime == undefined) ? freqLabel : '')
                         + (!hideTime && endTime == undefined ? ' | ' : '')
