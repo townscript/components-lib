@@ -115,6 +115,11 @@ var RangeDatePipe = /** @class */ (function () {
                     // For Daily recurring events, keep existing behavior
                     // freqLabel remains 'Daily'
                     
+                    // For WEEKLY and RDATE, we already have complete formatted string, so return it directly
+                    if (isWeekly || isRdate) {
+                        return freqLabel;
+                    }
+                    
                     return (hideTime || (endTime == undefined) ? freqLabel : '')
                         + (!hideTime && endTime == undefined ? ' | ' : '')
                         + (hideTime ? '' : (startTime + (endTime != undefined ? ' to ' + endTime : '')));
