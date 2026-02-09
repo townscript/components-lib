@@ -84,7 +84,7 @@ var RangeDatePipe = /** @class */ (function () {
                             var dayName = firstDate.toFormat('ccc'); // 3-letter day
                             var date = firstDate.toFormat('d');
                             var ordinalSuffix = getOrdinalSuffix(parseInt(date));
-                            var time = startTime;
+                            var time = firstDate.toFormat('hh:mm a');
                             var tzAbbr = getTimezoneAbbr(eventTimeZone);
                             freqLabel = dayName + ' ' + date + ordinalSuffix + ', ' + time + ' (' + tzAbbr + ') onwards | Multiple Dates';
                         } else {

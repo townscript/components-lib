@@ -1920,7 +1920,7 @@ let RangeDatePipe = class RangeDatePipe {
                             const dayName = firstDate.toFormat('ccc'); // 3-letter day
                             const date = firstDate.toFormat('d');
                             const ordinalSuffix = getOrdinalSuffix(parseInt(date));
-                            const time = startTime;
+                            const time = firstDate.toFormat('hh:mm a');
                             const tzAbbr = getTimezoneAbbr(eventTimeZone);
                             freqLabel = `${dayName} ${date}${ordinalSuffix}, ${time} (${tzAbbr}) onwards | Multiple Dates`;
                         } else {
