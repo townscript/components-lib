@@ -844,7 +844,7 @@ let TsHeaderComponent = class TsHeaderComponent {
                     if (this.utilityService.IsJsonString(res)) {
                         const country = JSON.parse(res)['country'];
                         const data = yield this.headerService.getPopularCities(country || this.urlArray[0]);
-                        this.popularPlaces = data['data'].slice(0, 6).map(ele => {
+                        this.popularPlaces = data['data'].slice(0, 12).map(ele => {
                             ele.type = 'city';
                             ele.cityCode = ele.code;
                             return ele;
@@ -1148,7 +1148,7 @@ let SearchComponent = class SearchComponent {
                     if (this.utilityService.IsJsonString(res)) {
                         const country = JSON.parse(res)['country'];
                         const data = yield this.headerService.getPopularCities(country || this.urlArray[0]);
-                        this.popularPlaces = data['data'].slice(0, 6).map(ele => {
+                        this.popularPlaces = data['data'].slice(0, 12).map(ele => {
                             ele.type = 'city';
                             ele.cityCode = ele.code;
                             return ele;
@@ -1858,104 +1858,30 @@ let RangeDatePipe = class RangeDatePipe {
                 if (isRecurrent && args['startTime'] && args['recurrenceRule']) {
                     const startTime = args['startTime'];
                     const endTime = args['endTime'];
-                    
-                    // Check for RDATE first
-                    const isRdate = args['recurrenceRule'].indexOf("RDATE") > -1;
-                    
-                    // Extract frequency only for RRULE cases
-                    let freq = null;
-                    let isWeekly = false;
-                    
-                    if (!isRdate) {
-                        freq = args['recurrenceRule'].split(';')[0].split('=')[1];
-                        isWeekly = freq && freq.toLowerCase() === 'weekly';
-                    }
-                    
+                    const freq = args['recurrenceRule'].split(';')[0].split('=')[1];
                     let freqLabel = 'Daily';
-                    // Helper function to get ordinal suffix
-                    const getOrdinalSuffix = (day) => {
-                        if (day > 3 && day < 21) return 'th';
-                        switch (day % 10) {
-                            case 1: return 'st';
-                            case 2: return 'nd';
-                            case 3: return 'rd';
-                            default: return 'th';
-                        }
-                    };
-                    
-                    // Helper function to get timezone abbreviation
-                    const getTimezoneAbbr = (timezone) => {
-                        const options = {
-                            timeZone: this.deprecatedVsNewTimeZones[timezone] != undefined ?
-                                this.deprecatedVsNewTimeZones[timezone] : timezone,
-                            timeZoneName: 'long'
-                        };
-                        try {
-                            const intl = new Intl.DateTimeFormat('en-gb', options);
-                            const sampleDate = intl.format(new Date());
-                            if (sampleDate.split(",")[1]) {
-                                const timeZone = sampleDate.split(",")[1].trim();
-                                let shortTz = "";
-                                timeZone.split(" ").filter(ele => {
-                                    shortTz += ele[0];
-                                });
-                                let result = shortTz;
-                                if (timeZone && timeZone.toLowerCase().indexOf("singapore") > -1) {
-                                    result = "SGT";
-                                } else if (timeZone && options.timeZone.indexOf("Jakarta") > -1) {
-                                    result = "WIB";
-                                }
-                                return result;
+                    //custom date selected
+                    if (args['recurrenceRule'].indexOf("RDATE") > -1) {
+                        freqLabel = 'Multiple Dates';
+                    }
+                    else {
+                        // predefined R Rule
+                        if (freq.toLowerCase() == 'Weekly'.toLowerCase()) {
+                            let byDays = args['recurrenceRule'].split(';')[2].split('=')[1].split(',');
+                            if (byDays.length > 2) {
+                                freqLabel = 'Multiple Dates';
                             }
-                            return 'UTC';
-                        } catch (e) {
-                            return 'UTC';
-                        }
-                    };
-                    
-                    // For WEEKLY and RDATE: use new format like "Sat 10th, 05:00 PM (IST) onwards | Multiple Dates"
-                    if (isWeekly || isRdate) {
-                        if (rangeDates && rangeDates.length > 0) {
-                            const firstDate = DateTime.fromISO(rangeDates[0], { zone: eventTimeZone });
-                            const dayName = firstDate.toFormat('ccc'); // 3-letter day
-                            const date = firstDate.toFormat('d');
-                            const ordinalSuffix = getOrdinalSuffix(parseInt(date));
-                            const time = firstDate.toFormat('hh:mm a');
-                            const tzAbbr = getTimezoneAbbr(eventTimeZone);
-                            freqLabel = `${dayName} ${date}${ordinalSuffix}, ${time} (${tzAbbr}) onwards | Multiple Dates`;
-                        } else {
-                            freqLabel = 'Multiple Dates';
-                        }
-                    } else if (freq.toLowerCase() !== 'daily') {
-                        // For other non-daily recurring events, keep existing logic
-                        if (args['recurrenceRule'].indexOf("RDATE") > -1) {
-                            freqLabel = 'Multiple Dates';
-                        } else {
-                            // predefined R Rule
-                            if (freq.toLowerCase() == 'Weekly'.toLowerCase()) {
-                                let byDays = args['recurrenceRule'].split(';')[2].split('=')[1].split(',');
-                                if (byDays.length > 2) {
-                                    freqLabel = 'Multiple Dates';
-                                } else {
-                                    freqLabel = 'Every ';
-                                    for (let index = 0; index < byDays.length; index++) {
-                                        freqLabel += this.days[byDays[index]];
-                                        if (index < (byDays.length - 1)) {
-                                            freqLabel += ', ';
-                                        }
+                            else {
+                                freqLabel = 'Every ';
+                                for (let index = 0; index < byDays.length; index++) {
+                                    freqLabel += this.days[byDays[index]];
+                                    if (index < (byDays.length - 1)) {
+                                        freqLabel += ', ';
                                     }
                                 }
                             }
                         }
                     }
-                    // For Daily recurring events, keep existing behavior
-                    // freqLabel remains 'Daily'
-                    
-                    // For WEEKLY and RDATE, we already have complete formatted string, so return it directly
-                    if (isWeekly || isRdate) {
-                        return freqLabel;
-                    }
-                    
                     return (hideTime || (endTime == undefined) ? freqLabel : '')
                         + (!hideTime && endTime == undefined ? ' | ' : '')
                         + (hideTime ? '' : (startTime + (endTime != undefined ? ' to ' + endTime : '')));

@@ -1105,7 +1105,7 @@
                                     return [4 /*yield*/, this.headerService.getPopularCities(country || this.urlArray[0])];
                                 case 1:
                                     data = _a.sent();
-                                    this.popularPlaces = data['data'].slice(0, 6).map(function (ele) {
+                                    this.popularPlaces = data['data'].slice(0, 12).map(function (ele) {
                                         ele.type = 'city';
                                         ele.cityCode = ele.code;
                                         return ele;
@@ -1427,7 +1427,7 @@
                                     return [4 /*yield*/, this.headerService.getPopularCities(country || this.urlArray[0])];
                                 case 1:
                                     data = _a.sent();
-                                    this.popularPlaces = data['data'].slice(0, 6).map(function (ele) {
+                                    this.popularPlaces = data['data'].slice(0, 12).map(function (ele) {
                                         ele.type = 'city';
                                         ele.cityCode = ele.code;
                                         return ele;
