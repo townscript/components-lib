@@ -2217,23 +2217,30 @@
                     if (isRecurrent && args['startTime'] && args['recurrenceRule']) {
                         var startTime = args['startTime'];
                         var endTime = args['endTime'];
-                        var freq = args['recurrenceRule'].split(';')[0].split('=')[1];
+                        var recurrenceRule = args['recurrenceRule'];
+                        // Check if it's daily recurring event
+                        var isDaily = false;
+                        if (recurrenceRule.startsWith('RRULE:')) {
+                            var freq = recurrenceRule.split(';')[0].split('=')[1];
+                            isDaily = freq.toLowerCase() === 'daily';
+                        }
                         // Handle daily events with existing logic
-                        if (freq.toLowerCase() === 'daily') {
+                        if (isDaily) {
                             var freqLabel = 'Daily';
                             return (hideTime || (endTime == undefined) ? freqLabel : '')
                                 + (!hideTime && endTime == undefined ? ' | ' : '')
                                 + (hideTime ? '' : (startTime + (endTime != undefined ? ' to ' + endTime : '')));
                         }
                         else {
-                            // For all other recurring events (weekly, monthly, etc.)
+                            // For all other recurring events (weekly, monthly, custom dates, etc.)
                             if (rangeDates && rangeDates.length > 0) {
                                 var startDate = luxon.DateTime.fromISO(rangeDates[0], { zone: eventTimeZone });
                                 var dayName = startDate.toFormat('ccc'); // Sat
-                                var dateWithOrdinal = startDate.toFormat('do'); // 10th  
+                                var day = startDate.toFormat('d');
+                                var dateWithOrdinal = _this.getOrdinalSuffix(parseInt(day)); // 7th
                                 var time = startDate.toFormat('hh:mm a'); // 05:00 PM
                                 // Get timezone abbreviation
-                                var timezoneAbbr = startDate.offsetNameShort;
+                                var timezoneAbbr = _this.getTimezoneAbbr(eventTimeZone);
                                 return dayName + " " + dateWithOrdinal + ", " + time + " (" + timezoneAbbr + ") onwards | Multiple Dates";
                             }
                             else {
@@ -2271,6 +2278,41 @@
                 }
             };
         }
+        RangeDatePipe.prototype.getOrdinalSuffix = function (day) {
+            var suffix = ["th", "st", "nd", "rd"];
+            var v = day % 100;
+            return day + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
+        };
+        RangeDatePipe.prototype.getTimezoneAbbr = function (timeZone) {
+            try {
+                var options = {
+                    timeZone: this.deprecatedVsNewTimeZones[timeZone] != undefined ?
+                        this.deprecatedVsNewTimeZones[timeZone] : timeZone,
+                    timeZoneName: 'long'
+                };
+                var intl = new Intl.DateTimeFormat('en-gb', options);
+                var sampleDate = intl.format(new Date());
+                if (sampleDate.split(",")[1]) {
+                    var timeZoneName = sampleDate.split(",")[1].trim();
+                    var shortTz_1 = "";
+                    timeZoneName.split(" ").filter(function (ele) {
+                        shortTz_1 += ele[0];
+                    });
+                    // Special cases
+                    if (timeZoneName && timeZoneName.toLowerCase().indexOf("singapore") > -1) {
+                        return "SGT";
+                    }
+                    else if (timeZoneName && options.timeZone.indexOf("Jakarta") > -1) {
+                        return "WIB";
+                    }
+                    return shortTz_1;
+                }
+            }
+            catch (e) {
+                // Fallback to original timezone
+            }
+            return timeZone;
+        };
         RangeDatePipe.ctorParameters = function () { return [
             { type: UtilityService }
         ]; };

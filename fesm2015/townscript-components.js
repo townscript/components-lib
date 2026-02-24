@@ -1858,23 +1858,30 @@ let RangeDatePipe = class RangeDatePipe {
                 if (isRecurrent && args['startTime'] && args['recurrenceRule']) {
                     const startTime = args['startTime'];
                     const endTime = args['endTime'];
-                    const freq = args['recurrenceRule'].split(';')[0].split('=')[1];
+                    const recurrenceRule = args['recurrenceRule'];
+                    // Check if it's daily recurring event
+                    let isDaily = false;
+                    if (recurrenceRule.startsWith('RRULE:')) {
+                        const freq = recurrenceRule.split(';')[0].split('=')[1];
+                        isDaily = freq.toLowerCase() === 'daily';
+                    }
                     // Handle daily events with existing logic
-                    if (freq.toLowerCase() === 'daily') {
+                    if (isDaily) {
                         let freqLabel = 'Daily';
                         return (hideTime || (endTime == undefined) ? freqLabel : '')
                             + (!hideTime && endTime == undefined ? ' | ' : '')
                             + (hideTime ? '' : (startTime + (endTime != undefined ? ' to ' + endTime : '')));
                     }
                     else {
-                        // For all other recurring events (weekly, monthly, etc.)
+                        // For all other recurring events (weekly, monthly, custom dates, etc.)
                         if (rangeDates && rangeDates.length > 0) {
                             const startDate = DateTime.fromISO(rangeDates[0], { zone: eventTimeZone });
                             const dayName = startDate.toFormat('ccc'); // Sat
-                            const dateWithOrdinal = startDate.toFormat('do'); // 10th  
+                            const day = startDate.toFormat('d');
+                            const dateWithOrdinal = this.getOrdinalSuffix(parseInt(day)); // 7th
                             const time = startDate.toFormat('hh:mm a'); // 05:00 PM
                             // Get timezone abbreviation
-                            let timezoneAbbr = startDate.offsetNameShort;
+                            const timezoneAbbr = this.getTimezoneAbbr(eventTimeZone);
                             return `${dayName} ${dateWithOrdinal}, ${time} (${timezoneAbbr}) onwards | Multiple Dates`;
                         }
                         else {
@@ -1911,6 +1918,41 @@ let RangeDatePipe = class RangeDatePipe {
                 return null;
             }
         };
+    }
+    getOrdinalSuffix(day) {
+        const suffix = ["th", "st", "nd", "rd"];
+        const v = day % 100;
+        return day + (suffix[(v - 20) % 10] || suffix[v] || suffix[0]);
+    }
+    getTimezoneAbbr(timeZone) {
+        try {
+            const options = {
+                timeZone: this.deprecatedVsNewTimeZones[timeZone] != undefined ?
+                    this.deprecatedVsNewTimeZones[timeZone] : timeZone,
+                timeZoneName: 'long'
+            };
+            const intl = new Intl.DateTimeFormat('en-gb', options);
+            const sampleDate = intl.format(new Date());
+            if (sampleDate.split(",")[1]) {
+                const timeZoneName = sampleDate.split(",")[1].trim();
+                let shortTz = "";
+                timeZoneName.split(" ").filter(ele => {
+                    shortTz += ele[0];
+                });
+                // Special cases
+                if (timeZoneName && timeZoneName.toLowerCase().indexOf("singapore") > -1) {
+                    return "SGT";
+                }
+                else if (timeZoneName && options.timeZone.indexOf("Jakarta") > -1) {
+                    return "WIB";
+                }
+                return shortTz;
+            }
+        }
+        catch (e) {
+            // Fallback to original timezone
+        }
+        return timeZone;
     }
 };
 RangeDatePipe.ctorParameters = () => [
