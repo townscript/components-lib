@@ -41,6 +41,8 @@ export declare class TsLoginSignupComponent implements OnInit, OnDestroy {
     signInErrMessage: string;
     resetPwdLinkSent: boolean;
     signUpErrMessage: string;
+    registrationClosedMsg: boolean;
+    readonly registrationClosedMessage = "New account registration is closed. Townhall services are being discontinued.";
     fbLoginURL: string;
     googleLoginURL: string;
     intlInput: any;
